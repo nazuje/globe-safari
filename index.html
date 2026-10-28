@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Globe Safari</title>
+    <meta
+      name="description"
+      content="Spin a real 3D Earth, tap anywhere, and guess which wild animals live there. A gentle geography game for families with kids aged 3 to 9."
+    />
+    <meta name="theme-color" content="#050816" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="globe" class="globe" aria-label="A spinning 3D Earth. Tap anywhere to meet the animals that live there."></div>
+
+    <div id="loading" class="loading" role="status">
+      <span class="loading-earth" aria-hidden="true">🌍</span>
+      <span>Getting the Earth ready…</span>
+    </div>
+
+    <header class="top-bar">
+      <h1 class="logo"><span aria-hidden="true">🌍</span> Globe Safari</h1>
+      <div id="stars" class="stars" aria-label="0 stars" aria-live="polite">
+        <span aria-hidden="true">⭐</span> <span id="star-count">0</span>
+      </div>
+    </header>
+
+    <nav class="actions" aria-label="Travel">
+      <button id="surprise" class="big-btn btn-surprise" type="button">Surprise me! 🎲</button>
+      <button id="home" class="big-btn btn-home" type="button">Back to space 🚀</button>
+    </nav>
+
+    <p id="hint" class="hint">Spin the Earth and tap anywhere to meet the animals!</p>
+
+    <aside id="panel" class="panel" role="dialog" aria-labelledby="panel-title" hidden></aside>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

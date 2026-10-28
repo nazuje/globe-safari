@@ -1,0 +1,112 @@
+import type { LookupResult } from '../geo/lookup.ts';
+import { el } from './dom.ts';
+import { renderExploreGrid } from './explore.ts';
+import { renderGuessGame } from './guess.ts';
+import { preloadPhotos } from './photo.ts';
+import { speakerButton, stopSpeaking } from './speech.ts';
+
+type Mode = 'guess' | 'explore';
+
+export interface PanelOptions {
+  onStar: () => void;
+  onClose: () => void;
+  /** Called after the panel opens or changes size, with the space it covers. */
+  onLayout: (cover: { right: number; bottom: number }) => void;
+}
+
+const SIDE_LAYOUT = '(min-width: 760px) and (min-aspect-ratio: 1/1)';
+
+function modeButton(label: string, mode: Mode, onPick: (mode: Mode) => void): HTMLButtonElement {
+  return el('button', {
+    className: 'mode-btn',
+    text: label,
+    attrs: { type: 'button', role: 'tab', 'data-mode': mode, 'aria-selected': 'false' },
+    onClick: () => onPick(mode),
+  });
+}
+
+/** The region panel: a side panel on wide screens, a bottom sheet on phones. */
+export function createPanel(root: HTMLElement, { onStar, onClose, onLayout }: PanelOptions) {
+  const title = el('h2', { attrs: { id: 'panel-title' } });
+  const emoji = el('div', { className: 'region-emoji', attrs: { 'aria-hidden': 'true' } });
+  const country = el('p', { className: 'region-country' });
+  const description = el('p', { className: 'region-description' });
+  const body = el('div', { className: 'panel-body' });
+  let result: LookupResult | null = null;
+  let mode: Mode = 'guess';
+
+  const modeButtons = [
+    modeButton('❓ Who lives here?', 'guess', (m) => showMode(m)),
+    modeButton('🃏 Meet them all', 'explore', (m) => showMode(m)),
+  ];
+
+  const closeButton = el('button', {
+    className: 'close-btn',
+    text: '✕',
+    attrs: { type: 'button', 'aria-label': 'Close' },
+    onClick: () => onClose(),
+  });
+
+  root.replaceChildren(
+    el('div', { className: 'panel-scroll' }, [
+      el('header', { className: 'panel-head' }, [emoji, el('div', { className: 'panel-titles' }, [title, country]), closeButton]),
+      description,
+      el('div', { className: 'mode-toggle', attrs: { role: 'tablist', 'aria-label': 'How to play' } }, modeButtons),
+      body,
+      el('p', { className: 'credit', text: 'Photos: Wikipedia' }),
+    ]),
+  );
+
+  function showMode(next: Mode) {
+    if (!result) return;
+    mode = next;
+    stopSpeaking();
+    for (const button of modeButtons) {
+      button.setAttribute('aria-selected', String(button.dataset.mode === mode));
+    }
+    if (mode === 'guess') renderGuessGame(body, result.region, { onStar });
+    else renderExploreGrid(body, result.region);
+  }
+
+  function reportLayout() {
+    if (root.hidden) return onLayout({ right: 0, bottom: 0 });
+    const rect = root.getBoundingClientRect();
+    const side = window.matchMedia(SIDE_LAYOUT).matches;
+    onLayout(side ? { right: rect.width, bottom: 0 } : { right: 0, bottom: rect.height });
+  }
+
+  new ResizeObserver(reportLayout).observe(root);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !root.hidden) onClose();
+  });
+
+  return {
+    open(next: LookupResult) {
+      result = next;
+      const { region } = next;
+      emoji.textContent = region.emoji;
+      title.textContent = region.name;
+      country.textContent = next.country ? `📍 ${next.country}` : '🌊 Out at sea';
+      const speaker = speakerButton(`${region.name}. ${region.description}`, 'Read about this place');
+      description.replaceChildren(el('span', { text: region.description }), ...(speaker ? [speaker] : []));
+      preloadPhotos(region.animals);
+      root.hidden = false;
+      root.scrollTop = 0;
+      root.querySelector('.panel-scroll')?.scrollTo({ top: 0 });
+      showMode('guess');
+      requestAnimationFrame(reportLayout);
+    },
+    close() {
+      stopSpeaking();
+      result = null;
+      root.hidden = true;
+      body.replaceChildren();
+      reportLayout();
+    },
+    get isOpen() {
+      return !root.hidden;
+    },
+  };
+}
+
+export type Panel = ReturnType<typeof createPanel>;
