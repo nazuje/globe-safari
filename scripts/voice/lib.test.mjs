@@ -76,9 +76,13 @@ describe('fixFor', () => {
 });
 
 describe('the pronunciation table', () => {
-  it('has the three fixes found so far', () => {
+  it('keeps its fixes as lowercase written words mapped to stressed sounds', () => {
     const table = JSON.parse(readFileSync(new URL('./pronunciation.json', import.meta.url), 'utf8'));
-    assert.deepEqual(table, { domov: 'dɔmˈɔːw', nekaj: 'nˈeːkaj', tukaj: 'tˈuːkaj' });
+    assert.equal(table.tukaj, 'tˈuːkaj');
+    for (const [word, sounds] of Object.entries(table)) {
+      assert.equal(word, word.toLowerCase(), word);
+      assert.ok(sounds.includes('ˈ'), `${word} has no stress mark`);
+    }
   });
 });
 

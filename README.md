@@ -6,17 +6,17 @@ Live at <https://nazuje.github.io/playroom/>, with games at `/playroom/<slug>/`.
 
 ## Games
 
-| Game | What it is | Ages | Alone | Together |
-| --- | --- | --- | --- | --- |
-| [🌍 Globe Safari](games/globe-safari/README.md) | Spin the Earth and guess who lives there! | 3-9 |  | ✓ |
-| [🦁 Memory Zoo](games/memory-zoo/README.md) | Find the animal pairs. Take turns! | 4-9 | ✓ | ✓ |
-| [🚂 Pattern Train](games/pattern-train/README.md) | What comes next on the train? | 5-9 | ✓ |  |
-| [🎨 Color Lab](games/color-lab/README.md) | Mix paints and guess the color! | 4-9 | ✓ | ✓ |
-| [🌻 Word Garden](games/word-garden/README.md) | Spell little words to grow flowers! | 5-9 | ✓ | ✓ |
-| [👾 Yum Yum Monster](games/yum-yum-monster/README.md) | Feed the silly monster! | 3-5 | ✓ |  |
-| [🔷 Shape Friends](games/shape-friends/README.md) | Help every shape find its home! | 3-5 | ✓ |  |
-| [🙈 Hide and Peek](games/hide-and-peek/README.md) | Hide a friend. Can you find it? | 3-6 |  | ✓ |
-| [🐸 Animal Moves](games/animal-moves/README.md) | Hop, stomp and wiggle together! | 3-7 |  | ✓ |
+| Game | What it is | Ages | Alone | Together | Languages |
+| --- | --- | --- | --- | --- | --- |
+| [🌍 Globe Safari](games/globe-safari/README.md) | Spin the Earth and guess who lives there! | 3-9 |  | ✓ | 🇬🇧 |
+| [🦁 Memory Zoo / Živalski spomin](games/memory-zoo/README.md) | Find the animal pairs. Take turns! | 4-9 | ✓ | ✓ | 🇬🇧 🇸🇮 |
+| [🚂 Pattern Train](games/pattern-train/README.md) | What comes next on the train? | 5-9 | ✓ |  | 🇬🇧 |
+| [🎨 Color Lab](games/color-lab/README.md) | Mix paints and guess the color! | 4-9 | ✓ | ✓ | 🇬🇧 |
+| [🌻 Word Garden / Besedni vrt](games/word-garden/README.md) | Spell little words to grow flowers! | 5-9 | ✓ | ✓ | 🇬🇧 🇸🇮 |
+| [👾 Yum Yum Monster / Lačna pošast](games/yum-yum-monster/README.md) | Feed the silly monster! | 3-5 | ✓ |  | 🇬🇧 🇸🇮 |
+| [🔷 Shape Friends / Prijatelji oblik](games/shape-friends/README.md) | Help every shape find its home! | 3-5 | ✓ |  | 🇬🇧 🇸🇮 |
+| [🙈 Hide and Peek / Skrij in poišči](games/hide-and-peek/README.md) | Hide a friend. Can you find it? | 3-6 |  | ✓ | 🇬🇧 🇸🇮 |
+| [🐸 Animal Moves / Živalski gibi](games/animal-moves/README.md) | Hop, stomp and wiggle together! | 3-7 |  | ✓ | 🇬🇧 🇸🇮 |
 
 ## Layout
 
@@ -61,6 +61,7 @@ npm run preview                      # serve dist/ at http://localhost:5179
 | `ages` | A range such as `"4-9"`. The portal's age filter shows a game when the chosen age falls inside it, ends included |
 | `modes` | `"solo"`, `"together"`, or both: how the game can be played |
 | `languages` | `"en"`, `"sl"`, or both: the languages the game is fully playable in. The portal shows a language chip once a game has it, and the language row itself once there are two languages. A tile shows a flag badge when a game has more than one language or isn't in English |
+| `translations` | Optional names per language, such as `{ "sl": { "title": "...", "tagline": "..." } }`. The tile uses them when that language is on |
 | `color` | Hex accent for the tile |
 | `status` | `"ready"` or `"coming-soon"` |
 
