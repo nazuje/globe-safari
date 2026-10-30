@@ -1,10 +1,11 @@
-import { burst } from '@playroom/kit';
+import { burst, onLanguageChange } from '@playroom/kit';
 import { ANIMALS } from './animals.ts';
 import { button, el } from './dom.ts';
 import { endPeek, flipCard, matchLine, newGame, turnLine, type FlipEvent, type GameState } from './game.ts';
+import { text } from './lang/index.ts';
 import { bestGrid } from './layout.ts';
 import { resultPanel, type Player } from './result.ts';
-import { PLAYER_NAMES, SOLO_NAME, type Setup } from './setup.ts';
+import type { Setup } from './setup.ts';
 import { say } from './voice.ts';
 
 /** Keep in step with --flip-ms in style.css. */
@@ -20,8 +21,8 @@ const CARD_GAP = 8;
 const MAX_CARD = 180;
 
 function playersFor(setup: Setup): Player[] {
-  if (setup.mode === 'solo') return [{ name: SOLO_NAME, face: setup.faces[0] }];
-  return PLAYER_NAMES.map((name, index) => ({ name, face: setup.faces[index] }));
+  if (setup.mode === 'solo') return [{ name: () => text().soloName, face: setup.faces[0] }];
+  return setup.faces.map((face, index) => ({ name: () => text().playerNames[index], face }));
 }
 
 function cardButton(emoji: string): HTMLButtonElement {
@@ -35,16 +36,18 @@ function cardButton(emoji: string): HTMLButtonElement {
 
 interface ScorePanel {
   root: HTMLElement;
+  name: HTMLElement;
   stars: HTMLElement;
 }
 
 function scorePanel(player: Player): ScorePanel {
   const root = el('div', 'score');
   const stars = el('span', 'score-stars', '⭐ 0');
-  const text = el('span', 'score-text');
-  text.append(el('span', 'score-name', player.name), stars);
-  root.append(el('span', 'score-face', player.face), text);
-  return { root, stars };
+  const name = el('span', 'score-name');
+  const label = el('span', 'score-text');
+  label.append(name, stars);
+  root.append(el('span', 'score-face', player.face), label);
+  return { root, name, stars };
 }
 
 /** One game from first flip to celebration. Calling onChange returns to the setup screen. */
@@ -78,8 +81,11 @@ export function startGame(host: HTMLElement, setup: Setup, onChange: () => void)
   });
   resize.observe(board);
 
+  const stopListening = onLanguageChange(() => draw());
+
   function leave(then: () => void): void {
     resize.disconnect();
+    stopListening();
     then();
   }
 
@@ -88,16 +94,17 @@ export function startGame(host: HTMLElement, setup: Setup, onChange: () => void)
       const active = index === game.current;
       panel.root.classList.toggle('is-turn', active);
       panel.root.toggleAttribute('aria-current', active);
-      const text = `⭐ ${game.stars[index]}`;
-      if (panel.stars.textContent !== text) {
-        panel.stars.textContent = text;
+      panel.name.textContent = players[index].name();
+      const score = `⭐ ${game.stars[index]}`;
+      if (panel.stars.textContent !== score) {
+        panel.stars.textContent = score;
         panel.stars.classList.remove('pop');
         void panel.stars.offsetWidth;
         panel.stars.classList.add('pop');
       }
     });
     screen.dataset.turn = String(game.current);
-    flipCount.textContent = `${game.flips} flips`;
+    flipCount.textContent = text().flipCount(game.flips);
     cards.forEach((card, index) => {
       const animal = game.cards[index];
       const matched = game.matched.includes(index);
@@ -105,12 +112,17 @@ export function startGame(host: HTMLElement, setup: Setup, onChange: () => void)
       card.classList.toggle('up', up);
       card.classList.toggle('matched', matched);
       card.classList.toggle('missed', game.phase === 'peeking' && up && !matched);
-      card.setAttribute('aria-label', up ? animal.name : `Card ${index + 1}, face down`);
+      card.setAttribute('aria-label', up ? text().animalName(animal) : text().cardDown(index + 1));
     });
   }
 
+  /** The line for whoever is up. Each line below is read when it plays, so it follows a language switch. */
+  function turnNow(): string {
+    return turnLine(players[game.current].name());
+  }
+
   function sayTurn(): void {
-    say(solo ? 'Try again!' : turnLine(players[game.current].name));
+    say(solo ? () => text().tryAgain : turnNow);
   }
 
   /** The missed pair turns back, the turn passes, and taps wait until they are down. */
@@ -128,7 +140,7 @@ export function startGame(host: HTMLElement, setup: Setup, onChange: () => void)
   function celebrateMatch(index: number, goesAgain: boolean): void {
     const { left, top, width, height } = cards[index].getBoundingClientRect();
     burst(left + width / 2, top + height / 2);
-    say(matchLine(game.cards[index], goesAgain));
+    say(() => matchLine(game.cards[index], goesAgain));
   }
 
   function finish(): void {
@@ -141,11 +153,11 @@ export function startGame(host: HTMLElement, setup: Setup, onChange: () => void)
   }
 
   function react(event: FlipEvent, index: number): void {
-    const animal = game.cards[index];
-    if (event === 'first') say(animal.name);
+    const sayAnimal = (): void => say(() => text().animalName(game.cards[index]));
+    if (event === 'first') sayAnimal();
     if (event === 'match') celebrateMatch(index, !solo);
     if (event === 'miss') {
-      say(animal.name);
+      sayAnimal();
       peekStart = performance.now();
       peekTimer = window.setTimeout(settle, FLIP_MS + PEEK_MS);
     }
@@ -156,15 +168,14 @@ export function startGame(host: HTMLElement, setup: Setup, onChange: () => void)
   }
 
   function tapCard(index: number): void {
-    const animal = game.cards[index];
-    const result = flipCard(game, index);
-    if (result.event === 'ignored') {
-      if (game.matched.includes(index) || game.faceUp.includes(index)) say(animal.name);
+    const flip = flipCard(game, index);
+    if (flip.event === 'ignored') {
+      if (game.matched.includes(index) || game.faceUp.includes(index)) say(() => text().animalName(game.cards[index]));
       return;
     }
-    game = result.game;
+    game = flip.game;
     draw();
-    react(result.event, index);
+    react(flip.event, index);
   }
 
   screen.addEventListener('click', (event) => {
@@ -179,5 +190,5 @@ export function startGame(host: HTMLElement, setup: Setup, onChange: () => void)
   });
 
   draw();
-  say(solo ? 'Find the pairs!' : turnLine(players[game.current].name));
+  say(solo ? () => text().findPairs : turnNow);
 }

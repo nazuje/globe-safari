@@ -1,9 +1,9 @@
-import { store } from '@playroom/kit';
+import { onLanguageChange, store } from '@playroom/kit';
 import { button, el } from './dom.ts';
+import { text } from './lang/index.ts';
 import {
   BESTS_KEY,
   BOARD_SIZES,
-  PLAYER_NAMES,
   SETUP_KEY,
   nextFace,
   readBests,
@@ -13,9 +13,9 @@ import {
 } from './setup.ts';
 import { say } from './voice.ts';
 
-const MODES: { mode: Mode; label: string; emoji: string; spoken: string }[] = [
-  { mode: 'together', label: 'Together', emoji: '🧒🧑', spoken: 'Together! Take turns.' },
-  { mode: 'solo', label: 'Just me', emoji: '🧒', spoken: 'Just me!' },
+const MODES: { mode: Mode; emoji: string }[] = [
+  { mode: 'together', emoji: '🧒🧑' },
+  { mode: 'solo', emoji: '🧒' },
 ];
 
 function choiceButton(emoji: string, label: string, note: string): HTMLButtonElement {
@@ -39,11 +39,11 @@ export function showSetup(host: HTMLElement, onPlay: (setup: Setup) => void): vo
 
   function modeRow(): HTMLElement {
     const row = el('div', 'choice-row');
-    for (const { mode, label, emoji, spoken } of MODES) {
-      const choice = choiceButton(emoji, label, '');
+    for (const { mode, emoji } of MODES) {
+      const choice = choiceButton(emoji, text().modes[mode].label, '');
       choice.setAttribute('aria-pressed', String(setup.mode === mode));
       choice.addEventListener('click', () => {
-        say(spoken);
+        say(() => text().modes[mode].spoken);
         update({ mode });
       });
       row.append(choice);
@@ -53,14 +53,14 @@ export function showSetup(host: HTMLElement, onPlay: (setup: Setup) => void): vo
 
   function faceRow(): HTMLElement {
     const row = el('div', 'face-row');
-    PLAYER_NAMES.forEach((name, player) => {
+    text().playerNames.forEach((name, player) => {
       const chip = button('face-chip');
       chip.append(el('span', 'face-emoji', setup.faces[player]), el('span', 'face-name', name));
-      chip.setAttribute('aria-label', `Change ${name}'s picture`);
+      chip.setAttribute('aria-label', text().changeFace(name));
       chip.addEventListener('click', () => {
         const faces: [string, string] = [...setup.faces];
         faces[player] = nextFace(setup.faces[player], setup.faces[1 - player]);
-        say(name);
+        say(() => text().playerNames[player]);
         update({ faces });
       });
       row.append(chip);
@@ -70,12 +70,13 @@ export function showSetup(host: HTMLElement, onPlay: (setup: Setup) => void): vo
 
   function sizeRow(): HTMLElement {
     const row = el('div', 'choice-row');
-    for (const { pairs, label, emoji, spoken } of BOARD_SIZES) {
+    for (const { pairs, emoji } of BOARD_SIZES) {
       const best = setup.mode === 'solo' ? bests[pairs] : undefined;
-      const choice = choiceButton(emoji, label, best === undefined ? `${pairs} pairs` : `Best ${best}`);
+      const note = best === undefined ? text().sizeNote(pairs) : text().bestNote(best);
+      const choice = choiceButton(emoji, text().sizes[pairs].label, note);
       choice.setAttribute('aria-pressed', String(setup.pairs === pairs));
       choice.addEventListener('click', () => {
-        say(spoken);
+        say(() => text().sizes[pairs].spoken);
         update({ pairs });
       });
       row.append(choice);
@@ -84,18 +85,22 @@ export function showSetup(host: HTMLElement, onPlay: (setup: Setup) => void): vo
   }
 
   function draw(): void {
-    const play = button('btn btn-leaf play-btn', 'Play! 🐾');
-    play.addEventListener('click', () => onPlay(setup));
+    const play = button('btn btn-leaf play-btn', text().play);
+    play.addEventListener('click', () => {
+      stopListening();
+      onPlay(setup);
+    });
     screen.replaceChildren(
-      el('h2', 'setup-label', "Who's playing?"),
+      el('h2', 'setup-label', text().whoPlays),
       modeRow(),
       ...(setup.mode === 'together' ? [faceRow()] : []),
-      el('h2', 'setup-label', 'How many cards?'),
+      el('h2', 'setup-label', text().howManyCards),
       sizeRow(),
       play,
     );
   }
 
+  const stopListening = onLanguageChange(draw);
   draw();
   host.replaceChildren(screen);
 }

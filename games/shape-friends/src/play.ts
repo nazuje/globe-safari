@@ -2,7 +2,7 @@ import { burst, speak, stopSpeaking } from '@playroom/kit';
 import { friendSvg, houseSvg } from './art.ts';
 import { byId, calmMotion, wait } from './dom.ts';
 import { doorNudge, giggle, hop, hopAlong, poseTransform, sillyShake, type HopParts, type Pose } from './hop.ts';
-import { GIGGLE_LINES, HINT_LINE, WRONG_LINES, cheerLine, doorLabel, promptLine } from './lines.ts';
+import { text } from './lang/index.ts';
 import { pathStones, type Point } from './path.ts';
 import { judgeTap, type Friend, type Question, type Round, type SizeName } from './rounds.ts';
 
@@ -141,7 +141,7 @@ export function createPlay(hooks: PlayHooks) {
       const house = document.createElement('button');
       house.type = 'button';
       house.className = 'house';
-      house.setAttribute('aria-label', doorLabel(door));
+      house.setAttribute('aria-label', text().doorLabel(door));
       house.innerHTML = houseSvg(door, position);
       house.style.setProperty('--delay', `${position * 70}ms`);
       house.addEventListener('click', () => tapDoor(position));
@@ -170,7 +170,7 @@ export function createPlay(hooks: PlayHooks) {
       if (phase !== 'waiting') return;
       showHint();
       giggle(body);
-      talk(promptLine(question()));
+      talk(text().promptLine(question()));
     }, delay);
   }
 
@@ -208,7 +208,7 @@ export function createPlay(hooks: PlayHooks) {
     });
     friendButton.style.opacity = '1';
     await hopAlong(parts, { x: startX, y: spot.y, scale }, stops);
-    talk(promptLine(question()));
+    talk(text().promptLine(question()));
     setWaiting();
   }
 
@@ -240,7 +240,7 @@ export function createPlay(hooks: PlayHooks) {
     house.classList.add('shut');
     await wait(calmMotion() ? 50 : 420);
 
-    speak(cheerLine(question()));
+    speak(text().cheerLine(question()));
     house.classList.add('happy');
     const box = sceneBox();
     burst(box.left + center.x, box.top + center.y, 10);
@@ -256,7 +256,8 @@ export function createPlay(hooks: PlayHooks) {
     setBusy();
     tapTurn += 1;
     setMood('silly');
-    speak(result.hint ? HINT_LINE : WRONG_LINES[tapTurn % WRONG_LINES.length]);
+    const { hintLine, wrongLines } = text();
+    speak(result.hint ? hintLine : wrongLines[tapTurn % wrongLines.length]);
     doorNudge(houses[door]);
     await sillyShake(body, tapTurn);
     setMood('happy');
@@ -275,7 +276,7 @@ export function createPlay(hooks: PlayHooks) {
 
   function sayItAgain(): void {
     if (phase !== 'waiting') return;
-    talk(promptLine(question()));
+    talk(text().promptLine(question()));
     giggle(body);
     startIdleTimer();
   }
@@ -284,7 +285,8 @@ export function createPlay(hooks: PlayHooks) {
     if (phase !== 'waiting') return;
     tapTurn += 1;
     giggle(body);
-    talk(GIGGLE_LINES[tapTurn % GIGGLE_LINES.length]);
+    const { giggleLines } = text();
+    talk(giggleLines[tapTurn % giggleLines.length]);
     startIdleTimer();
   }
 
@@ -298,6 +300,13 @@ export function createPlay(hooks: PlayHooks) {
       index = from;
       friendButton.style.opacity = '0';
       return bringFriend();
+    },
+    /** A language switch mid-round: the doors stay put, and a waiting friend says its line again. */
+    retell(): void {
+      const shown = round?.questions[index];
+      if (!shown) return;
+      houses.forEach((house, door) => house.setAttribute('aria-label', text().doorLabel(shown.doors[door])));
+      if (phase === 'waiting') sayItAgain();
     },
     /** A grown-up can step out only while a friend is waiting, so no animation is left running. */
     pause(): boolean {

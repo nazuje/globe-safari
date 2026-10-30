@@ -15,6 +15,12 @@ The levels are naming foods, colors, counting to 3, counting to 5, and counting 
 
 Foods live in `src/foods.ts`. Only give a food a color it really is, and don't count foods whose emoji shows a bunch, like grapes.
 
+## Languages
+
+The game plays in English and Slovenian, where it is called Lačna pošast. A flag in the top bar switches language at any time, and the round carries on. All the words are in `src/lang/`: `en.ts` and `sl.ts` have the same shape. A request holds only which food, color, count and wording it wants, so its line is always built in the current language.
+
+After changing a Slovenian line, run `npm run voice -- yum-yum-monster` and commit the new clips. Every Slovenian sentence is 3 to 7 words. The bite-by-bite numbers (`Ena!`, `Dve!`) are the one exception, because they are a count, not a sentence. Avoid words with no vowel, like `Mmmm!`, because the voice spells them out.
+
 ## Run it
 
 Yum Yum Monster is one game in [Playroom](../../README.md). You need Node.js 22 or newer. From the repository root:

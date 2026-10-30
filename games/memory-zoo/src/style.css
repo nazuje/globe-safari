@@ -26,6 +26,12 @@ body {
   font-size: clamp(1.5rem, 5vw, 2.2rem);
 }
 
+.topbar-tools {
+  display: flex;
+  flex: none;
+  gap: 12px;
+}
+
 .sound-btn {
   display: grid;
   flex: none;

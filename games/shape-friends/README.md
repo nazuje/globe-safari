@@ -1,6 +1,6 @@
 # 🔷 Shape Friends
 
-A shape-sorting game for ages 3 to 5, played alone. Friendly shapes need help getting home. No reading needed.
+A shape-sorting game for ages 3 to 5, played alone. Friendly shapes need help getting home. No reading needed. It plays in English and Slovenian (*Prijatelji oblik*): the flag in the top bar switches language, and progress stays.
 
 ## How to play
 

@@ -5,6 +5,15 @@
   font-display: swap;
 }
 
+/* The same face for Slovenian's capitals, with Č, Š and Ž. English never shows a capital, so it never loads this. */
+@font-face {
+  font-family: 'Andika Letters';
+  src: url('./fonts/andika-bold-caps-sl.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+41-5A, U+10C, U+160, U+17D;
+}
+
 :root {
   --tile-font: 'Andika Letters', 'Fredoka', ui-rounded, system-ui, sans-serif;
   --tile: 74px;

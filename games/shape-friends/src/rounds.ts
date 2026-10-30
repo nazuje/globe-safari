@@ -26,8 +26,6 @@ export interface Round {
 
 export interface Level {
   id: LevelId;
-  /** Small print for the grown-up who picks the level. */
-  label: string;
   fresh: readonly ShapeName[];
   familiar: readonly ShapeName[];
 }
@@ -57,11 +55,11 @@ export const HOME_COLOR: Record<ShapeName, ColorName> = {
 export const NAMED_COLORS: readonly ColorName[] = ['red', 'blue', 'yellow', 'green', 'purple', 'orange'];
 
 export const LEVELS: readonly Level[] = [
-  { id: 1, label: 'Circle, square, triangle', fresh: FIRST_SHAPES, familiar: [] },
-  { id: 2, label: 'Adds star, heart, rectangle', fresh: MORE_SHAPES, familiar: FIRST_SHAPES },
-  { id: 3, label: 'Adds oval and diamond', fresh: LAST_SHAPES, familiar: [...FIRST_SHAPES, ...MORE_SHAPES] },
-  { id: 4, label: 'Same shape, new sizes and colors', fresh: [], familiar: ALL_SHAPES },
-  { id: 5, label: 'Sort by color or size', fresh: [], familiar: ALL_SHAPES },
+  { id: 1, fresh: FIRST_SHAPES, familiar: [] },
+  { id: 2, fresh: MORE_SHAPES, familiar: FIRST_SHAPES },
+  { id: 3, fresh: LAST_SHAPES, familiar: [...FIRST_SHAPES, ...MORE_SHAPES] },
+  { id: 4, fresh: [], familiar: ALL_SHAPES },
+  { id: 5, fresh: [], familiar: ALL_SHAPES },
 ];
 
 export function isLevelId(value: unknown): value is LevelId {

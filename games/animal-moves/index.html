@@ -15,7 +15,7 @@
   </head>
   <body>
     <header id="topbar" class="topbar">
-      <h1 class="title">Animal Moves</h1>
+      <h1 id="game-title" class="title">Animal Moves</h1>
       <button id="beat-toggle" class="beat-toggle topbar-end" type="button" aria-pressed="true">🥁<span id="beat-icon">🔊</span></button>
     </header>
 
@@ -30,7 +30,7 @@
           <div id="modes" class="pills pills-modes" role="group" aria-label="Game"></div>
           <p id="mode-hint" class="hint"></p>
           <div class="count-row">
-            <span class="hint">Animals</span>
+            <span id="animals-label" class="hint">Animals</span>
             <div id="counts" class="pills pills-counts" role="group" aria-label="How many animals"></div>
           </div>
         </div>
@@ -63,7 +63,7 @@
 
       <section id="party" class="party" hidden>
         <div class="high-five" aria-hidden="true">🙌</div>
-        <h2 class="party-title">High five!</h2>
+        <h2 id="party-title" class="party-title">High five!</h2>
         <ol id="party-parade" class="party-parade" aria-hidden="true"></ol>
         <div id="party-actions" class="party-actions" hidden>
           <button id="again" class="go go-small" type="button">Go!</button>

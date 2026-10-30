@@ -1,4 +1,5 @@
 import { el } from './dom.ts';
+import { text } from './lang/index.ts';
 import { surpriseFor } from './scenes.ts';
 import type { Friend, Landmark, Scene, Spot } from './scenes.ts';
 
@@ -34,7 +35,6 @@ function landmarkElement(landmark: Landmark): HTMLElement {
 function spotElement(spot: Spot, order: number): HTMLButtonElement {
   const button = el('button', 'spot');
   button.type = 'button';
-  button.setAttribute('aria-label', spot.name);
   button.style.gridColumn = String(spot.col + 1);
   button.style.gridRow = String(spot.row + 2);
   button.style.setProperty('--order', String(order));
@@ -45,6 +45,7 @@ function spotElement(spot: Spot, order: number): HTMLButtonElement {
 }
 
 function showSpot(button: HTMLButtonElement, spot: Spot, scene: Scene, friend: Friend, view: RoomView): void {
+  button.setAttribute('aria-label', text().spotName(spot.id));
   const isOpen = view.opened.includes(spot.id);
   const hasFriend = view.friendAt === spot.id;
   button.classList.toggle('open', isOpen || (hasFriend && view.found));
@@ -70,7 +71,7 @@ export function createRoom(
   const landmarks = new Map(scene.landmarks.map((landmark) => [landmark.id, landmarkElement(landmark)]));
   element.append(...landmarks.values());
 
-  const buttons = new Map(spots.map((spot, order) => [spot.id, spotElement(spot, order)]));
+  const buttons = new Map<string, HTMLButtonElement>(spots.map((spot, order) => [spot.id, spotElement(spot, order)]));
   for (const spot of spots) {
     const button = buttons.get(spot.id);
     if (!button) continue;

@@ -1,4 +1,5 @@
 import { flowerAt, friendsFor } from '../garden.ts';
+import { text } from '../lang/index.ts';
 import { prefersCalm, el, wait } from './dom.ts';
 
 const SPROUT_MS = 800;
@@ -13,7 +14,7 @@ export function createGardenStrip(plantCount: number, onOpen: () => void) {
   const friends = el('span', { className: 'strip-friends' });
   const root = el(
     'button',
-    { className: 'strip', attrs: { type: 'button', 'aria-label': 'My garden' }, onClick: onOpen },
+    { className: 'strip', attrs: { type: 'button', 'aria-label': text().myGarden }, onClick: onOpen },
     [friends, row],
   );
 

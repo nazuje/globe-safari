@@ -1,6 +1,9 @@
 import { speak } from '@playroom/kit';
 
-let lastLine = '';
+/** A spoken line, built when it is used, so 🔊 repeats it in whichever language is on now. */
+export type Line = () => string;
+
+let lastLine: Line = () => '';
 let caption: HTMLElement | null = null;
 
 /** Where each spoken line is also written, for screen readers. */
@@ -9,16 +12,22 @@ export function setCaption(element: HTMLElement): void {
 }
 
 /** Sets what the 🔊 button repeats, without speaking. Browsers refuse speech before the first tap. */
-export function setLine(line: string): void {
+export function setLine(line: Line): void {
   lastLine = line;
-  if (caption) caption.textContent = line;
+  redrawCaption();
 }
 
-export function say(line: string): void {
+/** Rewrites the caption, for when the language changes. */
+export function redrawCaption(): void {
+  if (caption) caption.textContent = lastLine();
+}
+
+export function say(line: Line): void {
   setLine(line);
-  speak(line);
+  speak(line());
 }
 
 export function sayAgain(): void {
-  if (lastLine) speak(lastLine);
+  const line = lastLine();
+  if (line) speak(line);
 }

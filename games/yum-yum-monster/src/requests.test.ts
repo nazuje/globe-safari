@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { COLORS, FOODS, foodById } from './foods.ts';
-import { countsForLevel, countWord, LEVELS, makeRequests, PLATE_SIZE, REQUESTS_PER_ROUND, shuffle } from './requests.ts';
+import { FOOD_WORDS } from './lang/en.ts';
+import {
+  countsForLevel,
+  countWord,
+  LEVELS,
+  makeRequests,
+  PLATE_SIZE,
+  requestLine,
+  REQUESTS_PER_ROUND,
+  shuffle,
+} from './requests.ts';
 import type { Level, Rng } from './requests.ts';
 
 /** A small repeatable random source, so a failure can be replayed. */
@@ -87,7 +97,8 @@ describe('makeRequests, on every level', () => {
 
   it('keeps spoken lines to 2 to 7 short words', () => {
     everyRound((level, rng) => {
-      for (const { line } of makeRequests(level, rng)) {
+      for (const request of makeRequests(level, rng)) {
+        const line = requestLine(request);
         expect(line.split(' ').length).toBeGreaterThanOrEqual(2);
         expect(line.split(' ').length).toBeLessThanOrEqual(7);
       }
@@ -113,7 +124,7 @@ describe('level 1: name a food', () => {
       for (const request of makeRequests(1, seeded(seed))) {
         expect(request.kind).toBe('name');
         expect(request.count).toBe(1);
-        expect(request.line.toLowerCase()).toContain(foodById(request.correctId).a);
+        expect(requestLine(request).toLowerCase()).toContain(FOOD_WORDS[request.correctId as keyof typeof FOOD_WORDS].a);
       }
     }
   });
@@ -127,7 +138,7 @@ describe('level 2: colors', () => {
         expect(colors).not.toContain(undefined);
         expect(colors.filter((color) => color === request.color)).toHaveLength(1);
         expect(foodById(request.correctId).color).toBe(request.color);
-        expect(request.line).toContain(request.color);
+        expect(requestLine(request)).toContain(request.color);
       }
     }
   });
@@ -169,11 +180,11 @@ describe('levels 3 to 5: counting', () => {
   it('says the number and the right word', () => {
     const lines = SEEDS.flatMap((seed) => makeRequests(3, seeded(seed))).map((request) => ({
       request,
-      food: foodById(request.correctId),
+      food: FOOD_WORDS[request.correctId as keyof typeof FOOD_WORDS],
     }));
     for (const { request, food } of lines) {
       const word = countWord(request.count).replace('!', '').toLowerCase();
-      expect(request.line.toLowerCase()).toContain(`${word} ${request.count === 1 ? food.one : food.many}`);
+      expect(requestLine(request).toLowerCase()).toContain(`${word} ${request.count === 1 ? food.one : food.many}`);
     }
   });
 

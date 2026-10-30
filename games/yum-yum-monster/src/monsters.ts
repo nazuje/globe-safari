@@ -9,10 +9,11 @@ export type Mood =
   | 'giggle'
   | 'dance';
 
+export type MonsterId = 'sky' | 'coral' | 'grape' | 'leaf';
+
+/** The monsters have no names on purpose. Their descriptions for screen readers are in lang/. */
 export interface MonsterStyle {
-  id: string;
-  /** For screen readers and grown-ups. The monsters have no names on purpose. */
-  label: string;
+  id: MonsterId;
   body: string;
   belly: string;
   shade: string;
@@ -21,10 +22,10 @@ export interface MonsterStyle {
 }
 
 export const MONSTERS: readonly MonsterStyle[] = [
-  { id: 'sky', label: 'Blue monster with horns', body: '#4cb8ff', belly: '#d9f1ff', shade: '#2f97e0', look: 'horns', eyes: 2 },
-  { id: 'coral', label: 'Pink monster with round ears', body: '#ff8fa3', belly: '#ffe6ea', shade: '#ee6c84', look: 'ears', eyes: 2 },
-  { id: 'grape', label: 'Purple monster with one big eye', body: '#a884f8', belly: '#efe7ff', shade: '#8a60ec', look: 'antenna', eyes: 1 },
-  { id: 'leaf', label: 'Green monster with three eyes', body: '#4fd39a', belly: '#defaee', shade: '#2fb57c', look: 'tuft', eyes: 3 },
+  { id: 'sky', body: '#4cb8ff', belly: '#d9f1ff', shade: '#2f97e0', look: 'horns', eyes: 2 },
+  { id: 'coral', body: '#ff8fa3', belly: '#ffe6ea', shade: '#ee6c84', look: 'ears', eyes: 2 },
+  { id: 'grape', body: '#a884f8', belly: '#efe7ff', shade: '#8a60ec', look: 'antenna', eyes: 1 },
+  { id: 'leaf', body: '#4fd39a', belly: '#defaee', shade: '#2fb57c', look: 'tuft', eyes: 3 },
 ];
 
 const EXTRAS: Record<MonsterStyle['look'], string[]> = {

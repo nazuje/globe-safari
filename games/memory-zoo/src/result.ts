@@ -1,11 +1,13 @@
 import { burst, store } from '@playroom/kit';
 import { button, el } from './dom.ts';
 import { winnerLine, type GameState } from './game.ts';
+import { text } from './lang/index.ts';
 import { BESTS_KEY, readBests, recordBest } from './setup.ts';
 import { say } from './voice.ts';
 
 export interface Player {
-  name: string;
+  /** Read each time it is shown, because the language can change mid-game. */
+  name: () => string;
   face: string;
 }
 
@@ -23,7 +25,7 @@ interface Summary {
 
 function togetherSummary(game: GameState, players: readonly Player[]): Summary {
   const headline = winnerLine(
-    players.map((player) => player.name),
+    players.map((player) => player.name()),
     game.stars,
   );
   return {
@@ -34,16 +36,17 @@ function togetherSummary(game: GameState, players: readonly Player[]): Summary {
   };
 }
 
-function soloSummary(game: GameState): Summary {
+/** Records the score once, then gives back the summary to read in any language. */
+function soloSummary(game: GameState): () => Summary {
   const pairs = game.cards.length / 2;
   const { bests, isNew } = recordBest(readBests(store.get<unknown>(BESTS_KEY, null)), pairs, game.flips);
   store.set(BESTS_KEY, bests);
-  return {
+  return () => ({
     emoji: isNew ? '🏆' : '🎉',
-    headline: 'You found them all!',
-    spoken: isNew ? `You found them all! ${game.flips} flips. A new best!` : `You found them all! ${game.flips} flips.`,
-    details: [`${game.flips} flips`, isNew ? 'New best!' : `Best: ${bests[pairs]}`],
-  };
+    headline: text().soloHeadline,
+    spoken: text().soloSpoken(game.flips, isNew),
+    details: [text().flipCount(game.flips), isNew ? text().newBest : text().bestDetail(bests[pairs])],
+  });
 }
 
 function celebrate(): void {
@@ -53,12 +56,16 @@ function celebrate(): void {
   setTimeout(() => burst((width * 3) / 4, height / 2), 500);
 }
 
-/** The end of a game, laid over the finished board. */
+/**
+ * The end of a game, laid over the finished board. It covers the language flag,
+ * so its words stay as drawn, but its spoken line follows 🔊 onto the next screen.
+ */
 export function resultPanel(game: GameState, players: readonly Player[], actions: ResultActions): HTMLElement {
-  const summary = players.length > 1 ? togetherSummary(game, players) : soloSummary(game);
-  const again = button('btn btn-sun result-again', 'Play again 🔁');
+  const summarize = players.length > 1 ? () => togetherSummary(game, players) : soloSummary(game);
+  const summary = summarize();
+  const again = button('btn btn-sun result-again', text().playAgain);
   again.addEventListener('click', actions.onAgain);
-  const change = button('btn result-change', 'Change game');
+  const change = button('btn result-change', text().changeGame);
   change.addEventListener('click', actions.onChange);
 
   const details = el('div', 'result-details');
@@ -72,7 +79,7 @@ export function resultPanel(game: GameState, players: readonly Player[], actions
   panel.setAttribute('aria-label', summary.headline);
   panel.append(card);
 
-  say(summary.spoken);
+  say(() => summarize().spoken);
   celebrate();
   return panel;
 }

@@ -1,10 +1,24 @@
 import '@playroom/kit/kit.css';
 import './style.css';
-import { burst, canSpeak, homeButton, speak, store } from '@playroom/kit';
-import { pickClue, seekLine } from './clues.ts';
+import {
+  burst,
+  canSpeak,
+  getLanguage,
+  homeButton,
+  languageButton,
+  onLanguageChange,
+  say as sayAloud,
+  speak,
+  store,
+  useClips,
+} from '@playroom/kit';
+import { pickClue, seekParts } from './clues.ts';
 import { el } from './dom.ts';
 import { newGame, reduce, restoreGame, ROUNDS, sceneOf, seekerOf, spotsInPlay, wiggleSpot } from './game.ts';
 import type { Action, Phase, Player } from './game.ts';
+import type { FriendId } from './lang/en.ts';
+import { text } from './lang/index.ts';
+import clips from './lang/sl.clips.json';
 import { createRoom } from './room.ts';
 import type { Room } from './room.ts';
 import { friendById, FRIENDS, LEVELS, SCENES, spotById, surpriseFor } from './scenes.ts';
@@ -28,11 +42,15 @@ const promptText = byId('prompt-text');
 const sayAgain = byId('say-again');
 const score = byId('score');
 const restart = byId('restart');
+const title = byId('title');
+const home = homeButton();
+
+useClips(clips);
 
 let state = restoreGame(store.get<unknown>(SAVE_KEY, null));
 let room: Room | null = null;
 let builtFor = '';
-let spokenLine = '';
+let spokenLine: string[] = [];
 let quietUntil = 0;
 
 function isQuiet(): boolean {
@@ -44,10 +62,14 @@ function pauseTaps(ms: number): void {
   quietUntil = performance.now() + (reduced ? Math.min(ms, 300) : ms);
 }
 
-function say(line: string): void {
-  spokenLine = line;
+/** Shows a line and speaks it. Its parts play one after another where the language records them apart. */
+function say(parts: string[]): void {
+  spokenLine = parts;
+  const line = parts.join(' ');
   promptText.textContent = line;
-  if (canSpeak()) speak(line);
+  if (!canSpeak()) return;
+  if (text().speakInParts) parts.forEach((part, index) => void sayAloud(part, { queue: index > 0 }));
+  else speak(line);
 }
 
 function dispatch(action: Action, pause = PAUSE.screen): boolean {
@@ -63,31 +85,37 @@ function dispatch(action: Action, pause = PAUSE.screen): boolean {
   return true;
 }
 
-function friendName(): string {
-  return friendById(state.friendId).name;
+function friendId(): FriendId {
+  return friendById(state.friendId).id;
 }
 
 function hidingSpot(): Spot | null {
   return state.hidingSpot ? spotById(sceneOf(state), state.hidingSpot) : null;
 }
 
-function lastSeekLine(): string {
+function lastSeekLine(): string[] {
   const hidden = hidingSpot();
   const last = state.opened.at(-1);
-  if (!hidden || !last) return `Where is ${friendName()}? Tap to look!`;
+  if (!hidden || !last) return [text().whereIs(friendId())];
   const scene = sceneOf(state);
-  return seekLine(scene, spotsInPlay(state), hidden, state.opened, surpriseFor(scene, last, state.round));
+  const surprise = surpriseFor(scene, last, state.round, text());
+  return seekParts(scene, spotsInPlay(state), hidden, state.opened, surprise, text());
 }
 
-const LINES: Record<Phase, () => string> = {
-  pickFriend: () => 'Who will hide?',
-  pickScene: () => 'Where will we play?',
-  eyes: () => (state.round === 0 ? '' : 'Your turn to hide! ') + 'Close your eyes, seeker!',
-  hide: () => (state.hidingSpot ? 'Hee hee! Now tap Ready!' : `Hide ${friendName()}! Tap a hiding place!`),
-  pass: () => 'Pass it over! Ready or not!',
+function foundLine(): string[] {
+  const hidden = hidingSpot();
+  return hidden ? [text().found(friendId(), hidden.id)] : [];
+}
+
+const LINES: Record<Phase, () => string[]> = {
+  pickFriend: () => [text().whoHides],
+  pickScene: () => [text().wherePlay],
+  eyes: () => [text().closeEyes(state.round > 0)],
+  hide: () => [state.hidingSpot ? text().hidden : text().hideFriend(friendId())],
+  pass: () => [text().pass],
   seek: lastSeekLine,
-  found: () => `Peekaboo! You found ${friendName()}!`,
-  end: () => 'You both found everyone!',
+  found: foundLine,
+  end: () => [text().end],
 };
 
 function announce(): void {
@@ -130,9 +158,9 @@ function picker(cards: HTMLElement[]): HTMLElement {
 function levelButtons(): HTMLElement {
   const row = el('div', 'levels');
   row.setAttribute('role', 'group');
-  row.setAttribute('aria-label', 'Grown-up: how many hiding places');
+  row.setAttribute('aria-label', text().levelsLabel);
   for (const level of LEVELS) {
-    const button = el('button', 'small-btn', `${level.spots} spots`);
+    const button = el('button', 'small-btn', text().spotCount(level.spots));
     button.type = 'button';
     button.setAttribute('aria-pressed', String(state.level === level.id));
     button.addEventListener('click', () => {
@@ -194,7 +222,7 @@ function pickFriendScreen(): void {
   stage.append(
     picker(
       FRIENDS.map((friend) =>
-        card(friend.emoji, friend.name, 'card-friend', { type: 'pickFriend', friendId: friend.id }),
+        card(friend.emoji, text().friendName(friend.id), 'card-friend', { type: 'pickFriend', friendId: friend.id }),
       ),
     ),
   );
@@ -205,7 +233,7 @@ function pickSceneScreen(): void {
   stage.append(
     picker(
       SCENES.map((scene) =>
-        card(scene.emoji, scene.name, `card-scene scene-${scene.id}`, { type: 'pickScene', sceneId: scene.id }),
+        card(scene.emoji, text().sceneName(scene.id), `card-scene scene-${scene.id}`, { type: 'pickScene', sceneId: scene.id }),
       ),
     ),
   );
@@ -214,25 +242,25 @@ function pickSceneScreen(): void {
 
 function eyesScreen(): void {
   stage.append(poster('🙈', el('div', 'poster-note', FACE[seekerOf(state)])));
-  actions.append(bigButton('Eyes shut!', 'btn-sun', { type: 'eyesShut' }));
+  actions.append(bigButton(text().eyesShut, 'btn-sun', { type: 'eyesShut' }));
 }
 
 function hideScreen(): void {
   if (builtFor !== 'hide') stage.append(buildRoom());
-  if (state.hidingSpot) actions.append(bigButton('Ready!', 'btn-leaf', { type: 'ready' }));
+  if (state.hidingSpot) actions.append(bigButton(text().ready, 'btn-leaf', { type: 'ready' }));
   else actions.append(el('span', 'finger finger-up', '👆'));
 }
 
 function passScreen(): void {
   const pass = el('div', 'poster-note', `${FACE[state.hider]} 📱 ➡️ ${FACE[seekerOf(state)]}`);
   stage.append(poster('🤲', pass));
-  actions.append(bigButton('Here I come!', 'btn-grape', { type: 'startSeeking' }));
+  actions.append(bigButton(text().hereICome, 'btn-grape', { type: 'startSeeking' }));
 }
 
 function seekScreen(): void {
   if (builtFor !== 'seek') stage.append(buildRoom());
   if (state.phase === 'found') {
-    const label = state.round + 1 >= ROUNDS ? 'Hooray!' : 'Next!';
+    const label = state.round + 1 >= ROUNDS ? text().hooray : text().next;
     actions.append(bigButton(label, 'btn-sun', { type: 'next' }));
     return;
   }
@@ -244,7 +272,7 @@ function seekScreen(): void {
 function endScreen(): void {
   const friend = friendById(state.friendId).emoji;
   stage.append(poster(friend, el('div', 'poster-note', `🎉 ${FACE.kid} 🤗 ${FACE.grownup} 🎉`)));
-  actions.append(bigButton('Play again', 'btn-leaf', { type: 'playAgain' }));
+  actions.append(bigButton(text().playAgain, 'btn-leaf', { type: 'playAgain' }));
 }
 
 const SCREENS: Record<Phase, () => void> = {
@@ -273,11 +301,11 @@ function renderRestart(asking = false): void {
   if (state.phase === 'pickFriend') return;
   const toggle = el('button', 'small-btn', '↺');
   toggle.type = 'button';
-  toggle.setAttribute('aria-label', 'Grown-up: start over');
+  toggle.setAttribute('aria-label', text().startOverLabel);
   toggle.addEventListener('click', () => renderRestart(!asking));
   restart.append(toggle);
   if (!asking) return;
-  const confirm = el('button', 'small-btn', 'Start over');
+  const confirm = el('button', 'small-btn', text().startOver);
   confirm.type = 'button';
   confirm.addEventListener('click', () => {
     state = newGame(state);
@@ -307,9 +335,29 @@ function render(): void {
   renderRestart();
 }
 
-sayAgain.hidden = !canSpeak();
+/** The words on the page that stay put from screen to screen. */
+function showPageWords(): void {
+  const words = text();
+  document.documentElement.lang = getLanguage();
+  document.title = words.title;
+  document.querySelector('meta[name="description"]')?.setAttribute('content', words.description);
+  title.textContent = words.title;
+  score.setAttribute('aria-label', words.stars);
+  sayAgain.setAttribute('aria-label', words.sayAgain);
+  home.setAttribute('aria-label', words.backHome);
+  sayAgain.hidden = !canSpeak();
+}
+
 sayAgain.addEventListener('click', () => say(spokenLine));
-byId('topbar').prepend(homeButton());
+byId('topbar').prepend(home);
+title.after(languageButton(['en', 'sl']));
+
+// The room stays up, so nothing replays and no progress moves. Only the words change.
+onLanguageChange(() => {
+  showPageWords();
+  render();
+  say(LINES[state.phase]());
+});
 
 // Browsers block speech until the first tap, so a tap on empty space says the opening line.
 window.addEventListener(
@@ -320,5 +368,6 @@ window.addEventListener(
   { once: true },
 );
 
+showPageWords();
 render();
 announce();

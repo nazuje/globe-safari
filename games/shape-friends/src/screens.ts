@@ -1,8 +1,8 @@
 import { burst, speak } from '@playroom/kit';
 import { friendSvg, levelPicture, silhouetteSvg } from './art.ts';
 import { byId, wait } from './dom.ts';
-import { NEW_STICKER_LINE, OLD_STICKER_LINE, PARTY_LINE, stickerLine } from './lines.ts';
-import { LEVELS, levelOf, type LevelId, type Round } from './rounds.ts';
+import { text } from './lang/index.ts';
+import { LEVELS, type LevelId, type Round } from './rounds.ts';
 import { STICKERS, type Sticker } from './stickers.ts';
 
 export function drawTitleFriends(): void {
@@ -19,13 +19,13 @@ export function drawLevelPicker(selected: LevelId, onPick: (level: LevelId) => v
     button.type = 'button';
     button.className = 'level-btn';
     button.innerHTML = levelPicture(level.id);
-    button.setAttribute('aria-label', `Level ${level.id}: ${level.label}`);
+    button.setAttribute('aria-label', text().levelLabel(level.id));
     button.setAttribute('aria-pressed', String(level.id === selected));
     button.addEventListener('click', () => onPick(level.id));
     return button;
   });
   byId('levels').replaceChildren(...buttons);
-  byId('level-note').textContent = `Level ${selected}: ${levelOf(selected).label}`;
+  byId('level-note').textContent = text().levelLabel(selected);
 }
 
 const STICKER_POP_MS = 1900;
@@ -40,7 +40,7 @@ export async function runParty(round: Round, prize: Sticker, isNew: boolean): Pr
     .join('');
   reveal.hidden = true;
   next.hidden = true;
-  speak(PARTY_LINE);
+  speak(text().partyLine);
 
   [0.25, 0.75, 0.5].forEach((across, i) => {
     window.setTimeout(() => burst(window.innerWidth * across, window.innerHeight * 0.3), i * 320);
@@ -49,7 +49,7 @@ export async function runParty(round: Round, prize: Sticker, isNew: boolean): Pr
   await wait(STICKER_POP_MS);
   reveal.innerHTML = `<span class="sticker">${friendSvg(prize.friend, prize.accessory)}</span>`;
   reveal.hidden = false;
-  speak(isNew ? NEW_STICKER_LINE : OLD_STICKER_LINE);
+  speak(isNew ? text().newStickerLine : text().oldStickerLine);
   await wait(NEXT_BUTTON_MS - STICKER_POP_MS);
   next.hidden = false;
 }
@@ -67,7 +67,7 @@ export function drawBook(collected: readonly string[]): void {
     slot.type = 'button';
     slot.className = 'book-slot sticker';
     slot.innerHTML = friendSvg(item.friend, item.accessory);
-    const line = stickerLine(item.friend);
+    const line = text().stickerLine(item);
     slot.setAttribute('aria-label', line);
     slot.addEventListener('click', () => {
       speak(line);
@@ -78,5 +78,5 @@ export function drawBook(collected: readonly string[]): void {
     return slot;
   });
   byId('book-grid').replaceChildren(...slots);
-  byId('book-count').textContent = `${collected.length} of ${STICKERS.length} stickers`;
+  byId('book-count').textContent = text().stickerCount(collected.length, STICKERS.length);
 }

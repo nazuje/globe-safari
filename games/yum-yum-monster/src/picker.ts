@@ -1,18 +1,11 @@
-import { canSpeak, homeButton, speak } from '@playroom/kit';
+import { canSpeak, homeButton, languageButton, onLanguageChange, speak } from '@playroom/kit';
+import { text } from './lang/index.ts';
 import { buildMonster, MONSTERS } from './monsters.ts';
 import type { MonsterStyle } from './monsters.ts';
 import { LEVELS } from './requests.ts';
 import type { Level } from './requests.ts';
 
-const PICK_LINE = 'Pick a monster!';
-
-const LEVEL_PICTURES: Record<Level, { emoji: string; caption: string }> = {
-  1: { emoji: '🍎', caption: 'Level 1: name a food' },
-  2: { emoji: '🌈', caption: 'Level 2: colors' },
-  3: { emoji: '3️⃣', caption: 'Level 3: count to 3' },
-  4: { emoji: '5️⃣', caption: 'Level 4: count to 5' },
-  5: { emoji: '🔟', caption: 'Level 5: count to 10' },
-};
+const LEVEL_EMOJI: Record<Level, string> = { 1: '🍎', 2: '🌈', 3: '3️⃣', 4: '5️⃣', 5: '🔟' };
 
 export interface PickerOptions {
   level: Level;
@@ -25,7 +18,7 @@ function soundButton(onTap: () => void): HTMLButtonElement {
   button.type = 'button';
   button.className = 'sound-btn';
   button.textContent = '🔊';
-  button.setAttribute('aria-label', 'Say it again');
+  button.setAttribute('aria-label', text().sayAgain);
   button.addEventListener('click', onTap);
   return button;
 }
@@ -39,7 +32,7 @@ function monsterCards(onPick: (style: MonsterStyle) => void): HTMLElement {
     card.className = 'pick-card';
     card.style.setProperty('--tint', style.belly);
     card.style.setProperty('--delay', `${i * -0.35}s`);
-    card.setAttribute('aria-label', style.label);
+    card.setAttribute('aria-label', text().monsters[style.id]);
     card.append(buildMonster(style).root);
     card.addEventListener('click', () => onPick(style));
     grid.append(card);
@@ -55,7 +48,7 @@ function monsterCards(onPick: (style: MonsterStyle) => void): HTMLElement {
 function levelRow(start: Level, onLevel: (level: Level) => void): HTMLElement {
   const row = document.createElement('section');
   row.className = 'grownups';
-  row.setAttribute('aria-label', 'For grown-ups: choose a level');
+  row.setAttribute('aria-label', text().chooseLevel);
 
   const caption = document.createElement('p');
   caption.className = 'grownups-caption';
@@ -64,7 +57,7 @@ function levelRow(start: Level, onLevel: (level: Level) => void): HTMLElement {
   buttons.className = 'level-row';
 
   const select = (level: Level): void => {
-    caption.textContent = `For grown-ups. ${LEVEL_PICTURES[level].caption}`;
+    caption.textContent = `${text().forGrownUps} ${text().levels[level]}`;
     for (const button of buttons.children) {
       const on = (button as HTMLElement).dataset.level === String(level);
       button.setAttribute('aria-pressed', String(on));
@@ -76,8 +69,8 @@ function levelRow(start: Level, onLevel: (level: Level) => void): HTMLElement {
     button.type = 'button';
     button.className = 'level-btn';
     button.dataset.level = String(level);
-    button.textContent = LEVEL_PICTURES[level].emoji;
-    button.setAttribute('aria-label', LEVEL_PICTURES[level].caption);
+    button.textContent = LEVEL_EMOJI[level];
+    button.setAttribute('aria-label', text().levels[level]);
     button.addEventListener('click', () => {
       select(level);
       onLevel(level);
@@ -92,28 +85,46 @@ function levelRow(start: Level, onLevel: (level: Level) => void): HTMLElement {
 
 /** The start screen. Tapping a monster starts the game. Returns a function that tidies up. */
 export function showPicker(host: HTMLElement, options: PickerOptions): () => void {
-  const screen = document.createElement('div');
-  screen.className = 'picker';
+  let level = options.level;
+  const sayPick = (): void => speak(text().pick);
 
-  const bar = document.createElement('header');
-  bar.className = 'topbar';
-  const title = document.createElement('h1');
-  title.className = 'title';
-  title.textContent = 'Yum Yum Monster';
-  bar.append(homeButton(), title);
+  const onLevel = (picked: Level): void => {
+    level = picked;
+    options.onLevel(picked);
+  };
 
-  const sayPick = (): void => speak(PICK_LINE);
-  if (canSpeak()) {
-    const sound = soundButton(sayPick);
-    sound.classList.add('topbar-end');
-    bar.append(sound);
-  }
+  const draw = (): void => {
+    const screen = document.createElement('div');
+    screen.className = 'picker';
 
-  screen.append(bar, monsterCards(options.onPick), levelRow(options.level, options.onLevel));
-  host.replaceChildren(screen);
+    const bar = document.createElement('header');
+    bar.className = 'topbar';
+    const title = document.createElement('h1');
+    title.className = 'title';
+    title.textContent = text().title;
+    const home = homeButton();
+    home.setAttribute('aria-label', text().home);
+    const language = languageButton(['en', 'sl']);
+    language.classList.add('topbar-end');
+    bar.append(home, title, language);
+
+    if (canSpeak()) bar.append(soundButton(sayPick));
+
+    screen.append(bar, monsterCards(options.onPick), levelRow(level, onLevel));
+    host.replaceChildren(screen);
+  };
+
+  draw();
 
   // Browsers stay silent until the first tap, so the page tries now and again then.
   sayPick();
   if (!navigator.userActivation?.hasBeenActive) document.addEventListener('click', sayPick, { once: true });
-  return () => document.removeEventListener('click', sayPick);
+  const stopListening = onLanguageChange(() => {
+    draw();
+    sayPick();
+  });
+  return () => {
+    stopListening();
+    document.removeEventListener('click', sayPick);
+  };
 }

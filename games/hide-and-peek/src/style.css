@@ -17,7 +17,8 @@ body {
   padding-bottom: 6px;
 }
 
-.home-btn {
+.home-btn,
+.language-btn {
   width: 48px;
   height: 48px;
   font-size: 1.3rem;
@@ -804,5 +805,10 @@ body {
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
+  }
+
+  /* The start-over question needs the width the stars are using. */
+  .topbar:has(.restart button + button) .score {
+    display: none;
   }
 }

@@ -31,10 +31,17 @@
       "together"
     ],
     "languages": [
-      "en"
+      "en",
+      "sl"
     ],
     "color": "#f59f24",
-    "status": "ready"
+    "status": "ready",
+    "translations": {
+      "sl": {
+        "title": "Živalski spomin",
+        "tagline": "Poišči pare živali!"
+      }
+    }
   },
   {
     "slug": "pattern-train",
@@ -87,10 +94,17 @@
       "together"
     ],
     "languages": [
-      "en"
+      "en",
+      "sl"
     ],
     "color": "#2fb67c",
-    "status": "ready"
+    "status": "ready",
+    "translations": {
+      "sl": {
+        "title": "Besedni vrt",
+        "tagline": "Sestavi besede in vzgoji rože!"
+      }
+    }
   },
   {
     "slug": "yum-yum-monster",
@@ -106,10 +120,17 @@
       "solo"
     ],
     "languages": [
-      "en"
+      "en",
+      "sl"
     ],
     "color": "#ff6fa8",
-    "status": "ready"
+    "status": "ready",
+    "translations": {
+      "sl": {
+        "title": "Lačna pošast",
+        "tagline": "Nahrani smešno pošast!"
+      }
+    }
   },
   {
     "slug": "shape-friends",
@@ -124,10 +145,17 @@
       "solo"
     ],
     "languages": [
-      "en"
+      "en",
+      "sl"
     ],
     "color": "#17b5c9",
-    "status": "ready"
+    "status": "ready",
+    "translations": {
+      "sl": {
+        "title": "Prijatelji oblik",
+        "tagline": "Pomagaj oblikam najti dom!"
+      }
+    }
   },
   {
     "slug": "hide-and-peek",
@@ -142,10 +170,17 @@
       "together"
     ],
     "languages": [
-      "en"
+      "en",
+      "sl"
     ],
     "color": "#f7b500",
-    "status": "ready"
+    "status": "ready",
+    "translations": {
+      "sl": {
+        "title": "Skrij in poišči",
+        "tagline": "Skrij prijatelja in ga poišči!"
+      }
+    }
   },
   {
     "slug": "animal-moves",
@@ -160,9 +195,16 @@
       "together"
     ],
     "languages": [
-      "en"
+      "en",
+      "sl"
     ],
     "color": "#6cc04a",
-    "status": "ready"
+    "status": "ready",
+    "translations": {
+      "sl": {
+        "title": "Živalski gibi",
+        "tagline": "Skači, topotaj in se zibaj!"
+      }
+    }
   }
 ]

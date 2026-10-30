@@ -237,6 +237,43 @@ describe('🔊 say it again', () => {
   });
 });
 
+describe('switching language', () => {
+  it('starts a cut line again instead of skipping it', async () => {
+    const game = harness(follow());
+    game.player.start();
+    await tick(SPEECH_MS / 2);
+    const line = game.log.at(-1);
+    game.player.sayAgainInNewLanguage();
+    await tick(0);
+    expect(game.log.slice(-2)).toEqual([line, line]);
+    await tick(SPEECH_MS / 2);
+    expect(game.log).toHaveLength(2);
+    await tick(SPEECH_MS);
+    expect(game.log).toHaveLength(3);
+  });
+
+  it('leaves the beat and the clock alone', async () => {
+    const game = harness(follow());
+    game.player.start();
+    await toBeat();
+    await tick(1000);
+    game.player.sayAgainInNewLanguage();
+    expect(game.isBeating()).toBe(true);
+    await tick(MOVE_MS - 1000);
+    expect(game.step()?.scene.view).toBe('freeze');
+  });
+
+  it('stays quiet while paused', async () => {
+    const game = harness(follow());
+    game.player.start();
+    await tick(SETTLED);
+    game.player.pause({ quiet: true });
+    const said = game.log.length;
+    game.player.sayAgainInNewLanguage();
+    expect(game.log).toHaveLength(said);
+  });
+});
+
 describe('You pick', () => {
   const pickGame = () => harness(gameScript('pick', MOVES, 3, () => 0.5));
 

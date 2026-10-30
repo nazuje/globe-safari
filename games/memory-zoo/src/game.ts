@@ -1,4 +1,5 @@
 import type { Animal } from './animals.ts';
+import { text } from './lang/index.ts';
 
 /** Returns a number from 0 up to, but not including, 1. Tests pass their own. */
 export type Random = () => number;
@@ -105,15 +106,14 @@ export function leader(stars: readonly number[]): number | null {
 }
 
 export function matchLine(animal: Animal, goesAgain: boolean): string {
-  const line = `Two ${animal.plural.toLowerCase()}!`;
-  return goesAgain ? `${line} Go again!` : line;
+  return text().matchLine(animal, goesAgain);
 }
 
 export function turnLine(name: string): string {
-  return `${name}'s turn!`;
+  return text().turnLine(name);
 }
 
 export function winnerLine(names: readonly string[], stars: readonly number[]): string {
   const winner = leader(stars);
-  return winner === null ? 'You both win!' : `${names[winner]} found the most!`;
+  return winner === null ? text().tie : text().mostFound(names[winner]);
 }

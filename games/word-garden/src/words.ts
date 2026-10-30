@@ -12,7 +12,7 @@ export interface Level {
   words: readonly PictureWord[];
 }
 
-function pictures(entries: Record<string, string>): PictureWord[] {
+export function pictures(entries: Record<string, string>): PictureWord[] {
   return Object.entries(entries).map(([word, emoji]) => ({ word, emoji }));
 }
 
@@ -101,8 +101,11 @@ export const LEVELS: readonly Level[] = [
 ];
 
 /** The level and picture for a word, or undefined for a word no longer in the game. */
-export function findWord(word: string): { level: Level; picture: PictureWord } | undefined {
-  for (const level of LEVELS) {
+export function findWord(
+  word: string,
+  levels: readonly Level[] = LEVELS,
+): { level: Level; picture: PictureWord } | undefined {
+  for (const level of levels) {
     const picture = level.words.find((entry) => entry.word === word);
     if (picture) return { level, picture };
   }

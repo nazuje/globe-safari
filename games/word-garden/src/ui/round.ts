@@ -1,18 +1,19 @@
 import { burst, canSpeak } from '@playroom/kit';
+import { text } from '../lang/index.ts';
 import { pickExtras } from '../picker.ts';
 import { sayLetter, sayWin, sayWord } from '../speech.ts';
 import { hintTile, startSpelling, tapTile, type Spelling } from '../spelling.ts';
 import type { PictureWord } from '../words.ts';
 import { button, el, fly, wait } from './dom.ts';
 
-const TRY_AGAIN = 'Try another one!';
-const CHEERS = ['You did it!', 'Well done!', 'Hooray!', 'Great spelling!', 'You spelled it!'];
 const WIGGLE_MS = 480;
 
 export interface RoundOptions {
   picture: PictureWord;
   extras: number;
   showWord: boolean;
+  /** A round left unfinished, to carry on from where it stopped. */
+  resume?: Spelling;
   /** Runs on the win. Returns any extra lines to say after the word. */
   onWin: (seedFrom: Element) => string[];
   /** The buttons that take over from the tray after a win. */
@@ -21,10 +22,6 @@ export interface RoundOptions {
 
 function pick<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)];
-}
-
-function tileFace(letter: string): HTMLElement {
-  return el('span', { className: 'tile', text: letter });
 }
 
 function slotCenter(slot: Element): { x: number; y: number } {
@@ -36,20 +33,27 @@ function slotCenter(slot: Element): { x: number; y: number } {
 export function createRound(options: RoundOptions) {
   const { picture, showWord } = options;
   const { word } = picture;
-  let spelling: Spelling = startSpelling(word, pickExtras(word, options.extras, Math.random), Math.random);
+  // One language for the whole round. A language switch draws a new round.
+  const words = text();
+  const tileFace = (letter: string) => el('span', { className: 'tile', text: words.show(letter) });
+  let spelling: Spelling =
+    options.resume ??
+    startSpelling(word, pickExtras(word, options.extras, Math.random, words.lexicon, words.letters), Math.random);
   let wiggling = false;
+  let stopped = false;
 
   const hear = () => sayWord(word);
   const message = el('p', { className: 'message', attrs: { 'aria-live': 'polite' } });
   const slots = [...word].map((letter) =>
-    el('span', { className: 'slot' }, [el('span', { className: 'ghost', text: letter })]),
+    el('span', { className: 'slot' }, [el('span', { className: 'ghost', text: words.show(letter) })]),
   );
   const slotRow = el('div', { className: 'slots', attrs: { style: `--letters:${word.length}` } }, slots);
   const tileButtons = new Map<number, HTMLButtonElement>();
   const tray = el('div', { className: 'tray' });
   for (const tile of spelling.tiles) {
-    const tileButton = button(tile.letter, 'tile', () => void onTap(tile.id));
-    tileButton.setAttribute('aria-label', `letter ${tile.letter}`);
+    const tileButton = button(words.show(tile.letter), 'tile', () => void onTap(tile.id));
+    tileButton.setAttribute('aria-label', words.tileLabel(words.show(tile.letter)));
+    if (tile.used) useUp(tileButton);
     tileButtons.set(tile.id, tileButton);
     tray.append(tileButton);
   }
@@ -59,13 +63,19 @@ export function createRound(options: RoundOptions) {
       button(picture.emoji, 'picture', hear),
       canSpeak()
         ? button('🔊', 'hear', hear)
-        : el('p', { className: 'no-sound', text: 'No sound here. A grown-up can read the word.' }),
+        : el('p', { className: 'no-sound', text: words.noSound }),
     ]),
     el('div', { className: 'spell-side' }, [slotRow, message, tray]),
   ]);
-  root.querySelector('.hear')?.setAttribute('aria-label', 'Hear the word');
-  root.querySelector('.picture')?.setAttribute('aria-label', 'Hear the word');
+  root.querySelector('.hear')?.setAttribute('aria-label', words.hearWord);
+  root.querySelector('.picture')?.setAttribute('aria-label', words.hearWord);
   setShowWord(showWord);
+  for (const [at, slot] of slots.slice(0, spelling.filled).entries()) lockIn(slot, word[at]);
+
+  function useUp(tileButton: HTMLButtonElement) {
+    tileButton.classList.add('is-used');
+    tileButton.disabled = true;
+  }
 
   function clearHint() {
     for (const tileButton of tileButtons.values()) tileButton.classList.remove('is-hint');
@@ -90,8 +100,7 @@ export function createRound(options: RoundOptions) {
     }
 
     spelling = result.state;
-    tileButton.classList.add('is-used');
-    tileButton.disabled = true;
+    useUp(tileButton);
     message.textContent = '';
     if (result.outcome === 'correct') sayLetter(tile.letter);
     await fly(tileFace(tile.letter), tileButton, slot);
@@ -100,17 +109,17 @@ export function createRound(options: RoundOptions) {
   }
 
   function lockIn(slot: HTMLElement, letter: string) {
-    slot.append(el('span', { className: 'letter', text: letter }));
+    slot.append(el('span', { className: 'letter', text: words.show(letter) }));
     slot.classList.add('is-locked');
   }
 
   async function tryAnother(letter: string, tileButton: HTMLButtonElement, slot: HTMLElement) {
     wiggling = true;
-    message.textContent = TRY_AGAIN;
-    sayLetter(letter, TRY_AGAIN);
+    message.textContent = words.tryAnother;
+    sayLetter(letter, words.tryAnother);
     tileButton.classList.add('is-away');
     await fly(tileFace(letter), tileButton, slot, 240);
-    const visitor = el('span', { className: 'letter is-wiggling', text: letter });
+    const visitor = el('span', { className: 'letter is-wiggling', text: words.show(letter) });
     slot.append(visitor);
     await wait(WIGGLE_MS);
     visitor.remove();
@@ -120,12 +129,17 @@ export function createRound(options: RoundOptions) {
   }
 
   function win(lastLetter: string) {
+    // The last letter was on its way when the child left. The flower still counts, but there's nothing to show.
+    if (stopped) {
+      options.onWin(slotRow);
+      return;
+    }
     const center = slotCenter(slotRow);
     burst(center.x, center.y);
     slotRow.classList.add('is-won');
     const lines = options.onWin(slotRow);
-    sayWin(lastLetter, word, [pick(CHEERS), ...lines]);
-    message.textContent = word;
+    sayWin(lastLetter, word, [pick(words.cheers), ...lines]);
+    message.textContent = words.show(word);
     message.classList.add('is-word');
     tray.replaceChildren(el('div', { className: 'win-actions' }, options.winActions()));
   }
@@ -134,6 +148,12 @@ export function createRound(options: RoundOptions) {
     root,
     start: hear,
     setShowWord,
+    /** Where the round has got to, to carry on from later. */
+    spelling: () => spelling,
+    /** The round has left the screen, so it must stay quiet. Any letter still in flight lands unseen. */
+    stop() {
+      stopped = true;
+    },
     hint() {
       if (wiggling) return;
       clearHint();

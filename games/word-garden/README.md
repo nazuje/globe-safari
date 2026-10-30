@@ -11,6 +11,12 @@ A spelling game for ages 5 to 9, alone or with a grown-up beside them. A child s
 
 A small **Grown-ups** button has 💡 Hint, Show the word (faded letters to copy) and Levels.
 
+## Besedni vrt: Word Garden in Slovenian
+
+The flag in the top bar switches language. Slovenian is not a translation, because spelling is the game: it has its own words, its own 25-letter alphabet and its own rules for the extra tiles. Tiles and slots show capitals, which Slovenian children learn first. Each language keeps its own garden, so a Slovenian word always replays in Slovenian and an English garden stays as it was. A round can't change language, so switching gives a new word from the same level, and switching straight back carries on with the old word.
+
+Spoken letters are their sounds with a little vowel (be, ce, če), as a teacher says them when teaching reading, rather than the alphabet names (el, em, er). They play from the slow recording, because at full speed a letter is under a quarter of a second.
+
 ## Run it
 
 Word Garden is one game in [Playroom](../../README.md). You need Node.js 22 or newer. From the repository root:
@@ -25,10 +31,11 @@ The root `npm run build` puts the game in `dist/word-garden/`, live at <https://
 
 ## Tuning
 
-- Words live in `src/words.ts`. Only add a word if its emoji means that word to a child.
-- How letters and words sound lives in `src/speech.ts`. To change how a letter is said, edit `LETTER_SOUNDS`.
-- `src/lexicon.ts` is the list of everyday words the extra tiles must not be able to spell.
+- Words live in `src/words.ts` and, for Slovenian, `src/lang/slWords.ts`. Only add a word if its emoji means that word to a child, and run `npm run voice -- word-garden` after changing a Slovenian word.
+- All text lives in `src/lang/`. To change how a letter is said, edit `LETTER_SOUNDS` in `en.ts` or `sl.ts`.
+- `src/lexicon.ts` and `src/lang/slLexicon.ts` are the lists of everyday words the extra tiles must not be able to spell. The Slovenian list leaves out rarer word forms on purpose: Slovenian is so dense with short words that a fuller list leaves no fair extra tiles at all. If a word can't fill its tray, `sl.test.ts` fails.
+- Which letters count as look-alikes or sound-alikes is `letters` in `en.ts` and `sl.ts`.
 
 ## Credits
 
-The letter tiles use [Andika](https://fonts.google.com/specimen/Andika) by SIL International, under the SIL Open Font License. It is a typeface made for new readers, with a single-story "a", which Fredoka does not have. `src/fonts/andika-bold-az.woff2` holds only the bold letters a to z, so the tiles work offline.
+The letter tiles use [Andika](https://fonts.google.com/specimen/Andika) by SIL International, under the SIL Open Font License. It is a typeface made for new readers, with a single-story "a", which Fredoka does not have. `src/fonts/andika-bold-az.woff2` holds only the bold letters a to z, and `src/fonts/andika-bold-caps-sl.woff2` only the bold capitals A to Z with Č, Š and Ž, so the tiles work offline.

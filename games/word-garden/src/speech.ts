@@ -1,4 +1,5 @@
 import { canSpeak, say, stopSpeaking } from '@playroom/kit';
+import { text } from './lang/index.ts';
 
 /*
  * This game says a word slowly and then normally, so it needs its own rates and
@@ -7,21 +8,26 @@ import { canSpeak, say, stopSpeaking } from '@playroom/kit';
 const RATE = { word: 0.75, slow: 0.45, normal: 0.95 } as const;
 const PITCH = 1.1;
 
-/**
- * What to hand the voice for a lone letter. Capitals nudge most voices into
- * saying the letter's name. "a" alone often comes out as "uh", so it is spelled
- * by sound. Add a line here to tune any letter that sounds wrong.
- */
-const LETTER_SOUNDS: Record<string, string> = { a: 'ay' };
-
 export function letterSound(letter: string): string {
-  return LETTER_SOUNDS[letter] ?? letter.toUpperCase();
+  return text().letterSound(letter);
 }
 
-function sayInOrder(parts: readonly { text: string; rate: number }[]): void {
+interface Part {
+  text: string;
+  rate: number;
+  /** Slovenian plays a recording, so saying a word slowly needs its slow recording. */
+  slow?: boolean;
+}
+
+function sayInOrder(parts: readonly Part[]): void {
   if (!canSpeak()) return;
   stopSpeaking();
-  for (const { text, rate } of parts) void say(text, { rate, pitch: PITCH, queue: true });
+  for (const { text: line, rate, slow } of parts) void say(line, { rate, pitch: PITCH, queue: true, slow });
+}
+
+/** A Slovenian letter is a very short recording, so it uses the slow one to be heard clearly. */
+function letterPart(letter: string): Part {
+  return { text: letterSound(letter), rate: RATE.normal, slow: true };
 }
 
 export function sayWord(word: string): void {
@@ -34,7 +40,7 @@ export function sayLine(line: string): void {
 
 /** A letter, then optionally a kind line such as "Try another one!". */
 export function sayLetter(letter: string, line?: string): void {
-  const parts = [{ text: letterSound(letter), rate: RATE.normal }];
+  const parts = [letterPart(letter)];
   if (line) parts.push({ text: line, rate: RATE.normal });
   sayInOrder(parts);
 }
@@ -42,9 +48,9 @@ export function sayLetter(letter: string, line?: string): void {
 /** The last letter, then the finished word slowly, then normally, then any happy lines. */
 export function sayWin(lastLetter: string, word: string, lines: readonly string[]): void {
   sayInOrder([
-    { text: letterSound(lastLetter), rate: RATE.normal },
-    { text: word, rate: RATE.slow },
+    letterPart(lastLetter),
+    { text: word, rate: RATE.slow, slow: true },
     { text: word, rate: RATE.normal },
-    ...lines.map((text) => ({ text, rate: RATE.normal })),
+    ...lines.map((line) => ({ text: line, rate: RATE.normal })),
   ]);
 }

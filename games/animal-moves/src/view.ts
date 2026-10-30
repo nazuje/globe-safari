@@ -1,3 +1,5 @@
+import { getLanguage } from '@playroom/kit';
+import { text } from './lang/index.ts';
 import type { Move } from './moves.ts';
 import type { Mode, Scene, Step } from './script.ts';
 
@@ -7,18 +9,7 @@ export function byId(id: string): HTMLElement {
   return found;
 }
 
-export interface ModeInfo {
-  id: Mode;
-  label: string;
-  hint: string;
-}
-
-export const MODES: readonly ModeInfo[] = [
-  { id: 'follow', label: '🐸 Follow me', hint: 'Copy each animal. Hands free once it starts.' },
-  { id: 'freeze', label: '🧊 Freeze dance', hint: 'Dance to the beat. Freeze when it stops.' },
-  { id: 'pick', label: '👆 You pick', hint: 'Your child taps the next animal.' },
-  { id: 'turn', label: '🔄 Your turn', hint: 'Your child invents the move. You copy.' },
-];
+export const MODES: readonly Mode[] = ['follow', 'freeze', 'pick', 'turn'];
 
 export const COUNTS = [3, 6, 10] as const;
 
@@ -33,24 +24,26 @@ function pills<T>(host: HTMLElement, items: readonly T[], label: (item: T) => st
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'pill';
-    button.textContent = label(item);
     button.addEventListener('click', () => onTap(item));
     host.append(button);
     return { item, button };
   });
   return (current) => {
-    for (const { item, button } of buttons) button.setAttribute('aria-pressed', String(item === current));
+    for (const { item, button } of buttons) {
+      button.textContent = label(item);
+      button.setAttribute('aria-pressed', String(item === current));
+    }
   };
 }
 
 /** Draws the grown-up buttons. The returned function marks what's currently chosen. */
 export function buildMenu(onMode: (mode: Mode) => void, onCount: (count: number) => void): (mode: Mode, count: number) => void {
-  const markMode = pills(byId('modes'), MODES, (mode) => mode.label, (mode) => onMode(mode.id));
+  const markMode = pills(byId('modes'), MODES, (mode) => text().modes[mode].label, onMode);
   const markCount = pills<number>(byId('counts'), COUNTS, String, onCount);
   return (mode, count) => {
-    markMode(MODES.find((info) => info.id === mode) ?? MODES[0]);
+    markMode(mode);
     markCount(count);
-    byId('mode-hint').textContent = MODES.find((info) => info.id === mode)?.hint ?? '';
+    byId('mode-hint').textContent = text().modes[mode].hint;
   };
 }
 
@@ -58,7 +51,7 @@ export function setBeatToggle(on: boolean): void {
   byId('beat-icon').textContent = on ? '🔊' : '🔇';
   const toggle = byId('beat-toggle');
   toggle.setAttribute('aria-pressed', String(on));
-  toggle.setAttribute('aria-label', on ? 'Beat on' : 'Beat off');
+  toggle.setAttribute('aria-label', on ? text().beatOn : text().beatOff);
 }
 
 function renderTrail(scene: Scene): void {
@@ -103,11 +96,19 @@ function renderChoices(step: Step, onChoose: (move: Move) => void): void {
       button.style.setProperty('--tint', move.tint);
       button.style.setProperty('--delay', `${i * 0.4}s`);
       button.textContent = move.emoji;
-      button.setAttribute('aria-label', move.like);
       button.addEventListener('click', () => onChoose(move));
       return button;
     }),
   );
+}
+
+/** The words of a step. A language switch calls this alone, so the animations carry on. */
+export function renderStepWords(step: Step): void {
+  const { scene } = step;
+  byId('line').textContent = scene.view === 'count' ? '' : scene.line;
+  byId('tip').textContent = scene.tip;
+  if (step.kind !== 'pick') return;
+  for (const [i, choice] of [...byId('choices').children].entries()) choice.setAttribute('aria-label', step.options[i].like);
 }
 
 export function renderStep(step: Step, onChoose: (move: Move) => void): void {
@@ -116,8 +117,7 @@ export function renderStep(step: Step, onChoose: (move: Move) => void): void {
   renderActor(scene);
   renderChoices(step, onChoose);
   byId('bar').classList.toggle('bar-on', Boolean(scene.bar));
-  byId('line').textContent = scene.view === 'count' ? '' : scene.line;
-  byId('tip').textContent = scene.tip;
+  renderStepWords(step);
 }
 
 /** Fills the countdown bar. Driven from script, so it works with reduced motion and pauses exactly. */
@@ -128,6 +128,27 @@ export function setProgress(progress: number): void {
 export function setPaused(paused: boolean): void {
   byId('paused').hidden = !paused;
   byId('stage').classList.toggle('is-paused', paused);
+}
+
+/** Every word in index.html, in the language in use. */
+export function renderPageWords(): void {
+  const words = text();
+  document.documentElement.lang = getLanguage();
+  document.title = words.title;
+  document.querySelector('meta[name="description"]')?.setAttribute('content', words.description);
+  byId('game-title').textContent = words.title;
+  byId('party-title').textContent = words.highFive;
+  byId('go').textContent = words.go;
+  byId('again').textContent = words.go;
+  byId('to-menu').textContent = words.changeGame;
+  byId('stop').textContent = words.stopGame;
+  byId('animals-label').textContent = words.animals;
+  byId('modes').setAttribute('aria-label', words.game);
+  byId('counts').setAttribute('aria-label', words.howManyAnimals);
+  byId('pause').setAttribute('aria-label', words.pause);
+  byId('resume').setAttribute('aria-label', words.keepGoing);
+  byId('menu-say').setAttribute('aria-label', words.sayAgain);
+  byId('repeat').setAttribute('aria-label', words.sayAgain);
 }
 
 export function renderParty(moves: readonly Move[]): void {

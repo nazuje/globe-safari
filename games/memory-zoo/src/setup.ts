@@ -4,13 +4,10 @@ export const SETUP_KEY = 'memory-zoo:setup';
 export const BESTS_KEY = 'memory-zoo:bests';
 
 export const BOARD_SIZES = [
-  { pairs: 6, label: 'Easy', emoji: '🐭', spoken: 'Easy! Six pairs.' },
-  { pairs: 8, label: 'Medium', emoji: '🦊', spoken: 'Medium! Eight pairs.' },
-  { pairs: 12, label: 'Hard', emoji: '🦁', spoken: 'Hard! Twelve pairs.' },
+  { pairs: 6, emoji: '🐭' },
+  { pairs: 8, emoji: '🦊' },
+  { pairs: 12, emoji: '🦁' },
 ] as const;
-
-export const PLAYER_NAMES = ['Kid', 'Grown-up'] as const;
-export const SOLO_NAME = 'You';
 
 /** The faces a player can swap to. The list starts with the two defaults. */
 export const FACES = ['🧒', '🧑', '👧', '👦', '👩', '👨', '👵', '👴', '🦸', '🧙'] as const;

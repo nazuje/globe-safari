@@ -1,18 +1,18 @@
 import { canSpeak } from '@playroom/kit';
+import { text } from '../lang/index.ts';
 import { sayLine } from '../speech.ts';
-import { LEVELS, type Level } from '../words.ts';
+import type { Level } from '../words.ts';
 import { button, el } from './dom.ts';
 
-const HOW_TO = 'Pick a level. Listen to the word, then tap the letters to spell it and grow a flower!';
-
 export function createStartScreen(onLevel: (level: Level) => void): HTMLElement {
+  const words = text();
   return el('section', { className: 'start' }, [
-    el('p', { className: 'start-lead', text: 'Spell words. Grow flowers!' }),
-    canSpeak() && button('🔊 How to play', 'btn btn-sun', () => sayLine(HOW_TO)),
+    el('p', { className: 'start-lead', text: words.lead }),
+    canSpeak() && button(words.howToButton, 'btn btn-sun', () => sayLine(words.howTo)),
     el(
       'div',
       { className: 'levels' },
-      LEVELS.map((level) =>
+      words.levels.map((level) =>
         el(
           'button',
           {

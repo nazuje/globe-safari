@@ -1,7 +1,7 @@
+import { text } from './lang/index.ts';
 import type { Move } from './moves.ts';
 import type { Script, Step } from './script.ts';
 
-const REST_LINE = 'Take a rest!';
 /** Taps this soon after the screen changes are mashing, not meaning. */
 const SETTLE_MS = 500;
 const REPEAT_GAP_MS = 800;
@@ -21,6 +21,8 @@ export interface Player {
   resume(): void;
   /** Says the current instruction again, holding the beat and the clock while it speaks. */
   repeat(): void;
+  /** After a language switch, starts the line it cut off again, so nothing is skipped. */
+  sayAgainInNewLanguage(): void;
   choose(moveId: string): void;
   stop(): void;
   isPaused(): boolean;
@@ -123,7 +125,7 @@ export function createPlayer(script: Script, io: PlayerIO, now: () => number = D
       state = 'paused';
       settle();
       halt();
-      if (!quiet) void io.say(REST_LINE, freshSignal());
+      if (!quiet) void io.say(text().rest, freshSignal());
     },
 
     resume() {
@@ -150,6 +152,11 @@ export function createPlayer(script: Script, io: PlayerIO, now: () => number = D
         repeating = false;
         play(current);
       });
+    },
+
+    sayAgainInNewLanguage() {
+      // A cut line ends a moment later, and this fresh signal stops that ending from moving the game on.
+      if (state === 'running' && (step?.kind === 'say' || step?.kind === 'pick')) play(step);
     },
 
     choose(moveId) {

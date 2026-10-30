@@ -14,6 +14,7 @@ export interface Game {
   ages: string;
   modes: Mode[];
   languages: Language[];
+  translations?: Partial<Record<Language, { title: string; tagline: string }>>;
   color: string;
   status: 'ready' | 'coming-soon';
 }

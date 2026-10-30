@@ -36,6 +36,10 @@
   touch-action: manipulation;
 }
 
+.sound-btn[hidden] {
+  display: none;
+}
+
 .sound-btn:active {
   transform: translateY(4px);
   box-shadow: 0 1px 0 var(--sun-dark);

@@ -1,6 +1,6 @@
 import '@playroom/kit/kit.css';
 import './style.css';
-import { LANGUAGES, setLanguage, store, type Language } from '@playroom/kit';
+import { getLanguage, LANGUAGES, setLanguage, store, type Language } from '@playroom/kit';
 import {
   AGES,
   NO_FILTERS,
@@ -9,6 +9,7 @@ import {
   restoreFilter,
   skillsIn,
   tileLanguages,
+  tileWords,
   type Filters,
 } from './filter.ts';
 import { GAMES, MODE_LABELS, SKILL_LABELS, type Game, type Mode } from './games.ts';
@@ -82,7 +83,8 @@ function tile(game: Game): HTMLLIElement {
   );
   const shownLanguages = tileLanguages(game);
   if (shownLanguages.length > 0) chips.append(languageBadge(shownLanguages));
-  card.append(emoji, text('span', 'tile-title', game.title), text('span', 'tile-tagline', game.tagline), chips);
+  const words = tileWords(game, getLanguage());
+  card.append(emoji, text('span', 'tile-title', words.title), text('span', 'tile-tagline', words.tagline), chips);
   if (!ready) card.append(text('span', 'tile-ribbon', 'Soon!'));
 
   const item = document.createElement('li');

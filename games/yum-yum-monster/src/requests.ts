@@ -1,5 +1,7 @@
 import { COLORS, FOODS, foodById } from './foods.ts';
 import type { Color, Food } from './foods.ts';
+import { text } from './lang/index.ts';
+import { LINE_VARIANTS } from './lang/shared.ts';
 
 export type Rng = () => number;
 export type Level = 1 | 2 | 3 | 4 | 5;
@@ -16,8 +18,8 @@ export interface PlateItem {
 
 export interface MonsterRequest {
   kind: 'name' | 'color' | 'count';
-  /** The short line the monster says out loud. */
-  line: string;
+  /** Which wording the monster uses. See requestLine for the words. */
+  variant: number;
   /** The one right food on the plate. */
   correctId: string;
   /** How many the monster wants to eat. */
@@ -27,15 +29,20 @@ export interface MonsterRequest {
   plate: PlateItem[];
 }
 
-const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
-
-function capitalize(text: string): string {
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
-
 /** "Three!", the word the monster shouts as it eats. */
 export function countWord(n: number): string {
-  return `${capitalize(NUMBER_WORDS[n] ?? String(n))}!`;
+  return text().countAloud(n);
+}
+
+/**
+ * The short line the monster says out loud, in the language in use. Requests
+ * hold no words of their own, so a round carries on after a language switch.
+ */
+export function requestLine(request: MonsterRequest): string {
+  const { kind, color, count, variant } = request;
+  const food = foodById(request.correctId).id;
+  if (kind === 'count') return text().wantCount(food, count, variant);
+  return color ? text().wantColor(color, variant) : text().wantFood(food, variant);
 }
 
 export function shuffle<T>(items: readonly T[], rng: Rng): T[] {
@@ -73,19 +80,6 @@ export function countsForLevel(level: 3 | 4 | 5, rng: Rng): number[] {
   return counts;
 }
 
-function nameLine(food: Food, rng: Rng): string {
-  return pick([`Feed me ${food.a}!`, `I want ${food.a}!`, `${capitalize(food.a)}, please!`], rng);
-}
-
-function colorLine(color: Color, rng: Rng): string {
-  return pick([`Something ${color}, please!`, `I want something ${color}!`, `Feed me something ${color}!`], rng);
-}
-
-function countLine(food: Food, count: number, rng: Rng): string {
-  const amount = `${NUMBER_WORDS[count]} ${count === 1 ? food.one : food.many}`;
-  return pick([`I want ${amount}!`, `Feed me ${amount}!`, `${capitalize(amount)}, please!`], rng);
-}
-
 /** Lays the plate out with the right food in a different spot from last time. */
 function layPlate(right: PlateItem, others: PlateItem[], lastSlot: number, rng: Rng): { plate: PlateItem[]; slot: number } {
   const slots = [0, 1, 2].filter((slot) => slot !== lastSlot);
@@ -103,7 +97,7 @@ function nameRequests(rng: Rng): MonsterRequest[] {
       const others = shuffle(FOODS.filter((other) => other.id !== food.id), rng).slice(0, PLATE_SIZE - 1);
       const laid = layPlate({ foodId: food.id, stock: 1 }, others.map((other) => ({ foodId: other.id, stock: 1 })), slot, rng);
       slot = laid.slot;
-      return { kind: 'name' as const, line: nameLine(food, rng), correctId: food.id, count: 1, plate: laid.plate };
+      return { kind: 'name' as const, variant: pick(LINE_VARIANTS, rng), correctId: food.id, count: 1, plate: laid.plate };
     });
 }
 
@@ -121,7 +115,7 @@ function colorRequests(rng: Rng): MonsterRequest[] {
       const others = otherColors.map((other) => ({ foodId: pick(foodsOfColor(other), rng).id, stock: 1 }));
       const laid = layPlate({ foodId: food.id, stock: 1 }, others, slot, rng);
       slot = laid.slot;
-      return { kind: 'color' as const, line: colorLine(color, rng), correctId: food.id, count: 1, color, plate: laid.plate };
+      return { kind: 'color' as const, variant: pick(LINE_VARIANTS, rng), correctId: food.id, count: 1, color, plate: laid.plate };
     });
 }
 
@@ -140,7 +134,7 @@ function countRequests(level: 3 | 4 | 5, rng: Rng): MonsterRequest[] {
       rng,
     );
     slot = laid.slot;
-    return { kind: 'count' as const, line: countLine(food, count, rng), correctId: food.id, count, plate: laid.plate };
+    return { kind: 'count' as const, variant: pick(LINE_VARIANTS, rng), correctId: food.id, count, plate: laid.plate };
   });
 }
 

@@ -8,6 +8,7 @@ import {
   restoreFilter,
   skillsIn,
   tileLanguages,
+  tileWords,
   type Filters,
 } from './filter.ts';
 import { GAMES as REGISTRY, MODE_LABELS, type Game, type Mode, type Skill } from './games.ts';
@@ -41,6 +42,16 @@ describe('languagesIn', () => {
 
   it('leaves out a language no game has yet', () => {
     expect(languagesIn([game('a', ['memory'])])).toEqual(['en']);
+  });
+});
+
+describe('tileWords', () => {
+  it('uses the translated name when there is one, and English otherwise', () => {
+    const named = { ...game('a', ['memory']), title: 'Memory Zoo', tagline: 'Pairs!' };
+    const translated = { ...named, translations: { sl: { title: 'Živalski spomin', tagline: 'Pari!' } } };
+    expect(tileWords(translated, 'sl').title).toBe('Živalski spomin');
+    expect(tileWords(translated, 'en').title).toBe('Memory Zoo');
+    expect(tileWords(named, 'sl').tagline).toBe('Pairs!');
   });
 });
 

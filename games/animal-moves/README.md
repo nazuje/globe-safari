@@ -13,7 +13,7 @@ Tap **Go!** and the game runs by itself. It shows an animal, says the move, coun
 
 ## Tuning
 
-Moves live in `src/moves.ts`. Keep them on the spot, with no jumping off things and no running around the room.
+Moves live in `src/moves.ts`, and their words in `src/lang/`. Keep them on the spot, with no jumping off things and no running around the room.
 
 ## Run it
 

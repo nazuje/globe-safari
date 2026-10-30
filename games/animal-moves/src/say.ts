@@ -6,5 +6,6 @@ export { estimateMs, retryVoice } from '@playroom/kit';
 
 /** Speaks a line and resolves when it has ended, was aborted, or plainly isn't going to happen. */
 export function say(text: string, signal: AbortSignal): Promise<void> {
-  return sayLine(text, { signal });
+  // Only the lines in slowLines() have a slow recording. Every other line, and any device voice, ignores this.
+  return sayLine(text, { signal, slow: true });
 }

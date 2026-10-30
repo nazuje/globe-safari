@@ -1,8 +1,9 @@
 import '@playroom/kit/kit.css';
 import './style.css';
-import { homeButton, speak, store, stopSpeaking } from '@playroom/kit';
+import { getLanguage, homeButton, languageButton, onLanguageChange, speak, store, stopSpeaking, useClips } from '@playroom/kit';
 import { byId } from './dom.ts';
-import { INTRO_LINE, PLAY_LINE } from './lines.ts';
+import { text } from './lang/index.ts';
+import clips from './lang/sl.clips.json';
 import { createPlay } from './play.ts';
 import { ROUND_LENGTH, isLevelId, makeRound, type LevelId, type Round } from './rounds.ts';
 import { drawBook, drawLevelPicker, drawTitleFriends, runParty } from './screens.ts';
@@ -18,6 +19,8 @@ interface Progress {
 const PROGRESS_KEY = 'shape-friends-progress';
 const INTRO_PAUSE_MS = 2000;
 const SCREENS: readonly ScreenName[] = ['title', 'play', 'party', 'book'];
+
+useClips(clips);
 
 function loadProgress(): Progress {
   const saved = store.get<Partial<Progress> | null>(PROGRESS_KEY, null);
@@ -35,6 +38,7 @@ let beforeBook: ScreenName = 'title';
 
 const corner = byId<HTMLButtonElement>('corner');
 const dots = byId('dots');
+const home = homeButton();
 
 function saveProgress(next: Progress): void {
   progress = next;
@@ -51,13 +55,18 @@ function drawDots(): void {
   );
 }
 
+function drawCorner(): void {
+  const { pause, stickerBook } = text();
+  corner.hidden = screen === 'book';
+  corner.textContent = screen === 'play' ? '⏸' : '📖';
+  corner.setAttribute('aria-label', screen === 'play' ? pause : stickerBook);
+}
+
 function show(name: ScreenName): void {
   screen = name;
   for (const other of SCREENS) byId(`${other}-screen`).hidden = other !== name;
   dots.hidden = name !== 'play';
-  corner.hidden = name === 'book';
-  corner.textContent = name === 'play' ? '⏸' : '📖';
-  corner.setAttribute('aria-label', name === 'play' ? 'Pause, for grown-ups' : 'Sticker book');
+  drawCorner();
 }
 
 function showLevels(): void {
@@ -67,11 +76,33 @@ function showLevels(): void {
   });
 }
 
+function drawPlayLabel(): void {
+  const resuming = progress.friendsHome > 0 && selected === progress.level;
+  byId('play-label').textContent = resuming ? text().keepPlaying : text().play;
+}
+
 function showTitle(): void {
   show('title');
   showLevels();
-  byId('play-label').textContent = progress.friendsHome > 0 && selected === progress.level ? 'Keep playing' : 'Play';
-  if (navigator.userActivation?.hasBeenActive) speak(PLAY_LINE);
+  drawPlayLabel();
+  if (navigator.userActivation?.hasBeenActive) speak(text().playLine);
+}
+
+/** Everything fixed on the page that has words. It reads only the state, so it never touches progress. */
+function drawWords(): void {
+  const words = text();
+  document.documentElement.lang = getLanguage();
+  document.title = words.title;
+  document.querySelector('meta[name="description"]')?.setAttribute('content', words.description);
+  byId('game-title').textContent = words.title;
+  home.setAttribute('aria-label', words.home);
+  byId('friend').setAttribute('aria-label', words.friendLabel);
+  byId('say').setAttribute('aria-label', words.sayAgain);
+  byId('next').setAttribute('aria-label', words.playAgain);
+  byId('book-close').setAttribute('aria-label', words.closeBook);
+  drawCorner();
+  drawPlayLabel();
+  showLevels();
 }
 
 const play = createPlay({
@@ -97,7 +128,7 @@ function startPlaying(): void {
   show('play');
   drawDots();
   // This speech runs inside the tap, which is what lets phones speak later without a tap.
-  speak(INTRO_LINE);
+  speak(text().introLine);
   window.setTimeout(() => void play.start(running, progress.friendsHome), INTRO_PAUSE_MS);
 }
 
@@ -121,11 +152,20 @@ function closeBook(): void {
   else showTitle();
 }
 
-byId('topbar').prepend(homeButton());
+function changeLanguage(): void {
+  drawWords();
+  if (screen === 'book') drawBook(loadCollection());
+  if (screen === 'play') play.retell();
+  if (screen === 'title') speak(text().playLine);
+}
+
+byId('topbar').prepend(home, languageButton(['en', 'sl']));
+onLanguageChange(changeLanguage);
 corner.addEventListener('click', tapCorner);
 byId('play').addEventListener('click', startPlaying);
 byId('next').addEventListener('click', startPlaying);
 byId('book-close').addEventListener('click', closeBook);
 
 drawTitleFriends();
+drawWords();
 showTitle();

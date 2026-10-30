@@ -30,10 +30,17 @@ export function pickNext(
   return { word, seen: newPass ? [word] : [...stillInPool, word] };
 }
 
-/** Letters that sound or look alike. Any of these beside its partner in a word is an unfair trap. */
-const CONFUSABLE = ['ckq', 'csz', 'gj', 'iy', 'fv', 'bdpq'];
+/** The letters a language deals as extras. Each language has its own, so it needs its own rules. */
+export interface LetterRules {
+  alphabet: string;
+  /** Letters that sound or look alike. Any of these beside its partner in a word is an unfair trap. */
+  confusable: readonly string[];
+}
 
-const ALPHABET = 'abcdefghijklmnoprstuvwxyz';
+export const ENGLISH_LETTERS: LetterRules = {
+  alphabet: 'abcdefghijklmnoprstuvwxyz',
+  confusable: ['ckq', 'csz', 'gj', 'iy', 'fv', 'bdpq'],
+};
 
 function letterCounts(text: string): Map<string, number> {
   const counts = new Map<string, number>();
@@ -54,17 +61,23 @@ function spellsOtherWord(word: string, tiles: string, other: string): boolean {
   return usesExtra;
 }
 
-function isFairExtra(letter: string, word: string): boolean {
+function isFairExtra(letter: string, word: string, confusable: readonly string[]): boolean {
   if (word.includes(letter)) return false;
-  const partners = CONFUSABLE.filter((group) => group.includes(letter)).join('');
+  const partners = confusable.filter((group) => group.includes(letter)).join('');
   return ![...word].some((own) => partners.includes(own));
 }
 
-function fillTray(word: string, count: number, order: readonly string[], rivals: readonly string[]): string[] {
+function fillTray(
+  word: string,
+  count: number,
+  order: readonly string[],
+  rivals: readonly string[],
+  confusable: readonly string[],
+): string[] {
   const extras: string[] = [];
   for (const letter of order) {
     if (extras.length === count) break;
-    if (!isFairExtra(letter, word)) continue;
+    if (!isFairExtra(letter, word, confusable)) continue;
     const tiles = word + extras.join('') + letter;
     if (!rivals.some((other) => spellsOtherWord(word, tiles, other))) extras.push(letter);
   }
@@ -82,11 +95,12 @@ export function pickExtras(
   count: number,
   random: Random,
   lexicon: readonly string[] = LEXICON,
+  letters: LetterRules = ENGLISH_LETTERS,
 ): string[] {
   const rivals = lexicon.filter((other) => other.length === word.length);
   let best: string[] = [];
   for (let tries = 0; tries < 12 && best.length < count; tries++) {
-    const extras = fillTray(word, count, shuffled([...ALPHABET], random), rivals);
+    const extras = fillTray(word, count, shuffled([...letters.alphabet], random), rivals, letters.confusable);
     if (extras.length > best.length) best = extras;
   }
   return best;

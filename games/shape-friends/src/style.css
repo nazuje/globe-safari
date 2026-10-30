@@ -35,6 +35,7 @@ button {
 }
 
 .topbar .home-btn,
+.topbar .language-btn,
 .corner-btn {
   width: 48px;
   height: 48px;

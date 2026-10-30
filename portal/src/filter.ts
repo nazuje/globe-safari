@@ -29,6 +29,11 @@ export function tileLanguages({ languages }: Game): Language[] {
   return languages.length > 1 || languages[0] !== 'en' ? languages : [];
 }
 
+/** The name a tile shows in this language, falling back to the English name. */
+export function tileWords(game: Game, language: Language): { title: string; tagline: string } {
+  return game.translations?.[language] ?? game;
+}
+
 /** Reads a range such as "4-9". Anything else gives null. */
 export function parseAges(ages: string): { min: number; max: number } | null {
   const match = /^(\d+)-(\d+)$/.exec(ages);

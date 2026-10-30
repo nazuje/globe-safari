@@ -1,4 +1,6 @@
 import { WIGGLE_AFTER } from './game.ts';
+import { en } from './lang/en.ts';
+import type { Neighbor, Text } from './lang/en.ts';
 import type { Landmark, Scene, Spot, Surprise } from './scenes.ts';
 
 export interface Clue {
@@ -9,8 +11,6 @@ export interface Clue {
   /** Every spot in play this same phrase also fits. Always includes the hiding spot. */
   matches: string[];
 }
-
-const ROW_PHRASES = ['up high', 'in the middle', 'down low'];
 
 /** True when a spot really is where the landmark's word says. */
 export function fitsLandmark(landmark: Landmark, spot: Spot): boolean {
@@ -35,42 +35,46 @@ function idsWhere(spots: readonly Spot[], fits: (spot: Spot) => boolean): string
   return spots.filter(fits).map((spot) => spot.id);
 }
 
-function landmarkClues(scene: Scene, spots: readonly Spot[], hidden: Spot): Clue[] {
+function landmarkClues(scene: Scene, spots: readonly Spot[], hidden: Spot, words: Text): Clue[] {
   return scene.landmarks
     .filter((landmark) => fitsLandmark(landmark, hidden))
     .map((landmark) => ({
-      phrase: `${landmark.word} ${landmark.name}`,
+      phrase: words.landmarkClue(landmark),
       anchors: [landmark.id],
       matches: idsWhere(spots, (spot) => fitsLandmark(landmark, spot)),
     }));
 }
 
-const NEIGHBOR_WORDS = [
-  { word: 'next to', fits: isNextTo },
-  { word: 'under', fits: isUnder },
-  { word: 'above', fits: isAbove },
+const NEIGHBORS: readonly { neighbor: Neighbor; fits: (a: Spot, b: Spot) => boolean }[] = [
+  { neighbor: 'nextTo', fits: isNextTo },
+  { neighbor: 'under', fits: isUnder },
+  { neighbor: 'above', fits: isAbove },
 ];
 
-function neighborClues(spots: readonly Spot[], hidden: Spot): Clue[] {
-  return NEIGHBOR_WORDS.flatMap(({ word, fits }) =>
+function neighborClues(spots: readonly Spot[], hidden: Spot, words: Text): Clue[] {
+  return NEIGHBORS.flatMap(({ neighbor, fits }) =>
     spots
       .filter((other) => fits(hidden, other))
       .map((other) => ({
-        phrase: `${word} ${other.name}`,
+        phrase: words.neighborClue(neighbor, other.id),
         anchors: [other.id],
         matches: idsWhere(spots, (spot) => fits(spot, other)),
       })),
   );
 }
 
-function rowClue(spots: readonly Spot[], hidden: Spot): Clue {
+function rowClue(spots: readonly Spot[], hidden: Spot, words: Text): Clue {
   const matches = idsWhere(spots, (spot) => spot.row === hidden.row);
-  return { phrase: ROW_PHRASES[hidden.row], anchors: matches, matches };
+  return { phrase: words.rows[hidden.row], anchors: matches, matches };
 }
 
 /** Every true thing the room's layout lets us say about where a spot is. */
-export function cluesFor(scene: Scene, spots: readonly Spot[], hidden: Spot): Clue[] {
-  return [...landmarkClues(scene, spots, hidden), ...neighborClues(spots, hidden), rowClue(spots, hidden)];
+export function cluesFor(scene: Scene, spots: readonly Spot[], hidden: Spot, words: Text = en): Clue[] {
+  return [
+    ...landmarkClues(scene, spots, hidden, words),
+    ...neighborClues(spots, hidden, words),
+    rowClue(spots, hidden, words),
+  ];
 }
 
 function stillClosed(clue: Clue, opened: readonly string[]): number {
@@ -82,12 +86,18 @@ function stillClosed(clue: Clue, opened: readonly string[]): number {
  * points back at the spot just opened or repeats itself if it can avoid it, and it
  * narrows as tries go up: broad first, then the sharpest clue the room offers.
  */
-export function pickClue(scene: Scene, spots: readonly Spot[], hidden: Spot, opened: readonly string[]): Clue {
-  const all = cluesFor(scene, spots, hidden);
+export function pickClue(
+  scene: Scene,
+  spots: readonly Spot[],
+  hidden: Spot,
+  opened: readonly string[],
+  words: Text = en,
+): Clue {
+  const all = cluesFor(scene, spots, hidden, words);
   const last = opened.at(-1);
   const fresh = all.filter((clue) => !last || !clue.matches.includes(last));
   const pool = fresh.length > 0 ? fresh : all;
-  const previous = opened.length > 1 ? pickClue(scene, spots, hidden, opened.slice(0, -1)).phrase : null;
+  const previous = opened.length > 1 ? pickClue(scene, spots, hidden, opened.slice(0, -1), words).phrase : null;
   const unrepeated = pool.filter((clue) => clue.phrase !== previous);
   const choices = (unrepeated.length > 0 ? unrepeated : pool).toSorted(
     (a, b) => stillClosed(a, opened) - stillClosed(b, opened),
@@ -109,15 +119,28 @@ export function isWarmer(spots: readonly Spot[], hidden: Spot, opened: readonly 
   return distance(latest, hidden) < distance(before, hidden);
 }
 
-/** What the game says after an empty spot opens: a joke or "Warmer!", then where to look. */
+/** What the game says after an empty spot opens, in two parts: a joke or "Warmer!", then where to look. */
+export function seekParts(
+  scene: Scene,
+  spots: readonly Spot[],
+  hidden: Spot,
+  opened: readonly string[],
+  surprise: Surprise,
+  words: Text = en,
+): [opener: string, where: string] {
+  const opener = isWarmer(spots, hidden, opened) ? words.warmer : surprise.line;
+  if (opened.length > WIGGLE_AFTER) return [opener, words.seeWiggle];
+  return [opener, words.look(pickClue(scene, spots, hidden, opened, words).phrase)];
+}
+
+/** The same thing as one line. */
 export function seekLine(
   scene: Scene,
   spots: readonly Spot[],
   hidden: Spot,
   opened: readonly string[],
   surprise: Surprise,
+  words: Text = en,
 ): string {
-  const opener = isWarmer(spots, hidden, opened) ? 'Warmer!' : surprise.line;
-  if (opened.length > WIGGLE_AFTER) return `${opener} See it wiggle?`;
-  return `${opener} Look ${pickClue(scene, spots, hidden, opened).phrase}!`;
+  return seekParts(scene, spots, hidden, opened, surprise, words).join(' ');
 }

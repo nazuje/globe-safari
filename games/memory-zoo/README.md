@@ -1,6 +1,6 @@
 # 🦁 Memory Zoo
 
-A pairs game with 32 animals, for ages 4 to 9. Play together, taking turns, or alone.
+A pairs game with 32 animals, for ages 4 to 9. Play together, taking turns, or alone. It plays in English and Slovenian (*Živalski spomin*), with a flag in the top bar to switch.
 
 ## How to play
 

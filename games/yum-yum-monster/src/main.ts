@@ -1,6 +1,8 @@
 import '@playroom/kit/kit.css';
 import './style.css';
-import { store } from '@playroom/kit';
+import { getLanguage, onLanguageChange, store, useClips } from '@playroom/kit';
+import { text } from './lang/index.ts';
+import clips from './lang/sl.clips.json';
 import type { MonsterStyle } from './monsters.ts';
 import { showPicker } from './picker.ts';
 import { startPlay } from './play.ts';
@@ -21,6 +23,16 @@ function savedLevel(): Level {
   const level = store.get<number>(LEVEL_KEY, 1);
   return LEVELS.find((known) => known === level) ?? 1;
 }
+
+function labelPage(): void {
+  document.documentElement.lang = getLanguage();
+  document.title = text().title;
+  document.querySelector('meta[name="description"]')?.setAttribute('content', text().description);
+}
+
+useClips(clips);
+labelPage();
+onLanguageChange(labelPage);
 
 const app = byId('app');
 let level = savedLevel();

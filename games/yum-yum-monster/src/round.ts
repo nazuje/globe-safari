@@ -1,4 +1,6 @@
 import { FOODS } from './foods.ts';
+import { text } from './lang/index.ts';
+import { LINE_VARIANTS } from './lang/shared.ts';
 import { LEVELS, makeRequests, REQUESTS_PER_ROUND } from './requests.ts';
 import type { Level, MonsterRequest, PlateItem, Rng } from './requests.ts';
 
@@ -73,6 +75,11 @@ function isValidRequest(request: MonsterRequest): boolean {
   return Boolean(right && right.stock >= request.count) && request.plate.every((item) => known(item.foodId));
 }
 
+/** Rounds saved before requests had wordings get the first one. */
+function withVariant(request: MonsterRequest): MonsterRequest {
+  return LINE_VARIANTS.includes(request.variant) ? request : { ...request, variant: 0 };
+}
+
 /** Rebuilds a round saved on this device, or gives null if it can't be trusted or is over. */
 export function restoreRound(saved: unknown, level: Level): Round | null {
   const round = saved as Partial<Round> | null;
@@ -83,20 +90,17 @@ export function restoreRound(saved: unknown, level: Level): Round | null {
   if (!Number.isInteger(index) || index < 0 || index >= requests.length) return null;
   if (!requests.every(isValidRequest)) return null;
   if (!Number.isInteger(eaten) || eaten < 0 || eaten >= requests[index]!.count) return null;
-  return { level, requests, index, eaten, misses };
+  return { level, requests: requests.map(withVariant), index, eaten, misses };
 }
 
+export type ReactionMood = 'mmm' | 'wiggle' | 'burp' | 'giggle';
+
+/** The words for each mood are in lang/, under reactions. */
 export interface Reaction {
-  line: string;
-  mood: 'mmm' | 'wiggle' | 'burp' | 'giggle';
+  mood: ReactionMood;
 }
 
-export const REACTIONS: readonly Reaction[] = [
-  { line: 'Mmmm!', mood: 'mmm' },
-  { line: 'Yum yum yum!', mood: 'wiggle' },
-  { line: 'Burp! Oops!', mood: 'burp' },
-  { line: 'Hee hee! So tasty!', mood: 'giggle' },
-];
+export const REACTIONS: readonly Reaction[] = [{ mood: 'mmm' }, { mood: 'wiggle' }, { mood: 'burp' }, { mood: 'giggle' }];
 
 /** A funny reaction, never the same one twice in a row. */
 export function nextReaction(previous: Reaction | null, rng: Rng = Math.random): Reaction {
@@ -104,8 +108,7 @@ export function nextReaction(previous: Reaction | null, rng: Rng = Math.random):
   return options[Math.floor(rng() * options.length)]!;
 }
 
-export const SNEEZE_LINES: readonly string[] = ['Ah-choo!', 'Yucky! Ah-choo!', 'Oh no! Ah-choo!'];
-
 export function sneezeLine(rng: Rng = Math.random): string {
-  return SNEEZE_LINES[Math.floor(rng() * SNEEZE_LINES.length)]!;
+  const lines = text().sneezes;
+  return lines[Math.floor(rng() * lines.length)]!;
 }

@@ -1,10 +1,11 @@
-import { burst, canSpeak, homeButton, speak, stopSpeaking } from '@playroom/kit';
+import { burst, canSpeak, homeButton, languageButton, onLanguageChange, say, speak, stopSpeaking } from '@playroom/kit';
 import { BOUNCE_MS, bounceBack, flyIn, FLY_MS } from './flight.ts';
 import { foodById } from './foods.ts';
 import type { Color } from './foods.ts';
+import { text } from './lang/index.ts';
 import { buildMonster } from './monsters.ts';
 import type { MonsterStyle, MonsterView } from './monsters.ts';
-import { countWord } from './requests.ts';
+import { countWord, requestLine } from './requests.ts';
 import type { Level, MonsterRequest, PlateItem } from './requests.ts';
 import {
   currentRequest,
@@ -18,10 +19,6 @@ import {
   sneezeLine,
 } from './round.ts';
 import type { Reaction, Round } from './round.ts';
-
-const HELLO_LINE = 'I am so hungry!';
-const FULL_LINE = 'I am so full! Thank you!';
-const AGAIN_LINE = 'More food?';
 
 const HELLO_MS = 1700;
 const CHOMP_MS = 480;
@@ -122,15 +119,15 @@ export function startPlay(host: HTMLElement, options: PlayOptions): () => void {
   const leave = element('button', 'leave-btn topbar-end');
   leave.type = 'button';
   leave.textContent = '⚙️';
-  leave.setAttribute('aria-label', 'Change monster or level');
   leave.addEventListener('click', onLeave);
-  bar.append(homeButton(), leave);
+  const home = homeButton();
+  bar.append(home, leave, languageButton(['en', 'sl']));
 
   const ask = element('section', 'ask', screen);
   ask.setAttribute('aria-live', 'polite');
   const bubble = element('div', 'bubble', ask);
   const picture = element('div', 'ask-picture', bubble);
-  const text = element('p', 'ask-text', bubble);
+  const askText = element('p', 'ask-text', bubble);
 
   const stage = element('div', 'stage', screen);
   const monster: MonsterView = buildMonster(style);
@@ -141,21 +138,33 @@ export function startPlay(host: HTMLElement, options: PlayOptions): () => void {
   finger.textContent = '👆';
   finger.setAttribute('aria-hidden', 'true');
 
+  const sound = element('button', 'sound-btn', ask);
+  sound.type = 'button';
+  sound.textContent = '🔊';
+
+  // The words in the bubble, kept as a function so a language switch can redraw them.
+  let bubbleLine = (): string => '';
+
+  const showBubbleLine = (line: () => string): void => {
+    bubbleLine = line;
+    askText.textContent = line();
+  };
+
   const save = (): void => onProgress(round);
 
-  const sayRequest = (): void => speak(currentRequest(round).line);
+  const sayRequest = (): void => speak(requestLine(currentRequest(round)));
 
-  const showLine = (emoji: string, line: string): void => {
+  const showLine = (emoji: string, line: () => string): void => {
     picture.replaceChildren();
     element('span', 'ask-food', picture).textContent = emoji;
-    text.textContent = line;
+    showBubbleLine(line);
   };
 
   const showAsk = (): void => {
     const request = currentRequest(round);
     picture.replaceChildren();
     pictureFor(request, level, round.eaten, picture);
-    text.textContent = request.line;
+    showBubbleLine(() => requestLine(request));
     monster.setTally(level === 5 ? request.count : 0, round.eaten);
   };
 
@@ -209,8 +218,9 @@ export function startPlay(host: HTMLElement, options: PlayOptions): () => void {
     lastReaction = reaction;
     monster.setFullness(fullness(round));
     monster.setMood(reaction.mood);
-    showLine('😋', reaction.line);
-    speak(reaction.line);
+    const line = (): string => text().reactions[reaction.mood];
+    showLine('😋', line);
+    speak(line());
     await pause(REACTION_MS);
     showRequest();
   };
@@ -220,9 +230,9 @@ export function startPlay(host: HTMLElement, options: PlayOptions): () => void {
     monster.setFullness(1);
     monster.setTally(0, 0);
     monster.setMood('dance');
-    showLine('🎉', FULL_LINE);
+    showLine('🎉', () => text().full);
     plate.replaceChildren();
-    speak(FULL_LINE);
+    speak(text().full);
     for (let i = 0; i < 4; i++) {
       const box = monster.root.getBoundingClientRect();
       burst(box.left + box.width * (0.25 + 0.5 * Math.random()), box.top + box.height * (0.2 + 0.5 * Math.random()), 24);
@@ -231,14 +241,14 @@ export function startPlay(host: HTMLElement, options: PlayOptions): () => void {
     const again = element('button', 'btn btn-sun again', plate);
     again.type = 'button';
     again.textContent = '🍽️';
-    again.setAttribute('aria-label', 'More food');
+    again.setAttribute('aria-label', text().moreFood);
     again.addEventListener('click', () => {
       round = newRound(level);
       save();
       monster.setFullness(0);
       void sayHello();
     });
-    speak(AGAIN_LINE);
+    speak(text().again);
   };
 
   const eat = async (item: PlateItem, tile: HTMLElement): Promise<void> => {
@@ -291,7 +301,8 @@ export function startPlay(host: HTMLElement, options: PlayOptions): () => void {
     tile.classList.add('tile-wiggle');
     showHint();
     if (showsHint(round)) showFinger();
-    sayRequest();
+    // Waits for the sneeze to end. A new tap still cuts both off, so it never holds the game up.
+    void say(requestLine(currentRequest(round)), { queue: true });
     listen();
   };
 
@@ -311,7 +322,7 @@ export function startPlay(host: HTMLElement, options: PlayOptions): () => void {
       const tile = element('button', 'tile', plate);
       tile.type = 'button';
       tile.dataset.food = item.foodId;
-      tile.setAttribute('aria-label', food.one);
+      tile.setAttribute('aria-label', text().foodNames[food.id]);
       fillPile(element('span', 'pile', tile), food.emoji, foodLeft(round, item));
       tile.addEventListener('click', () => onTile(item, tile));
     }
@@ -331,8 +342,8 @@ export function startPlay(host: HTMLElement, options: PlayOptions): () => void {
     busy = true;
     plate.replaceChildren();
     monster.setMood('wiggle');
-    showLine('😋', HELLO_LINE);
-    speak(HELLO_LINE);
+    showLine('😋', () => text().hello);
+    speak(text().hello);
     await pause(HELLO_MS);
     showRequest();
   }
@@ -345,14 +356,26 @@ export function startPlay(host: HTMLElement, options: PlayOptions): () => void {
   };
 
   monster.root.addEventListener('click', sayAgain);
-  if (canSpeak()) {
-    const sound = element('button', 'sound-btn', ask);
-    sound.type = 'button';
-    sound.textContent = '🔊';
-    sound.setAttribute('aria-label', 'Say it again');
-    sound.addEventListener('click', sayAgain);
-  }
+  sound.addEventListener('click', sayAgain);
 
+  const labelControls = (): void => {
+    home.setAttribute('aria-label', text().home);
+    leave.setAttribute('aria-label', text().changeMonster);
+    sound.setAttribute('aria-label', text().sayAgain);
+    sound.hidden = !canSpeak();
+    plate.querySelector('.again')?.setAttribute('aria-label', text().moreFood);
+    for (const tile of tiles()) tile.setAttribute('aria-label', text().foodNames[foodById(tile.dataset.food!).id]);
+  };
+
+  // Words only. The round, the screen and any animation carry on as they are.
+  const stopListening = onLanguageChange(() => {
+    labelControls();
+    askText.textContent = bubbleLine();
+    if (plate.querySelector('.again')) speak(text().again);
+    else sayAgain();
+  });
+
+  labelControls();
   host.replaceChildren(screen);
   save();
   monster.setFullness(fullness(round));
@@ -360,6 +383,7 @@ export function startPlay(host: HTMLElement, options: PlayOptions): () => void {
   else void sayHello();
 
   return () => {
+    stopListening();
     window.clearTimeout(idleTimer);
     for (const id of timers) window.clearTimeout(id);
     stopSpeaking();

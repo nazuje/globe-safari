@@ -10,6 +10,8 @@ A hide-and-seek game for ages 3 to 6, for a child and a grown-up passing one dev
 4. After three tries the right spot wiggles, so nobody gets stuck. "Peekaboo!" earns a star, then you swap.
 5. After four rounds, the game says "You both found everyone!". Nobody loses.
 
+The game also plays in Slovenian as *Skrij in poišči*, with the flag in the top bar. Its words are in `src/lang/`. Slovenian place names need a different form after each preposition, so `sl.ts` holds those forms as data, and a joke and its clue are recorded as two clips, because together they would be thousands of sentences.
+
 ## Run it
 
 Hide and Peek is one game in [Playroom](../../README.md). You need Node.js 22 or newer. From the repository root:
