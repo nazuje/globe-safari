@@ -1,0 +1,1063 @@
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.app {
+  --backdrop: #ffe9c9;
+  --action-size: clamp(64px, min(10dvh, 19vw), 96px);
+  --tab-height: clamp(64px, 9dvh, 88px);
+  --tile-height: clamp(64px, 10.5dvh, 104px);
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: linear-gradient(180deg, var(--backdrop), var(--paper) 90%);
+  transition: background 0.3s;
+}
+
+.topbar {
+  gap: 8px;
+  padding: calc(var(--safe-top) + 8px) 12px 8px;
+}
+
+.title {
+  margin: 0;
+  min-width: 0;
+  font-size: clamp(1.15rem, 5vw, 2rem);
+  line-height: 1.05;
+}
+
+.bar-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  line-height: 1;
+  background: #fff;
+  box-shadow: 0 5px 0 var(--sun-dark);
+  touch-action: manipulation;
+}
+
+.bar-btn[hidden] {
+  display: none;
+}
+
+.bar-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--sun-dark);
+}
+
+/* ---------- The stage ---------- */
+
+.play {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 8px;
+  min-height: 0;
+  padding: 0 12px calc(var(--safe-bottom) + 12px);
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  min-height: 0;
+}
+
+.floor {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.actor {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 0;
+  border: 0;
+  background: none;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.actor:focus-visible {
+  outline: 4px solid var(--grape);
+  outline-offset: -4px;
+  border-radius: var(--radius);
+}
+
+.mover {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.creature {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  --gx: 0;
+  --gy: 0;
+  --phase: 0s;
+}
+
+.hint {
+  position: absolute;
+  left: 54%;
+  bottom: 6%;
+  z-index: 3;
+  font-size: 3.4rem;
+  line-height: 1;
+  pointer-events: none;
+  animation: hint-bounce 0.9s ease-in-out infinite;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.action {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--action-size);
+  height: var(--action-size);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--action-color, #fff);
+  box-shadow: 0 5px 0 var(--action-edge, var(--sun-dark));
+  touch-action: manipulation;
+}
+
+.action:active {
+  translate: 0 4px;
+  box-shadow: 0 1px 0 var(--action-edge, var(--sun-dark));
+}
+
+.action-face {
+  font-size: calc(var(--action-size) * 0.56);
+  line-height: 1;
+}
+
+.action-dice {
+  --action-color: var(--sun);
+  --action-edge: var(--sun-dark);
+}
+
+.action-dice[data-spinning] .action-face {
+  animation: dice-spin 0.3s linear infinite;
+}
+
+.action-dance {
+  --action-color: var(--coral);
+  --action-edge: var(--coral-dark);
+}
+
+.action-camera {
+  --action-color: var(--sky);
+  --action-edge: var(--sky-dark);
+}
+
+.action-wall {
+  --action-color: var(--leaf);
+  --action-edge: var(--leaf-dark);
+}
+
+.count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: 15px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--grape);
+}
+
+.count[hidden] {
+  display: none;
+}
+
+/* ---------- Tabs and options ---------- */
+
+.dresser {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.tab,
+.tile {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 6px;
+  border: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  touch-action: manipulation;
+}
+
+.tab {
+  height: var(--tab-height);
+  box-shadow: 0 4px 0 #d9cdb8;
+}
+
+.tab[aria-pressed='true'] {
+  background: var(--sun);
+  box-shadow: 0 4px 0 var(--sun-dark);
+}
+
+.tray {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr));
+  grid-auto-rows: var(--tile-height);
+  grid-template-rows: repeat(2, var(--tile-height));
+  gap: 6px;
+}
+
+.tile {
+  box-shadow: 0 3px 0 #d9cdb8;
+  animation: tile-in 0.16s ease-out;
+}
+
+.tile[aria-pressed='true'] {
+  outline: 5px solid var(--grape);
+  outline-offset: -5px;
+  background: #f1eaff;
+}
+
+.tab:active,
+.tile:active {
+  transform: scale(0.94);
+}
+
+.tab svg,
+.tile svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tile-emoji {
+  font-size: calc(var(--tile-height) * 0.58);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.tab .tile-emoji {
+  font-size: calc(var(--tab-height) * 0.56);
+}
+
+.tab:focus-visible,
+.tile:focus-visible,
+.action:focus-visible,
+.bar-btn:focus-visible,
+.slot:focus-visible {
+  outline: 4px solid var(--grape);
+  outline-offset: 2px;
+}
+
+/* Six tabs in a row would be narrower than a small finger. */
+@media (max-width: 437px) {
+  .play {
+    padding-inline: 10px;
+  }
+
+  .actions {
+    gap: 6px;
+  }
+
+  .tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tray {
+    gap: 4px;
+  }
+}
+
+@media (orientation: landscape) and (min-aspect-ratio: 5/4) {
+  .app {
+    --tab-height: clamp(64px, 13dvh, 104px);
+    --tile-height: clamp(64px, 17dvh, 140px);
+    --action-size: clamp(64px, 11dvh, 96px);
+  }
+
+  .play {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 12px;
+  }
+}
+
+/* ---------- The friends wall ---------- */
+
+.wall {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 8px;
+  padding: calc(var(--safe-top) + 8px) 12px calc(var(--safe-bottom) + 12px);
+  background: var(--paper-2);
+}
+
+.wall[hidden] {
+  display: none;
+}
+
+.wall-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wall-title {
+  flex: 1;
+  margin: 0;
+  font-size: clamp(1.2rem, 5vw, 2rem);
+}
+
+.wall-dance {
+  --action-size: 64px;
+}
+
+.wall-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  min-height: 0;
+}
+
+.slot {
+  min-width: 0;
+  min-height: 0;
+  padding: 3px;
+  border: 0;
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+.slot-empty {
+  border: 3px dashed #d9cdb8;
+  background: transparent;
+}
+
+.friend {
+  overflow: visible;
+}
+
+@media (orientation: landscape) and (min-aspect-ratio: 5/4) {
+  .wall-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Passing effects ---------- */
+
+.fx {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fx-piece {
+  position: absolute;
+  line-height: 1;
+}
+
+.fx-paper {
+  position: absolute;
+  top: 0;
+  width: 12px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+.flash {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #fff;
+  pointer-events: none;
+  animation: flash 0.3s ease-out forwards;
+}
+
+.flyer {
+  position: fixed;
+  z-index: 55;
+  pointer-events: none;
+}
+
+.tiny {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 3;
+  width: 34%;
+  height: 34%;
+  pointer-events: none;
+  animation: tiny-pop 3s ease-out both;
+}
+
+/* ---------- Always alive: breathing, blinking, looking around ---------- */
+
+.breath {
+  animation: breathe 3.2s ease-in-out infinite var(--phase);
+}
+
+.eye {
+  animation: blink 5.3s linear infinite var(--phase);
+}
+
+.pupil {
+  animation: look 11s ease-in-out infinite var(--phase);
+}
+
+.pupil-googly {
+  animation: look 3.7s ease-in-out infinite var(--phase);
+}
+
+.creature[data-glancing] .pupil {
+  animation: none;
+  transform: translate(calc(var(--reach) * var(--gx)), calc(var(--reach) * var(--gy)));
+  transition: transform 0.12s ease-out;
+}
+
+.twinkle {
+  animation: twinkle 1.6s ease-in-out infinite var(--phase);
+}
+
+.tongue {
+  animation: lick 4.1s ease-in-out infinite var(--phase);
+}
+
+.kiss {
+  animation: kiss 2.9s ease-in-out infinite var(--phase);
+}
+
+.antennae {
+  animation: antennae 2.3s ease-in-out infinite var(--phase);
+}
+
+.arm-left {
+  animation: idle-wave 13s ease-in-out infinite var(--phase);
+}
+
+.held {
+  animation: held-bob 3.2s ease-in-out infinite var(--phase);
+}
+
+/* ---------- Faces. Everything an act changes is hidden here until the act asks for it ---------- */
+
+.eye-happy,
+.eye-shut,
+.mouth-open {
+  display: none;
+}
+
+.blush {
+  opacity: 0;
+}
+
+[data-act='delight'] .eye,
+[data-act='giggle'] .eye,
+[data-act='dance'] .eye,
+[data-act='pose'] .eye,
+[data-act='tiny'] .eye,
+[data-act='wave'] .eye {
+  display: none;
+}
+
+[data-act='delight'] .eye-happy,
+[data-act='giggle'] .eye-happy,
+[data-act='dance'] .eye-happy,
+[data-act='pose'] .eye-happy,
+[data-act='tiny'] .eye-happy,
+[data-act='wave'] .eye-happy {
+  display: inline;
+}
+
+[data-act='sneeze'] .eye,
+[data-act='yawn'] .eye,
+[data-act='toot'] .eye {
+  display: none;
+}
+
+[data-act='sneeze'] .eye-shut,
+[data-act='yawn'] .eye-shut,
+[data-act='toot'] .eye-shut {
+  display: inline;
+}
+
+[data-act='burp'] .mouth-look,
+[data-act='sneeze'] .mouth-look,
+[data-act='yawn'] .mouth-look,
+[data-act='float'] .mouth-look,
+[data-act='insideOut'] .mouth-look {
+  display: none;
+}
+
+[data-act='burp'] .mouth-open,
+[data-act='sneeze'] .mouth-open,
+[data-act='yawn'] .mouth-open,
+[data-act='float'] .mouth-open,
+[data-act='insideOut'] .mouth-open {
+  display: inline;
+}
+
+[data-act='yawn'] .mouth-open {
+  animation: yawn-mouth 2.6s ease-in-out both;
+}
+
+[data-act='toot'] .blush {
+  animation: blush 1.5s ease-in-out both;
+}
+
+[data-act='sneeze'] .hat-fly {
+  animation: hat-fly 2.1s ease-in-out both;
+}
+
+/* ---------- Acts ---------- */
+
+[data-act='delight'] .mover {
+  animation: hop 0.7s ease-out;
+  transform-origin: 50% 90%;
+}
+
+[data-act='burp'] .mover {
+  animation: burp 0.6s ease-out;
+  transform-origin: 50% 90%;
+}
+
+[data-act='sneeze'] .mover {
+  animation: sneeze 2.1s ease-in-out;
+  transform-origin: 50% 90%;
+}
+
+[data-act='toot'] .mover {
+  animation: toot 0.7s ease-out;
+  transform-origin: 50% 90%;
+}
+
+[data-act='giggle'] .mover {
+  animation: giggle 0.16s linear 8;
+  transform-origin: 50% 90%;
+}
+
+[data-act='yawn'] .mover {
+  animation: yawn 2.6s ease-in-out;
+  transform-origin: 50% 90%;
+}
+
+[data-act='spin'] .mover {
+  animation: spin 1.2s ease-in-out;
+}
+
+[data-act='insideOut'] .mover {
+  animation: inside-out 1.9s ease-in-out;
+}
+
+[data-act='float'] .mover {
+  animation: float 3s ease-in-out;
+}
+
+[data-act='tiny'] .mover {
+  animation: lean 3s ease-in-out;
+  transform-origin: 50% 90%;
+}
+
+[data-act='wave'] .mover {
+  animation: none;
+}
+
+[data-act='whirl'] .mover {
+  animation: whirl 0.16s linear infinite;
+  transform-origin: 50% 90%;
+}
+
+[data-act='pose'] .mover {
+  animation: pose 0.5s ease-out;
+  transform-origin: 50% 90%;
+}
+
+[data-act='wave'] .arm-left,
+[data-act='wave'] .arm-right,
+[data-act='delight'] .arm-left {
+  animation: arm-wave 0.4s ease-in-out infinite;
+}
+
+[data-act='dance'] .arm-left,
+[data-act='dance'] .arm-right {
+  animation: arm-wave 0.38s ease-in-out infinite;
+}
+
+[data-act='dance'] .mover {
+  animation: dance-hop 0.76s ease-in-out infinite var(--stagger, 0ms);
+  transform-origin: 50% 90%;
+}
+
+[data-act='dance'][data-move='1'] .mover {
+  animation-name: dance-sway;
+}
+
+[data-act='dance'][data-move='2'] .mover {
+  animation-name: dance-twist;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes hint-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes dice-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes tile-in {
+  from {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+}
+
+@keyframes flash {
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(0.988, 1.022);
+  }
+}
+
+@keyframes blink {
+  0%,
+  93%,
+  100% {
+    transform: scaleY(1);
+  }
+  96% {
+    transform: scaleY(0.06);
+  }
+}
+
+@keyframes look {
+  0%,
+  16%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20%,
+  34% {
+    transform: translate(calc(var(--reach) * -0.9), 0);
+  }
+  38%,
+  50% {
+    transform: translate(0, 0);
+  }
+  54%,
+  66% {
+    transform: translate(calc(var(--reach) * 0.9), calc(var(--reach) * -0.4));
+  }
+  70%,
+  82% {
+    transform: translate(0, calc(var(--reach) * 0.6));
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    transform-origin: 0 0;
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes lick {
+  0%,
+  70%,
+  100% {
+    transform: translateY(0);
+  }
+  80% {
+    transform: translateY(7px);
+  }
+  90% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes kiss {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes antennae {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes idle-wave {
+  0%,
+  84%,
+  100% {
+    transform: rotate(0);
+  }
+  87%,
+  93% {
+    transform: rotate(26deg);
+  }
+  90%,
+  96% {
+    transform: rotate(-6deg);
+  }
+}
+
+@keyframes held-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes arm-wave {
+  0%,
+  100% {
+    transform: rotate(-16deg);
+  }
+  50% {
+    transform: rotate(22deg);
+  }
+}
+
+@keyframes hop {
+  0% {
+    transform: scale(1, 1);
+  }
+  18% {
+    transform: scale(1.1, 0.88);
+  }
+  50% {
+    transform: translateY(-9%) scale(0.94, 1.08);
+  }
+  78% {
+    transform: scale(1.08, 0.92);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes burp {
+  30% {
+    transform: scale(1.1, 0.94) rotate(-2deg);
+  }
+}
+
+@keyframes sneeze {
+  0%,
+  100% {
+    transform: none;
+  }
+  36% {
+    transform: rotate(-7deg) scale(1.05);
+  }
+  42% {
+    transform: rotate(9deg) scale(0.94);
+  }
+  52% {
+    transform: rotate(-3deg);
+  }
+  64% {
+    transform: none;
+  }
+}
+
+@keyframes hat-fly {
+  0%,
+  38% {
+    transform: none;
+    opacity: 1;
+  }
+  62% {
+    transform: translate(130px, -300px) rotate(220deg);
+    opacity: 1;
+  }
+  72% {
+    transform: translate(40px, -400px) rotate(330deg);
+    opacity: 0.2;
+  }
+  73% {
+    transform: translate(0, -340px);
+    opacity: 1;
+  }
+  90% {
+    transform: none;
+  }
+  95% {
+    transform: translateY(-16px);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes toot {
+  25% {
+    transform: translateY(-5%) rotate(3deg);
+  }
+  55% {
+    transform: scale(1.05, 0.95);
+  }
+}
+
+@keyframes blush {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  20%,
+  80% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes giggle {
+  0%,
+  100% {
+    transform: rotate(-3deg) translateX(-1%);
+  }
+  50% {
+    transform: rotate(3deg) translateX(1%);
+  }
+}
+
+@keyframes yawn {
+  0%,
+  100% {
+    transform: none;
+  }
+  45%,
+  60% {
+    transform: scale(0.97, 1.07);
+  }
+}
+
+@keyframes yawn-mouth {
+  0%,
+  100% {
+    transform: scale(0.3);
+  }
+  45%,
+  60% {
+    transform: scale(1.5, 1.7);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotateY(720deg);
+  }
+}
+
+@keyframes inside-out {
+  0%,
+  100% {
+    transform: none;
+  }
+  18% {
+    transform: scale(1.1, 0.9);
+  }
+  37% {
+    transform: scale(0.02, 1.1) rotate(8deg);
+  }
+  56% {
+    transform: scale(1.14, 0.94);
+  }
+  76% {
+    transform: scale(0.96, 1.05);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: none;
+  }
+  18% {
+    transform: scale(1.12);
+  }
+  45% {
+    transform: translateY(-26%) rotate(-5deg) scale(1.12);
+  }
+  62% {
+    transform: translateY(-30%) rotate(5deg) scale(1.12);
+  }
+  78% {
+    transform: translateY(0) scale(1.14, 0.84);
+  }
+  88% {
+    transform: translateY(-5%) scale(0.96, 1.05);
+  }
+}
+
+@keyframes lean {
+  0%,
+  100% {
+    transform: none;
+  }
+  12%,
+  85% {
+    transform: rotate(4deg) translateX(3%);
+  }
+}
+
+@keyframes tiny-pop {
+  0% {
+    transform: translate(70%, 30%) scale(0);
+  }
+  14% {
+    transform: translate(0, 0) scale(1.15);
+  }
+  20%,
+  88% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(70%, 30%) scale(0);
+  }
+}
+
+@keyframes whirl {
+  0%,
+  100% {
+    transform: rotate(-3deg) scale(1.02);
+  }
+  50% {
+    transform: rotate(3deg) scale(0.98);
+  }
+}
+
+@keyframes pose {
+  30% {
+    transform: scale(1.07);
+  }
+}
+
+@keyframes dance-hop {
+  0%,
+  100% {
+    transform: scale(1, 1) rotate(-5deg);
+  }
+  25% {
+    transform: translateY(-9%) scale(0.96, 1.05) rotate(0);
+  }
+  50% {
+    transform: scale(1.06, 0.93) rotate(5deg);
+  }
+  75% {
+    transform: translateY(-9%) scale(0.96, 1.05) rotate(0);
+  }
+}
+
+@keyframes dance-sway {
+  0%,
+  100% {
+    transform: translateX(-6%) rotate(-9deg);
+  }
+  50% {
+    transform: translateX(6%) rotate(9deg);
+  }
+}
+
+@keyframes dance-twist {
+  0%,
+  100% {
+    transform: rotateY(-35deg) scale(1.02);
+  }
+  50% {
+    transform: rotateY(35deg) translateY(-5%);
+  }
+}

@@ -1,0 +1,717 @@
+/* Keep the balloon colors out of here: each half gets --balloon from its character. */
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Top bar: floats over the halves, and is gone while anyone is tapping ---------- */
+
+.topbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 30;
+  padding-bottom: 0;
+  gap: 8px;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.topbar > *,
+.topbar-tools > * {
+  pointer-events: auto;
+}
+
+body[data-phase='countdown'] .topbar,
+body[data-phase='playing'] .topbar,
+body[data-phase='finale'] .topbar {
+  opacity: 0;
+}
+
+body[data-phase='countdown'] .topbar *,
+body[data-phase='playing'] .topbar *,
+body[data-phase='finale'] .topbar * {
+  pointer-events: none;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.4rem;
+  pointer-events: none;
+}
+
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+  background: #fff;
+  box-shadow: 0 5px 0 var(--sun-dark);
+  touch-action: manipulation;
+}
+
+.tool-btn[hidden] {
+  display: none;
+}
+
+#seats {
+  font-size: 0.95rem;
+  letter-spacing: -2px;
+}
+
+.tool-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--sun-dark);
+}
+
+.new-friends #change {
+  animation: nudge 0.8s ease-in-out infinite;
+}
+
+@media (max-width: 620px) {
+  .title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+/* ---------- The two halves ---------- */
+
+.arena {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  gap: 6px;
+  background: #fff;
+  touch-action: none;
+}
+
+body[data-split='columns'] .arena {
+  grid-template-columns: 1fr 1fr;
+}
+
+body[data-split='stacked'] .arena {
+  grid-template-rows: 1fr 1fr;
+}
+
+.half {
+  --balloon: #ffffff;
+  --hero: min(32cqw, 19cqh);
+  --hero-bottom: 7cqh;
+  --string: 5cqh;
+  --full: min(84cqw, 54cqh);
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+  background: color-mix(in srgb, var(--balloon) 30%, #fffdf6);
+  transition: background 0.25s;
+}
+
+.half.gold {
+  --balloon: #f5b800;
+}
+
+.half.no-character {
+  background: var(--paper-2);
+}
+
+.half.flipped {
+  /* This half's feet are at the top of the screen, under the bar. */
+  --hero-bottom: max(7cqh, 84px);
+  transform: rotate(180deg);
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
+}
+
+.picking .field {
+  visibility: hidden;
+}
+
+/* ---------- The balloon and its owner ---------- */
+
+.hero {
+  position: absolute;
+  bottom: var(--hero-bottom);
+  left: 50%;
+  font-size: var(--hero);
+  line-height: 1;
+  translate: -50% 0;
+}
+
+.badge {
+  position: absolute;
+  bottom: var(--hero-bottom);
+  left: calc(50% + var(--hero) * 0.62);
+  font-size: calc(var(--hero) * 0.42);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.rig {
+  position: absolute;
+  bottom: calc(var(--hero-bottom) + var(--hero) * 1.08 + var(--string));
+  left: 50%;
+  width: var(--full);
+  height: calc(var(--full) * 1.08);
+  pointer-events: none;
+  translate: -50% 0;
+}
+
+.scaler {
+  width: 100%;
+  height: 100%;
+  transform: scale(var(--scale, 0.2));
+  transform-origin: 50% 100%;
+  transition: transform 0.09s ease-out;
+}
+
+.balloon {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50% 50% 48% 48% / 46% 46% 54% 54%;
+  background:
+    radial-gradient(circle at 33% 26%, rgb(255 255 255 / 85%) 0 7%, transparent 8%),
+    radial-gradient(circle at 38% 34%, color-mix(in srgb, var(--balloon) 62%, #fff), var(--balloon) 58%, color-mix(in srgb, var(--balloon) 74%, #2b2140));
+  box-shadow: inset -6px -8px 18px rgb(43 33 64 / 18%);
+}
+
+.balloon::after {
+  position: absolute;
+  bottom: -3.5%;
+  left: 50%;
+  width: 9%;
+  height: 6%;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: color-mix(in srgb, var(--balloon) 80%, #2b2140);
+  content: '';
+  translate: -50% 0;
+}
+
+.string {
+  position: absolute;
+  bottom: calc(var(--hero-bottom) + var(--hero) * 0.96);
+  left: 50%;
+  width: 3px;
+  height: calc(var(--string) + var(--hero) * 0.14);
+  border-radius: 3px;
+  background: rgb(43 33 64 / 45%);
+  pointer-events: none;
+}
+
+.tense .balloon {
+  animation: strain 0.14s linear infinite alternate;
+}
+
+.gold .balloon {
+  box-shadow:
+    inset -6px -8px 18px rgb(120 80 0 / 30%),
+    0 0 40px 10px rgb(255 215 0 / 60%);
+}
+
+.popped .rig,
+.popped .string {
+  visibility: hidden;
+}
+
+.half[data-mood='dance'] .hero {
+  animation: dance 0.56s ease-in-out infinite;
+}
+
+.half[data-mood='laugh'] .hero {
+  animation: fall-over 0.5s cubic-bezier(0.3, 1.4, 0.6, 1) forwards, shake-laugh 0.22s linear 0.5s infinite alternate;
+}
+
+/* ---------- Tally: the stickers won ---------- */
+
+.tally {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  left: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tally-count {
+  flex: none;
+  min-width: 34px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  background: #fff;
+}
+
+.sticker {
+  flex: none;
+  font-size: clamp(1.4rem, 9cqw, 2.2rem);
+  line-height: 1.15;
+}
+
+.sticker-new {
+  animation: sticker-in 0.5s cubic-bezier(0.3, 1.8, 0.5, 1) 0.2s both;
+}
+
+/* The bar sits over the top of the screen, and in a stack the middle button sits between the two tallies. */
+body[data-split='columns'] .half:not(.flipped) .tally {
+  top: 84px;
+}
+
+body[data-split='stacked'] .tally {
+  top: 72px;
+}
+
+/* ---------- Countdown ---------- */
+
+.count {
+  position: absolute;
+  top: 36%;
+  right: 0;
+  left: 0;
+  z-index: 3;
+  font-size: min(26cqw, 24cqh);
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  color: var(--ink);
+  pointer-events: none;
+  -webkit-text-stroke: 3px #fff;
+  paint-order: stroke fill;
+  translate: 0 -50%;
+}
+
+body[data-phase='countdown'] .count {
+  font-size: min(40cqw, 30cqh);
+}
+
+.count-in {
+  animation: count-in 0.32s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+
+.hint {
+  position: absolute;
+  /* Just above the small balloon, pointing at the thing to pump. */
+  bottom: calc(var(--hero-bottom) + var(--hero) * 1.08 + var(--string) + var(--full) * 0.26);
+  left: 50%;
+  display: none;
+  font-size: min(22cqw, 16cqh);
+  pointer-events: none;
+  translate: -50% 0;
+}
+
+.hinting .hint {
+  display: block;
+  animation: finger 0.6s ease-in-out infinite;
+}
+
+/* ---------- Choosing a friend and a size ---------- */
+
+.picker {
+  --cols: 3;
+  --rows: 2;
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 76px 2px;
+  container-type: size;
+}
+
+.picking .picker {
+  display: flex;
+}
+
+body[data-split='stacked'] .half:not(.flipped) .picker {
+  padding: 8px 2px;
+}
+
+body[data-split='stacked'] .half.flipped .picker {
+  padding: 8px 2px 76px;
+}
+
+.pick-grid {
+  --cell: max(76px, min((100cqw - (var(--cols) - 1) * 6px) / var(--cols), (100cqh - (var(--rows) - 1) * 6px) / var(--rows), 150px));
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--cell));
+  gap: 6px;
+}
+
+.pick-grid[data-count='8'] {
+  --cols: 4;
+}
+
+.pick {
+  display: grid;
+  place-items: center;
+  width: var(--cell);
+  height: var(--cell);
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  font-size: calc(var(--cell) * 0.62);
+  line-height: 1;
+  background: #fff;
+  box-shadow: 0 5px 0 var(--sun-dark);
+  animation: wave 2s ease-in-out var(--wave, 0s) infinite;
+  touch-action: none;
+}
+
+.pick:active {
+  transform: translateY(3px);
+}
+
+.pick.taken {
+  opacity: 0.3;
+  filter: grayscale(0.8);
+  animation: none;
+}
+
+.picking-hero {
+  font-size: clamp(2.6rem, 16cqh, 5rem);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 170px));
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+}
+
+.level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 88px;
+  padding: 8px 2px;
+  border: 0;
+  border-radius: 24px;
+  line-height: 1.15;
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 5px 0 var(--sun-dark);
+  animation: wave 2s ease-in-out var(--wave, 0s) infinite;
+  touch-action: none;
+}
+
+.level-emoji {
+  font-size: clamp(2.4rem, 13cqh, 4rem);
+  line-height: 1.1;
+}
+
+.level-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.level-ages {
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+
+/* Narrow halves: phones held upright with players side by side. */
+@container (max-width: 260px) {
+  .pick-grid {
+    --cols: 2;
+    --rows: 3;
+  }
+
+  .pick-grid[data-count='8'] {
+    --cols: 2;
+    --rows: 4;
+  }
+
+  .level-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .level {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 8px;
+    justify-items: start;
+    padding-inline: 12px;
+  }
+
+  .level-emoji {
+    grid-row: span 2;
+    font-size: 2.4rem;
+  }
+
+  .level-label,
+  .level-ages {
+    white-space: nowrap;
+  }
+}
+
+/* ---------- The middle button ---------- */
+
+.hub {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: clamp(96px, 17vmin, 136px);
+  height: clamp(96px, 17vmin, 136px);
+  padding: 0;
+  border: 6px solid #fff;
+  border-radius: 50%;
+  font-size: clamp(2.6rem, 8vmin, 3.8rem);
+  line-height: 1;
+  color: var(--ink);
+  background: var(--sun);
+  box-shadow: 0 7px 0 var(--sun-dark);
+  opacity: 0;
+  pointer-events: none;
+  touch-action: none;
+  translate: -50% -50%;
+}
+
+.hub.hub-on {
+  opacity: 1;
+  pointer-events: auto;
+  animation: hub-in 0.35s cubic-bezier(0.3, 1.6, 0.5, 1), nudge 1.2s ease-in-out 0.4s infinite;
+}
+
+/* ---------- Things flying over everything ---------- */
+
+.fx {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti,
+.puff,
+.giggle,
+.runaway,
+.bird {
+  position: absolute;
+  pointer-events: none;
+}
+
+.confetti {
+  border-radius: 2px;
+  will-change: transform;
+}
+
+.puff {
+  font-size: 1.8rem;
+}
+
+.giggle {
+  font-size: 2.2rem;
+}
+
+.bird {
+  left: 0;
+  font-size: clamp(3rem, 10vmin, 5rem);
+  line-height: 1;
+}
+
+.runaway {
+  top: 0;
+  left: 0;
+  border-radius: 50% 50% 48% 48% / 46% 46% 54% 54%;
+  box-shadow: inset -6px -8px 18px rgb(43 33 64 / 18%);
+}
+
+/* The air it's losing, blowing out of the knot. */
+.runaway::after {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  font-size: 3rem;
+  line-height: 1;
+  content: '💨';
+  translate: -50% 0;
+}
+
+/* ---------- Movement ---------- */
+
+@keyframes strain {
+  from {
+    transform: translate(-1.5px, 0.5px) rotate(-0.7deg);
+  }
+
+  to {
+    transform: translate(1.5px, -0.5px) rotate(0.7deg);
+  }
+}
+
+@keyframes dance {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-12deg);
+  }
+
+  25% {
+    transform: translateY(-34%) rotate(0deg) scale(1.1);
+  }
+
+  50% {
+    transform: translateY(0) rotate(12deg);
+  }
+
+  75% {
+    transform: translateY(-34%) rotate(0deg) scale(1.1);
+  }
+}
+
+@keyframes fall-over {
+  to {
+    transform: translateY(10%) rotate(92deg);
+  }
+}
+
+@keyframes shake-laugh {
+  from {
+    transform: translateY(8%) rotate(87deg);
+  }
+
+  to {
+    transform: translateY(12%) rotate(97deg);
+  }
+}
+
+@keyframes sticker-in {
+  from {
+    transform: scale(3) rotate(-30deg);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes count-in {
+  from {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes finger {
+  50% {
+    transform: translateY(-18%) scale(1.08);
+  }
+}
+
+@keyframes wave {
+  0%,
+  70%,
+  100% {
+    transform: scale(1);
+  }
+
+  85% {
+    transform: scale(1.06) rotate(-3deg);
+  }
+}
+
+@keyframes nudge {
+  50% {
+    transform: scale(1.09);
+  }
+}
+
+@keyframes hub-in {
+  from {
+    transform: scale(0.2);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+/* ---------- Calm mode: the game plays the same, with less bouncing ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .half[data-mood='laugh'] .hero {
+    animation: none;
+    transform: rotate(92deg);
+  }
+
+  .half[data-mood='dance'] .hero {
+    animation: none;
+    transform: scale(1.15);
+  }
+
+  .scaler {
+    transition: none;
+  }
+
+  .tense .balloon,
+  .hinting .hint {
+    animation: none;
+  }
+}

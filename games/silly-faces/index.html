@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Silly Faces</title>
+    <meta name="description" content="Dress up a big cuddly creature, tickle it, make it dance and fill a wall with friends. No goals and no wrong choices." />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤪</text></svg>"
+    />
+  </head>
+  <body>
+    <div id="app" class="app">
+      <header id="topbar" class="topbar">
+        <h1 id="title" class="title">Silly Faces</h1>
+        <button id="again" class="bar-btn topbar-end" type="button">🔊</button>
+      </header>
+      <main id="play" class="play">
+        <section class="stage">
+          <div id="floor" class="floor">
+            <button id="actor" class="actor" type="button"></button>
+            <div id="hint" class="hint" aria-hidden="true">👆</div>
+          </div>
+          <div class="actions">
+            <button id="dice" class="action action-dice" type="button"><span class="action-face">🎲</span></button>
+            <button id="dance" class="action action-dance" type="button"><span class="action-face">🎶</span></button>
+            <button id="camera" class="action action-camera" type="button"><span class="action-face">📷</span></button>
+            <button id="wall-open" class="action action-wall" type="button">
+              <span class="action-face">🖼️</span><span id="count" class="count" hidden></span>
+            </button>
+          </div>
+        </section>
+        <section class="dresser">
+          <div id="tabs" class="tabs"></div>
+          <div id="tray" class="tray"></div>
+        </section>
+      </main>
+      <section id="wall" class="wall" hidden>
+        <div class="wall-bar">
+          <button id="wall-close" class="bar-btn" type="button">✖️</button>
+          <h2 id="wall-title" class="wall-title">Friends</h2>
+          <button id="wall-dance" class="action action-dance wall-dance" type="button"><span class="action-face">🎶</span></button>
+        </div>
+        <div id="wall-grid" class="wall-grid"></div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

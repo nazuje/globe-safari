@@ -1,0 +1,68 @@
+import type { Text } from './en.ts';
+
+export const sl: Text = {
+  title: 'Brm brm!',
+  description: 'Izberi vozilo in zdrvi po smešni cesti s tremi pasovi ter zbiraj zvezdice. Brez nesreč in brez poraza, za otroke od 4 do 9 let.',
+  home: 'Nazaj na igre',
+  sayAgain: 'Povej še enkrat',
+  changeRide: 'Izberi drugo vozilo',
+  speedGroup: 'Kako hitro',
+  garage: 'Garaža',
+  locked: 'Še zaklenjeno',
+  nextRide: 'Naslednje vozilo',
+  fullGarage: 'Garaža je polna!',
+  pick: 'Izberi si vozilo!',
+  rides: {
+    car: 'Dirkalnik!',
+    unicorn: 'Samorog!',
+    tractor: 'Traktor!',
+    rocket: 'Raketa!',
+    dragon: 'Zmaj!',
+    bicycle: 'Kolo!',
+    fireEngine: 'Gasilski avto!',
+    carpet: 'Leteča preproga!',
+    snail: 'Polž!',
+    dinosaur: 'Dinozaver!',
+    scooter: 'Skuter!',
+    turtle: 'Želva!',
+    helicopter: 'Helikopter!',
+    train: 'Vlak!',
+    robot: 'Robot!',
+    skateboard: 'Rolka!',
+    saucer: 'Leteči krožnik!',
+    rainbow: 'Mavrica!',
+  },
+  speeds: {
+    slow: 'Počasi!',
+    fast: 'Hitro!',
+    super: 'Super hitro!',
+  },
+  start: 'Na mesta, pozor, zdaj!',
+  hint: 'Tapni levo ali desno!',
+  cheers: ['Hura, cilj!', 'Kakšna vožnja!', 'Bravo, na cilju!'],
+  bonks: ['Ups!', 'Bum!', 'Ojoj!'],
+  flying: 'Letimo!',
+  ufo: 'Glej, leteči krožnik!',
+  giant: 'Velikanska zvezda!',
+  newRide: 'Novo vozilo!',
+  moreStars: 'Zberi še več zvezdic!',
+  again: 'Še enkrat!',
+};
+
+/** Every line the game can say in Slovenian. */
+export function spokenLines(): string[] {
+  return [
+    sl.pick,
+    ...Object.values(sl.rides),
+    ...Object.values(sl.speeds),
+    sl.start,
+    sl.hint,
+    ...sl.cheers,
+    ...sl.bonks,
+    sl.flying,
+    sl.ufo,
+    sl.giant,
+    sl.newRide,
+    sl.moreStars,
+  ];
+}

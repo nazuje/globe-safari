@@ -206,5 +206,158 @@
         "tagline": "Skači, topotaj in se zibaj!"
       }
     }
+  },
+  {
+    "slug": "pop-party",
+    "title": "Pop Party",
+    "emoji": "🫧",
+    "tagline": "Pop, pop, pop! See what's inside.",
+    "skills": [
+      "fun"
+    ],
+    "ages": "3-7",
+    "modes": [
+      "solo",
+      "together"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Mehurčkova zabava",
+        "tagline": "Pokaj mehurčke in poglej, kaj je notri!"
+      }
+    },
+    "color": "#35b6e6",
+    "status": "ready"
+  },
+  {
+    "slug": "treasure-dig",
+    "title": "Treasure Dig",
+    "emoji": "💎",
+    "tagline": "Dig up dinosaurs, gems and surprises!",
+    "skills": [
+      "fun"
+    ],
+    "ages": "3-8",
+    "modes": [
+      "solo"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Lov na zaklad",
+        "tagline": "Izkoplji dinozavre, dragulje in presenečenja!"
+      }
+    },
+    "color": "#c98a3c",
+    "status": "ready"
+  },
+  {
+    "slug": "silly-faces",
+    "title": "Silly Faces",
+    "emoji": "🤪",
+    "tagline": "Make a funny creature and watch it dance!",
+    "skills": [
+      "fun"
+    ],
+    "ages": "3-9",
+    "modes": [
+      "solo",
+      "together"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Smešni obrazi",
+        "tagline": "Naredi smešno bitje in poglej, kako pleše!"
+      }
+    },
+    "color": "#e0569b",
+    "status": "ready"
+  },
+  {
+    "slug": "zoom-road",
+    "title": "Zoom Road",
+    "emoji": "🏎️",
+    "tagline": "Pick your ride and zoom to the finish!",
+    "skills": [
+      "fun"
+    ],
+    "ages": "4-9",
+    "modes": [
+      "solo"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Brm brm!",
+        "tagline": "Izberi vozilo in pelji do cilja!"
+      }
+    },
+    "color": "#e8503a",
+    "status": "ready"
+  },
+  {
+    "slug": "balloon-battle",
+    "title": "Balloon Battle",
+    "emoji": "🎈",
+    "tagline": "Two players. Tap fast. Bang!",
+    "skills": [
+      "fun"
+    ],
+    "ages": "3-9",
+    "modes": [
+      "together"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Balonski dvoboj",
+        "tagline": "Dva igralca, hitri prsti in pok!"
+      }
+    },
+    "color": "#8a5cf0",
+    "status": "ready"
+  },
+  {
+    "slug": "silly-band",
+    "title": "Silly Band",
+    "emoji": "🎸",
+    "tagline": "Tap the band and make a racket!",
+    "skills": [
+      "fun"
+    ],
+    "ages": "3-9",
+    "modes": [
+      "solo",
+      "together"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Smešni orkester",
+        "tagline": "Tapni člane orkestra in zaigraj!"
+      }
+    },
+    "color": "#2fb37a",
+    "status": "ready"
   }
 ]

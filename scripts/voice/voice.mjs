@@ -26,7 +26,8 @@ const HERE = fileURLToPath(new URL('.', import.meta.url));
 const PYTHON = join(HERE, '.venv', 'bin', 'python');
 const MODEL = join(HERE, 'model', `${VOICE}.onnx`);
 const FIXES = join(HERE, 'pronunciation.json');
-const WORK = join(HERE, '.cache');
+// One folder per run, so generating two games at once can't clear each other's files.
+const WORK = join(HERE, '.cache', String(process.pid));
 const FFMPEG_AT_ONCE = 6;
 
 const run = promisify(execFile);

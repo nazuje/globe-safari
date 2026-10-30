@@ -1,0 +1,52 @@
+import type { FriendId } from '../friends.ts';
+
+const friends: Record<FriendId, string> = {
+  kitten: 'Kitten!',
+  puppy: 'Puppy!',
+  dinosaur: 'Dinosaur!',
+  rocket: 'Rocket!',
+  crown: 'Crown!',
+  donut: 'Donut!',
+  duck: 'Duck!',
+  robot: 'Robot!',
+  unicorn: 'Unicorn!',
+  tractor: 'Tractor!',
+  butterfly: 'Butterfly!',
+  frog: 'Frog!',
+  fireTruck: 'Fire truck!',
+  iceCream: 'Ice cream!',
+  octopus: 'Octopus!',
+  helicopter: 'Helicopter!',
+  bunny: 'Bunny!',
+  ball: 'Ball!',
+  penguin: 'Penguin!',
+  rainbow: 'Rainbow!',
+  lion: 'Lion!',
+  turtle: 'Turtle!',
+  ladybug: 'Ladybug!',
+  elephant: 'Elephant!',
+  dragon: 'Dragon!',
+  saucer: 'Flying saucer!',
+  alien: 'Little alien!',
+  peacock: 'Peacock!',
+  diamond: 'Diamond!',
+  trophy: 'Golden cup!',
+};
+
+export const en = {
+  title: 'Pop Party',
+  description: 'Tap floating bubbles and see who tumbles out. A silly popping game for ages 3 to 7, alone or together.',
+  home: 'Back to Playroom',
+  sayAgain: 'Say it again',
+  shelf: (found: number, total: number): string => `Bubbles to pop. Friends on the shelf: ${found} of ${total}.`,
+  popThem: 'Pop the bubbles!',
+  cheers: ['Hooray!', 'Wow!', 'Yippee!', 'Bravo!', 'Party time!'] as readonly string[],
+  sneeze: 'Ah-choo!',
+  blessYou: 'Bless you!',
+  oops: 'Oops, excuse me!',
+  rain: 'Bubble rain!',
+  everyone: 'All your friends are here!',
+  friends,
+};
+
+export type Text = typeof en;

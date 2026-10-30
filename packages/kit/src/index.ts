@@ -12,5 +12,6 @@ export {
   type SlGender,
   type SlNoun,
 } from './slovenian.ts';
+export { playNote, playSound, SOUND_NAMES, type NoteOptions, type SoundName } from './sfx.ts';
 export { canSpeak, estimateMs, retryVoice, say, speak, stopSpeaking, type SayOptions } from './speech.ts';
 export { store } from './store.ts';

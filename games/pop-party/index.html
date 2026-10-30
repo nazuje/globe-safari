@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Pop Party</title>
+    <meta name="description" content="Tap floating bubbles and see who tumbles out. A silly popping game for ages 3 to 7, alone or together." />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎈</text></svg>"
+    />
+  </head>
+  <body>
+    <header id="topbar" class="topbar">
+      <h1 id="title" class="title">Pop Party</h1>
+      <button id="say" class="say-btn topbar-end" type="button">🔊</button>
+    </header>
+    <main id="stage" class="stage">
+      <canvas id="play" class="play" role="img"></canvas>
+      <p id="toast" class="toast" aria-live="polite"></p>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

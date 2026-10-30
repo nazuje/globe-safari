@@ -17,6 +17,12 @@ Live at <https://nazuje.github.io/playroom/>, with games at `/playroom/<slug>/`.
 | [🔷 Shape Friends / Prijatelji oblik](games/shape-friends/README.md) | Help every shape find its home! | 3-5 | ✓ |  | 🇬🇧 🇸🇮 |
 | [🙈 Hide and Peek / Skrij in poišči](games/hide-and-peek/README.md) | Hide a friend. Can you find it? | 3-6 |  | ✓ | 🇬🇧 🇸🇮 |
 | [🐸 Animal Moves / Živalski gibi](games/animal-moves/README.md) | Hop, stomp and wiggle together! | 3-7 |  | ✓ | 🇬🇧 🇸🇮 |
+| [🫧 Pop Party / Mehurčkova zabava](games/pop-party/README.md) | Pop, pop, pop! See what's inside. | 3-7 | ✓ | ✓ | 🇬🇧 🇸🇮 |
+| [💎 Treasure Dig / Lov na zaklad](games/treasure-dig/README.md) | Dig up dinosaurs, gems and surprises! | 3-8 | ✓ |  | 🇬🇧 🇸🇮 |
+| [🤪 Silly Faces / Smešni obrazi](games/silly-faces/README.md) | Make a funny creature and watch it dance! | 3-9 | ✓ | ✓ | 🇬🇧 🇸🇮 |
+| [🏎️ Zoom Road / Brm brm!](games/zoom-road/README.md) | Pick your ride and zoom to the finish! | 4-9 | ✓ |  | 🇬🇧 🇸🇮 |
+| [🎈 Balloon Battle / Balonski dvoboj](games/balloon-battle/README.md) | Two players. Tap fast. Bang! | 3-9 |  | ✓ | 🇬🇧 🇸🇮 |
+| [🎸 Silly Band / Smešni orkester](games/silly-band/README.md) | Tap the band and make a racket! | 3-9 | ✓ | ✓ | 🇬🇧 🇸🇮 |
 
 ## Layout
 
@@ -25,7 +31,7 @@ games.json            the registry: every game the portal shows
 portal/               the game picker, served at the site root
 games/<slug>/         one folder per game
 games/_template/      a working starter game, copied to make new ones
-packages/kit/         @playroom/kit: speech, languages, star burst, home button, store, kit.css
+packages/kit/         @playroom/kit: speech, languages, sound effects, star burst, home button, store, kit.css
 scripts/build-site.mjs  builds the portal and every ready game into dist/
 scripts/voice/        generates Slovenian speech clips ahead of time
 ```
@@ -57,7 +63,7 @@ npm run preview                      # serve dist/ at http://localhost:5179
 | `slug` | Folder name in `games/` and the URL path |
 | `title`, `emoji` | Shown on the tile |
 | `tagline` | One short kid-friendly line |
-| `skills` | Any of `world`, `memory`, `logic`, `colors`, `reading`, `numbers`, `moving` |
+| `skills` | Any of `fun`, `world`, `memory`, `logic`, `colors`, `reading`, `numbers`, `moving` |
 | `ages` | A range such as `"4-9"`. The portal's age filter shows a game when the chosen age falls inside it, ends included |
 | `modes` | `"solo"`, `"together"`, or both: how the game can be played |
 | `languages` | `"en"`, `"sl"`, or both: the languages the game is fully playable in. The portal shows a language chip once a game has it, and the language row itself once there are two languages. A tile shows a flag badge when a game has more than one language or isn't in English |
@@ -95,6 +101,7 @@ Games import from `@playroom/kit`. It is plain TypeScript with no dependencies a
 - `useClips(manifest)`: plays recorded clips for Slovenian lines. Until a game calls it, that game speaks English whatever the shared language is.
 - `slCount`, `slNumber`, `slCounted`: Slovenian counting grammar. See below.
 - `missingClips(manifest, lines, slowLines?)`: lines with no clip, for a game's test.
+- `playSound(name)`, `playNote(hz, options?)`, `SOUND_NAMES`: short sound effects (`pop`, `boing`, `ding`, `whoosh`, `bonk`, `dig`, `burp`, `toot`, `tada`) and single musical notes, made with Web Audio so no sound files ship. Quiet no-ops where audio isn't available. Browsers only allow sound after a tap, so a game's first sound should come from one.
 - `burst(x, y, count?)`: a star burst at a viewport position. It needs no CSS and calms down for people who prefer reduced motion.
 - `homeButton()`: a big round 🏠 link back to the portal, for the game's top bar.
 - `store.get(key, fallback)`, `store.set(key, value)`: small JSON values in localStorage for this device, such as best scores. They never throw, so nothing important should rely on them.

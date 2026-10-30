@@ -1,0 +1,53 @@
+import type { SpeedId } from '../course.ts';
+import type { RideId } from '../rides.ts';
+
+export const en = {
+  title: 'Zoom Road',
+  description: 'Pick a ride and zoom down a silly three-lane road, collecting stars. No crashing and no losing, for ages 4 to 9.',
+  home: 'Back to Playroom',
+  sayAgain: 'Say it again',
+  changeRide: 'Pick another ride',
+  speedGroup: 'How fast',
+  garage: 'Garage',
+  locked: 'Still locked',
+  nextRide: 'Next ride',
+  fullGarage: 'The garage is full!',
+  pick: 'Pick your ride!',
+  rides: {
+    car: 'Race car!',
+    unicorn: 'Unicorn!',
+    tractor: 'Tractor!',
+    rocket: 'Rocket!',
+    dragon: 'Dragon!',
+    bicycle: 'Bicycle!',
+    fireEngine: 'Fire engine!',
+    carpet: 'Flying carpet!',
+    snail: 'Snail!',
+    dinosaur: 'Dinosaur!',
+    scooter: 'Scooter!',
+    turtle: 'Turtle!',
+    helicopter: 'Helicopter!',
+    train: 'Train!',
+    robot: 'Robot!',
+    skateboard: 'Skateboard!',
+    saucer: 'Flying saucer!',
+    rainbow: 'Rainbow!',
+  } satisfies Record<RideId, string> as Record<RideId, string>,
+  speeds: {
+    slow: 'Slow!',
+    fast: 'Fast!',
+    super: 'Super Zoom!',
+  } satisfies Record<SpeedId, string> as Record<SpeedId, string>,
+  start: 'Ready, steady, go!',
+  hint: 'Tap left or right!',
+  cheers: ['Hooray, you made it!', 'What a ride!', 'The finish line! Well done!'],
+  bonks: ['Oops!', 'Bonk!', 'Whoopsie!'],
+  flying: "We're flying!",
+  ufo: 'Look, a UFO!',
+  giant: 'A giant star!',
+  newRide: 'A new ride!',
+  moreStars: 'Collect more stars!',
+  again: 'Again!',
+};
+
+export type Text = typeof en;

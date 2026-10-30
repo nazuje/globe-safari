@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Balloon Battle</title>
+    <meta
+      name="description"
+      content="A two-player tapping race for ages 3 to 9. Pump up your balloon until it goes bang! Little ones and grown-ups can play on equal terms."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎈</text></svg>"
+    />
+  </head>
+  <body data-phase="setup">
+    <main id="arena" class="arena"></main>
+    <div id="fx" class="fx" aria-hidden="true"></div>
+    <button id="hub" class="hub" type="button"></button>
+    <header id="topbar" class="topbar">
+      <h1 id="title" class="title">Balloon Battle</h1>
+      <div class="topbar-tools topbar-end">
+        <button id="change" class="tool-btn" type="button">🎭</button>
+        <button id="seats" class="tool-btn" type="button"></button>
+        <button id="repeat" class="tool-btn" type="button">🔊</button>
+      </div>
+    </header>
+    <p id="spoken" class="sr-only" aria-live="polite"></p>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

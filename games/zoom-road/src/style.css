@@ -1,0 +1,340 @@
+html,
+body {
+  overscroll-behavior: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.topbar {
+  flex: none;
+  gap: 8px;
+}
+
+.title {
+  min-width: 0;
+  margin: 0;
+  font-size: clamp(1.3rem, 5vw, 2.2rem);
+  white-space: nowrap;
+}
+
+.bar-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  background: #fff;
+  box-shadow: 0 4px 0 var(--sun-dark);
+  touch-action: manipulation;
+}
+
+.bar-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--sun-dark);
+}
+
+.bar-btn[hidden] {
+  display: none;
+}
+
+body[data-screen='pick'] .change-btn {
+  display: none;
+}
+
+.app {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ---------- The race fills the screen below the bar, and the page must not move ---------- */
+
+body[data-screen='race'] {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body[data-screen='race'] .topbar {
+  padding-top: calc(var(--safe-top) + 6px);
+  padding-bottom: 8px;
+}
+
+@media (max-width: 480px) {
+  body[data-screen='race'] .title {
+    display: none;
+  }
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.road {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* ---------- The garage ---------- */
+
+.pick {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(100%, 860px);
+  margin: 0 auto;
+  padding: 0 var(--gutter) calc(var(--safe-bottom) + 20px);
+}
+
+.speeds {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.speed-btn {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  padding: 4px 6px;
+  border: 4px solid transparent;
+  border-radius: var(--radius);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 4px 0 #e6d6b8;
+  touch-action: manipulation;
+}
+
+.speed-btn[aria-pressed='true'] {
+  border-color: var(--leaf-dark);
+  background: #d9f8e9;
+}
+
+.speed-art {
+  font-size: 1.7rem;
+}
+
+.meter {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.meter-count {
+  flex: none;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.meter-track {
+  flex: 1;
+  height: 18px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 2px #e6d6b8;
+}
+
+.meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--sun), var(--coral));
+  transition: width 0.8s ease;
+}
+
+.meter-goal {
+  flex: none;
+  width: 44px;
+  font-size: 2rem;
+  line-height: 44px;
+  text-align: center;
+}
+
+.meter-goal .ride-art {
+  display: block;
+  width: 44px;
+  height: 44px;
+  filter: brightness(0) opacity(0.45);
+}
+
+.rides {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.ride-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  min-height: 112px;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 5px 0 #e6d6b8;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  touch-action: manipulation;
+}
+
+.ride-card:active {
+  transform: translateY(4px) scale(0.97);
+  box-shadow: 0 1px 0 #e6d6b8;
+}
+
+.ride-card .ride-art {
+  width: 72px;
+  height: 72px;
+}
+
+.ride-locked {
+  background: #efe6d4;
+}
+
+.ride-locked .ride-art {
+  filter: brightness(0) opacity(0.32);
+}
+
+.ride-card.wiggle {
+  animation: wiggle 0.45s ease;
+}
+
+@keyframes wiggle {
+  20% {
+    transform: rotate(-7deg);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+  80% {
+    transform: rotate(-3deg);
+  }
+}
+
+/* ---------- The trophy, over the road so the confetti keeps falling behind it ---------- */
+
+.trophy {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  width: min(calc(100% - 2 * var(--gutter)), 460px);
+  max-height: calc(100% - 16px);
+  padding: 14px 18px 18px;
+  overflow-y: auto;
+  border-radius: 32px;
+  background: var(--paper);
+  box-shadow: 0 12px 0 rgba(43, 33, 64, 0.25);
+  transform: translate(-50%, -50%);
+  animation: trophy-in 0.4s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes trophy-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -30%) scale(0.7);
+  }
+}
+
+.trophy-cup {
+  font-size: clamp(3.4rem, 15dvh, 6rem);
+  line-height: 1.1;
+  animation: cup-bounce 1.2s ease-in-out infinite;
+}
+
+@keyframes cup-bounce {
+  50% {
+    transform: translateY(-8px) rotate(4deg) scale(1.05);
+  }
+}
+
+.trophy-stars {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.new-ride {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  font-size: 1.15rem;
+  font-weight: 600;
+  background: #d9f8e9;
+}
+
+.new-ride .ride-art {
+  flex: none;
+  width: 64px;
+  height: 64px;
+}
+
+.trophy-again {
+  width: 100%;
+  min-height: 88px;
+  font-size: 1.8rem;
+}
+
+.trophy-change {
+  min-height: 48px;
+  font-size: 1rem;
+  --btn-color: #fff;
+  --btn-edge: #e6d6b8;
+}
+
+@media (max-height: 460px) {
+  .pick {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+
+  .rides {
+    grid-column: 1 / -1;
+  }
+
+  .speed-btn {
+    min-height: 52px;
+  }
+
+  .trophy-cup {
+    display: none;
+  }
+
+  .trophy-again {
+    min-height: 64px;
+  }
+}
