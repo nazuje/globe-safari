@@ -1,17 +1,21 @@
-# 🌍 Globe Safari
+# 🧸 Playroom
 
-A gentle geography game for parents and young kids (about 3 to 9). Spin a realistic 3D Earth, tap anywhere, land or sea, and meet the wild animals that live there.
+A cozy shelf of small web games for a parent and a young child to play together. The portal at the site root shows every game as a big tile; each game lives at its own sub-path.
 
-## How to play
+Live at <https://nazuje.github.io/playroom/>, with games at `/playroom/<slug>/`.
 
-1. **Spin the Earth.** Drag to turn it, and pinch or scroll to zoom. It slowly turns by itself when nobody is touching it.
-2. **Tap anywhere.** The camera flies down to that spot, drops a pin, and opens a panel about the wild place there, like the *Amazon Rainforest*, the *African Savanna* or the *Great Barrier Reef*.
-3. **Who lives here?** One mystery animal at a time. Tap **Next clue 🔍** to get another hint (they get easier), then **Reveal! ✨** to flip the card. If your family guessed right, tap **We got it! ⭐** to earn a star.
-4. **Meet them all.** See every animal in the region as flip cards. Tap a card to see its name and a fun fact.
-5. Tap 🔊 next to any clue or fact to hear it read aloud, perfect for kids who can't read yet.
-6. **Surprise me! 🎲** jumps to a random wild place. **Back to space 🚀** zooms back out.
+## Layout
 
-There are 32 wild regions covering every continent and every ocean, each with 6 to 8 animals.
+```
+games.json            the registry: every game the portal shows
+portal/               the game picker, served at the site root
+games/<slug>/         one folder per game
+games/_template/      a working starter game, copied to make new ones
+packages/kit/         @playroom/kit: speech, star burst, home button, store, kit.css
+scripts/build-site.mjs  builds the portal and every ready game into dist/
+```
+
+It is one npm workspace with one root `package-lock.json`. TypeScript, Vite and Vitest live at the root. Each game keeps its own dependencies.
 
 ## Run it
 
@@ -19,26 +23,63 @@ You need Node.js 22 or newer.
 
 ```sh
 npm install
-npm run dev      # start a local dev server
-npm test         # run the unit tests
-npm run build    # build the static site into dist/
+npm run dev                          # the portal, with every ready game at /<slug>/
+npm run dev -w @playroom/<slug>      # one game on its own
+npm test                             # every workspace's tests
+npm run typecheck                    # every workspace, including the template
+npm run build                        # the whole site into dist/
+npm run preview                      # serve dist/ at http://localhost:5179
 ```
 
-`npm run build` writes a fully static site to `dist/` with relative paths, so it works from any folder, including GitHub Pages at `/globe-safari/`. Pushing to `main` deploys it automatically through `.github/workflows/deploy.yml` (turn on **Settings → Pages → Source: GitHub Actions** once in the repository).
+`npm run dev` is enough to click through the whole site. A small Vite plugin in `portal/devGames.ts` runs each ready game inside the portal's dev server, so tile links work and edits to a game reload the page. A game has to be `"ready"` in `games.json` to appear there. While a game is still `"coming-soon"`, use `npm run dev -w @playroom/<slug>`.
 
-## How it works
+## The registry
 
-- `src/data/` holds the hand-written regions and animals, each region with simple latitude/longitude boxes or small polygons and a priority, so small specific places (the Galápagos, Madagascar, New Zealand) win over broad ones.
-- `src/geo/lookup.ts` is the pure lookup: it checks whether a point is on land using the country shapes, picks the best matching region, falls back to the nearest region for land in between, and to the right ocean for open water. Every point on Earth gets a region; the tests check a 5° grid over the whole globe.
-- `src/globe/` sets up the 3D Earth with globe.gl, the camera moves, borders and the pin.
-- `src/ui/` holds the panel, the guessing game, the flip-card grid, read-aloud and the star burst.
-- `src/photos.ts` fetches animal photos from Wikipedia at runtime and remembers them. If a photo can't load, the animal's emoji is shown instead.
+`games.json` is an array with one entry per game:
+
+| Field | Meaning |
+| --- | --- |
+| `slug` | Folder name in `games/` and the URL path |
+| `title`, `emoji` | Shown on the tile |
+| `tagline` | One short kid-friendly line |
+| `skills` | Any of `world`, `memory`, `logic`, `colors`, `reading`, `numbers` |
+| `ages` | A range such as `"4-9"` |
+| `color` | Hex accent for the tile |
+| `status` | `"ready"` or `"coming-soon"` |
+
+`"coming-soon"` games show as dimmed tiles and are not built. `"ready"` games are linked and built, and the build fails loudly if a ready game has no `games/<slug>/` folder or no `build` script. **When your game is finished, flip its own entry to `"ready"`.**
+
+## Template: add a new game
+
+1. Copy the template. Folders starting with `_` are ignored by the site build, so the copy needs a real name:
+
+   ```sh
+   cp -R games/_template games/<slug>
+   ```
+
+2. In `games/<slug>/package.json`, set `"name"` to `"@playroom/<slug>"`. Two workspaces can't share a name, so do this before anything else.
+3. In `games/<slug>/index.html`, change the title, description, favicon emoji and heading.
+4. Add an entry to `games.json` with `"status": "coming-soon"`, or update the one already there.
+5. Run `npm install` at the root. This adds the game to `package-lock.json`, and CI's `npm ci` fails without it. If two people add games at once, take either side of a lockfile conflict and run `npm install` again.
+6. Build the game in `games/<slug>/src/`, and start it with `npm run dev -w @playroom/<slug>`. If it has tests, add `"test": "vitest run"` to its scripts and `npm test` picks them up.
+7. When it's done, set `"status": "ready"` and check `npm run build`.
+
+Keep the game's `base: './'` and use relative paths only, because the site runs under `/playroom/`.
+
+## The kit
+
+Games import from `@playroom/kit`. It is plain TypeScript with no dependencies and no build step of its own; Vite bundles it into each game.
+
+- `speak(text)`, `canSpeak()`, `stopSpeaking()`: read aloud in a friendly English voice. Safe to call where speech isn't supported.
+- `burst(x, y, count?)`: a star burst at a viewport position. It needs no CSS and calms down for people who prefer reduced motion.
+- `homeButton()`: a big round 🏠 link back to the portal, for the game's top bar.
+- `store.get(key, fallback)`, `store.set(key, value)`: small JSON values in localStorage for this device, such as best scores. They never throw, so nothing important should rely on them.
+- `import '@playroom/kit/kit.css'`: the Fredoka font, the palette as CSS custom properties, the page background, `.btn` with `.btn-sun`, `.btn-coral`, `.btn-leaf` and `.btn-grape`, `.topbar` with `.topbar-end`, and reduced-motion handling.
+
+## Deploy
+
+Pushing to `main` runs `.github/workflows/deploy.yml`, which tests, builds and publishes `dist/` to GitHub Pages (turn on **Settings → Pages → Source: GitHub Actions** once in the repository).
 
 ## Credits
 
-- **Earth imagery:** NASA Blue Marble and topography (public domain), via the [three-globe](https://github.com/vasturiano/three-globe) examples. Star background from the same examples.
-- **Clouds:** NASA-derived cloud map from [webgl-earth](https://github.com/turban/webgl-earth) by Bjørn Sandvik, shipped with the globe.gl examples, resized for the web.
-- **Country borders:** [Natural Earth](https://www.naturalearthdata.com/) (public domain), via [world-atlas](https://github.com/topojson/world-atlas).
-- **Animal photos:** [Wikipedia](https://en.wikipedia.org/) and Wikimedia Commons contributors, loaded live through the Wikipedia REST API.
-- **3D globe:** [globe.gl](https://github.com/vasturiano/globe.gl) by Vasco Asturiano, built on [three.js](https://threejs.org/).
-- **Font:** [Fredoka](https://fonts.google.com/specimen/Fredoka) from Google Fonts.
+Each game credits its own sources in its README. See [Globe Safari](games/globe-safari/README.md). The font is [Fredoka](https://fonts.google.com/specimen/Fredoka) from Google Fonts.

@@ -1,9 +1,10 @@
+import { stopSpeaking } from '@playroom/kit';
 import type { LookupResult } from '../geo/lookup.ts';
 import { el } from './dom.ts';
 import { renderExploreGrid } from './explore.ts';
 import { renderGuessGame } from './guess.ts';
 import { preloadPhotos } from './photo.ts';
-import { speakerButton, stopSpeaking } from './speech.ts';
+import { speakerButton } from './speech.ts';
 
 type Mode = 'guess' | 'explore';
 

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Playroom</title>
+    <meta
+      name="description"
+      content="Playroom is a cozy shelf of small web games for a parent and a young child to play together."
+    />
+    <meta name="theme-color" content="#fff1d6" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧸</text></svg>"
+    />
+  </head>
+  <body>
+    <header class="welcome">
+      <h1 class="logo"><span class="logo-mark" aria-hidden="true">🧸</span> Playroom</h1>
+      <p class="tagline">Pick a game to play together!</p>
+    </header>
+
+    <main class="shelf">
+      <div id="filters" class="filters" role="group" aria-label="Show games by skill"></div>
+      <ul id="tiles" class="tiles"></ul>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

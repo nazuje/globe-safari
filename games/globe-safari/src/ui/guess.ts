@@ -1,8 +1,8 @@
+import { burst, stopSpeaking } from '@playroom/kit';
 import type { Animal, Region } from '../data/types.ts';
-import { starBurst } from './confetti.ts';
 import { bigButton, el, shuffle } from './dom.ts';
 import { animalPicture } from './photo.ts';
-import { speakerButton, stopSpeaking } from './speech.ts';
+import { speakerButton } from './speech.ts';
 
 export interface GuessOptions {
   /** Called when the family says they guessed right. */
@@ -78,7 +78,8 @@ export function renderGuessGame(container: HTMLElement, region: Region, { onStar
       card.classList.add('is-flipped');
       back.removeAttribute('aria-hidden');
       front.setAttribute('aria-hidden', 'true');
-      starBurst(card, gotIt ? 26 : 14);
+      const box = card.getBoundingClientRect();
+      burst(box.left + box.width / 2, box.top + box.height / 2, gotIt ? 26 : 14);
       const isLast = position === order.length - 1;
       actions.replaceChildren(
         bigButton(isLast ? 'Play again 🔁' : 'Next animal ➡️', () => {

@@ -1,4 +1,5 @@
 import './style.css';
+import { homeButton } from '@playroom/kit';
 import { REGIONS } from './data/regions.ts';
 import type { Region } from './data/types.ts';
 import { loadBorderShapes, loadCountryLookup } from './geo/loadCountries.ts';
@@ -12,6 +13,8 @@ function byId<T extends HTMLElement = HTMLElement>(id: string): T {
   if (!found) throw new Error(`Missing #${id} in index.html`);
   return found as T;
 }
+
+byId('brand').prepend(homeButton());
 
 const hint = byId('hint');
 const loading = byId('loading');

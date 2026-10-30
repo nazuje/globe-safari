@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+
+:root {
+  --ink: #2b2140;
+  --ink-soft: #5d5375;
+  --paper: #fffaf0;
+  --paper-2: #fff1d6;
+  --sun: #ffc93c;
+  --sun-dark: #d99a00;
+  --coral: #ff6b6b;
+  --coral-dark: #c94444;
+  --leaf: #3ecf8e;
+  --leaf-dark: #25976a;
+  --sky: #4cb8ff;
+  --sky-dark: #2483c7;
+  --grape: #8b5cf6;
+  --grape-dark: #6236c9;
+  --radius: 22px;
+  --gutter: 16px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  font-family: 'Fredoka', 'Baloo 2', ui-rounded, 'Segoe UI Rounded', system-ui, sans-serif;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--paper-2), var(--paper) 340px);
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ---------- Top bar: homeButton() first, then a title. Add .topbar-end to push the last item right ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: calc(var(--safe-top) + 12px) var(--gutter) 12px;
+}
+
+.topbar-end {
+  margin-left: auto;
+}
+
+.home-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  font-size: 1.7rem;
+  line-height: 1;
+  text-decoration: none;
+  background: #fff;
+  box-shadow: 0 5px 0 var(--sun-dark);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  touch-action: manipulation;
+}
+
+.home-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--sun-dark);
+}
+
+/* ---------- Big buttons ---------- */
+
+.btn {
+  --btn-color: var(--sky);
+  --btn-edge: var(--sky-dark);
+  min-height: 56px;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--btn-color);
+  box-shadow: 0 5px 0 var(--btn-edge);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s;
+  touch-action: manipulation;
+}
+
+.btn:hover {
+  filter: brightness(1.06);
+}
+
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--btn-edge);
+}
+
+.btn:disabled {
+  cursor: default;
+  filter: grayscale(0.7);
+  opacity: 0.6;
+  transform: none;
+}
+
+.btn-sun {
+  --btn-color: var(--sun);
+  --btn-edge: var(--sun-dark);
+}
+
+.btn-coral {
+  --btn-color: var(--coral);
+  --btn-edge: var(--coral-dark);
+}
+
+.btn-leaf {
+  --btn-color: var(--leaf);
+  --btn-edge: var(--leaf-dark);
+}
+
+.btn-grape {
+  --btn-color: var(--grape);
+  --btn-edge: var(--grape-dark);
+  color: #fff;
+}
+
+.btn:focus-visible,
+.home-btn:focus-visible {
+  outline: 4px solid var(--grape);
+  outline-offset: 3px;
+}
+
+/* ---------- Calm mode ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

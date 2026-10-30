@@ -88,6 +88,33 @@ button {
   z-index: 10;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.home-btn {
+  pointer-events: auto;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  text-decoration: none;
+  background: var(--glass);
+  backdrop-filter: blur(6px);
+  touch-action: manipulation;
+}
+
+.home-btn:active {
+  transform: translateY(2px);
+}
+
 .logo {
   margin: 0;
   padding: 6px 18px;
@@ -118,6 +145,18 @@ button {
 
 .stars.pop {
   animation: pop 0.5s ease;
+}
+
+@media (max-width: 400px) {
+  .logo {
+    padding: 6px 12px;
+    font-size: 1.15rem;
+  }
+
+  .stars {
+    padding: 6px 12px;
+    font-size: 1.2rem;
+  }
 }
 
 /* ---------- Big buttons ---------- */
@@ -156,7 +195,8 @@ button {
 .mode-btn:focus-visible,
 .close-btn:focus-visible,
 .speaker-btn:focus-visible,
-.explore-card:focus-visible {
+.explore-card:focus-visible,
+.home-btn:focus-visible {
   outline: 4px solid var(--sun);
   outline-offset: 3px;
 }
@@ -671,25 +711,6 @@ button {
   font-size: 0.95rem;
 }
 
-/* ---------- Star burst ---------- */
-
-.burst {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-  z-index: 3;
-}
-
-.burst-piece {
-  position: absolute;
-  font-size: 1.8rem;
-  transform: translate(-50%, -50%);
-  animation: burst 1.2s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
-}
-
 /* ---------- Wide screens: side panel ---------- */
 
 @media (min-width: 760px) and (min-aspect-ratio: 1/1) {
@@ -799,17 +820,6 @@ button {
   }
 }
 
-@keyframes burst {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(0.4);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--spin)) scale(1.1);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -817,19 +827,5 @@ button {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-
-  .burst-piece {
-    animation: fade-star 1.2s ease forwards !important;
-    transform: translate(calc(-50% + var(--dx) * 0.4), calc(-50% + var(--dy) * 0.4));
-  }
-}
-
-@keyframes fade-star {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
   }
 }

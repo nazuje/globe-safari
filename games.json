@@ -1,0 +1,52 @@
+[
+  {
+    "slug": "globe-safari",
+    "title": "Globe Safari",
+    "emoji": "🌍",
+    "tagline": "Spin the Earth and guess who lives there!",
+    "skills": ["world"],
+    "ages": "3-9",
+    "color": "#2f9fe8",
+    "status": "ready"
+  },
+  {
+    "slug": "memory-zoo",
+    "title": "Memory Zoo",
+    "emoji": "🦁",
+    "tagline": "Find the animal pairs. Take turns!",
+    "skills": ["memory"],
+    "ages": "4-9",
+    "color": "#f59f24",
+    "status": "coming-soon"
+  },
+  {
+    "slug": "pattern-train",
+    "title": "Pattern Train",
+    "emoji": "🚂",
+    "tagline": "What comes next on the train?",
+    "skills": ["logic"],
+    "ages": "4-9",
+    "color": "#ef5b5b",
+    "status": "coming-soon"
+  },
+  {
+    "slug": "color-lab",
+    "title": "Color Lab",
+    "emoji": "🎨",
+    "tagline": "Mix paints and guess the color!",
+    "skills": ["colors"],
+    "ages": "4-9",
+    "color": "#8b5cf6",
+    "status": "coming-soon"
+  },
+  {
+    "slug": "word-garden",
+    "title": "Word Garden",
+    "emoji": "🌻",
+    "tagline": "Spell little words to grow flowers!",
+    "skills": ["reading"],
+    "ages": "5-9",
+    "color": "#2fb67c",
+    "status": "coming-soon"
+  }
+]

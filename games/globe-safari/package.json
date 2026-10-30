@@ -1,0 +1,26 @@
+{
+  "name": "@playroom/globe-safari",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "^3.1.1",
+    "@types/three": "^0.186.0",
+    "@types/topojson-client": "^3.1.5"
+  },
+  "dependencies": {
+    "@playroom/kit": "*",
+    "d3-geo": "^3.1.1",
+    "globe.gl": "^2.46.2",
+    "three": "^0.186.1",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
+  }
+}

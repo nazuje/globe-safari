@@ -1,0 +1,11 @@
+.title {
+  margin: 0;
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+}
+
+.game {
+  display: grid;
+  place-items: center;
+  min-height: 60dvh;
+  padding: var(--gutter);
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@playroom/portal",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "test": "vitest run",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@playroom/kit": "*"
+  }
+}
