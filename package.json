@@ -1,5 +1,6 @@
 {
   "name": "playroom",
+  "description": "A playroom of small web games for young kids, to play alone or with a grown-up.",
   "private": true,
   "version": "0.0.0",
   "type": "module",

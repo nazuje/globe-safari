@@ -1,8 +1,22 @@
 # 🧸 Playroom
 
-A cozy shelf of small web games for a parent and a young child to play together. The portal at the site root shows every game as a big tile; each game lives at its own sub-path.
+A cozy shelf of small web games for young children, to play alone or with a grown-up. The portal at the site root shows every game as a big tile, with filters for who's playing, age and type of game. Each game lives at its own sub-path.
 
 Live at <https://nazuje.github.io/playroom/>, with games at `/playroom/<slug>/`.
+
+## Games
+
+| Game | What it is | Ages | Alone | Together |
+| --- | --- | --- | --- | --- |
+| [🌍 Globe Safari](games/globe-safari/README.md) | Spin the Earth and guess who lives there! | 3-9 |  | ✓ |
+| [🦁 Memory Zoo](games/memory-zoo/README.md) | Find the animal pairs. Take turns! | 4-9 | ✓ | ✓ |
+| [🚂 Pattern Train](games/pattern-train/README.md) | What comes next on the train? | 5-9 | ✓ |  |
+| [🎨 Color Lab](games/color-lab/README.md) | Mix paints and guess the color! | 4-9 | ✓ | ✓ |
+| [🌻 Word Garden](games/word-garden/README.md) | Spell little words to grow flowers! | 5-9 | ✓ | ✓ |
+| [👾 Yum Yum Monster](games/yum-yum-monster/README.md) | Feed the silly monster! | 3-5 | ✓ |  |
+| [🔷 Shape Friends](games/shape-friends/README.md) | Help every shape find its home! | 3-5 | ✓ |  |
+| [🙈 Hide and Peek](games/hide-and-peek/README.md) | Hide a friend. Can you find it? | 3-6 |  | ✓ |
+| [🐸 Animal Moves](games/animal-moves/README.md) | Hop, stomp and wiggle together! | 3-7 |  | ✓ |
 
 ## Layout
 
@@ -83,4 +97,4 @@ Pushing to `main` runs `.github/workflows/deploy.yml`, which tests, builds and p
 
 ## Credits
 
-Each game credits its own sources in its README. See [Globe Safari](games/globe-safari/README.md). The font is [Fredoka](https://fonts.google.com/specimen/Fredoka) from Google Fonts.
+Games that use outside images or fonts credit them in their README: [Globe Safari](games/globe-safari/README.md) and [Word Garden](games/word-garden/README.md). The other games are drawn with emoji and CSS. The main font is [Fredoka](https://fonts.google.com/specimen/Fredoka) from Google Fonts.

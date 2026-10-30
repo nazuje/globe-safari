@@ -1,6 +1,27 @@
-# Word Garden
+# 🌻 Word Garden
 
-A child spells short picture words with big letter tiles, and each word grows a flower in their garden. Made for a new reader with a grown-up beside them.
+A spelling game for ages 5 to 9, alone or with a grown-up beside them. A child spells short picture words with big letter tiles, and each word grows a flower in their garden.
+
+## How to play
+
+1. Pick 3, 4 or 5 letter words. A picture appears and the word is spoken. Tap the picture or 🔊 to hear it again.
+2. Tap letters to spell the word. A wrong letter hops back, and nothing is lost.
+3. Each finished word plants a flower, and every fifth word brings a garden friend.
+4. **My garden** shows every flower. Tap one to hear its word and spell it again.
+
+A small **Grown-ups** button has 💡 Hint, Show the word (faded letters to copy) and Levels.
+
+## Run it
+
+Word Garden is one game in [Playroom](../../README.md). You need Node.js 22 or newer. From the repository root:
+
+```sh
+npm install
+npm run dev -w @playroom/word-garden     # start a local dev server for just this game
+npm test -w @playroom/word-garden        # run the unit tests
+```
+
+The root `npm run build` puts the game in `dist/word-garden/`, live at <https://nazuje.github.io/playroom/word-garden/>.
 
 ## Tuning
 
