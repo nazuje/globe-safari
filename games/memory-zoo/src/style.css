@@ -1,0 +1,475 @@
+:root {
+  /* Keep in step with FLIP_MS in playScreen.ts. */
+  --flip-ms: 450ms;
+}
+
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.topbar {
+  flex: none;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+}
+
+.sound-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+  background: #fff;
+  box-shadow: 0 5px 0 var(--sun-dark);
+  touch-action: manipulation;
+}
+
+.sound-btn[hidden] {
+  display: none;
+}
+
+.sound-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--sun-dark);
+}
+
+.sound-btn:focus-visible,
+.choice:focus-visible,
+.face-chip:focus-visible,
+.card:focus-visible {
+  outline: 4px solid var(--grape);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.app {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 var(--gutter) calc(var(--safe-bottom) + 12px);
+}
+
+/* ---------- Setup ---------- */
+
+.setup {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 560px;
+  min-height: 0;
+  margin: 0 auto;
+  overflow-y: auto;
+  justify-content: safe center;
+  /* Room for the button shadows, which the scroll box would otherwise clip. */
+  padding: 2px 2px 10px;
+}
+
+.setup-label {
+  margin: 4px 0 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.choice-row,
+.face-row {
+  display: grid;
+  flex: none;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 10px;
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px;
+  padding: 8px 4px;
+  border: 4px solid transparent;
+  border-radius: var(--radius);
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 4px 0 #e6d8bb;
+  touch-action: manipulation;
+}
+
+.choice[aria-pressed='true'] {
+  border-color: var(--sun-dark);
+  background: var(--sun);
+  box-shadow: 0 4px 0 var(--sun-dark);
+}
+
+.choice-emoji {
+  font-size: 1.9rem;
+  line-height: 1.15;
+}
+
+.choice-label {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.choice-note {
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.face-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 64px;
+  padding: 4px 8px;
+  border: 3px dashed var(--sun-dark);
+  border-radius: var(--radius);
+  color: var(--ink);
+  background: #fffdf8;
+  touch-action: manipulation;
+}
+
+.face-emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.face-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.play-btn {
+  flex: none;
+  min-height: 68px;
+  margin-top: 6px;
+  font-size: 1.5rem;
+}
+
+/* ---------- Scoreboard: the side whose turn it is lights up in their color ---------- */
+
+.play {
+  --turn-color: var(--sun);
+  --turn-edge: var(--sun-dark);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.play[data-turn='1'] {
+  --turn-color: var(--sky);
+  --turn-edge: var(--sky-dark);
+}
+
+.scoreboard {
+  display: flex;
+  flex: none;
+  gap: 10px;
+}
+
+.score {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 62px;
+  padding: 4px 8px;
+  border: 4px solid transparent;
+  border-radius: var(--radius);
+  background: #fff;
+  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.score.is-turn {
+  border-color: var(--turn-edge);
+  background: var(--turn-color);
+  box-shadow: 0 4px 0 var(--turn-edge);
+  transform: scale(1.03);
+}
+
+.score:not(.is-turn) {
+  color: var(--ink-soft);
+}
+
+.score-face {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.score:not(.is-turn) .score-face {
+  filter: grayscale(0.5);
+}
+
+.score-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.score-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.score-stars {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.score-stars.pop {
+  animation: pop 0.45s ease;
+}
+
+.flip-count {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  border-radius: var(--radius);
+  font-size: 1.25rem;
+  font-weight: 600;
+  background: #fff;
+}
+
+/* ---------- Board ---------- */
+
+.board {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.grid {
+  --cols: 4;
+  --card: 72px;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--card));
+  gap: 8px;
+}
+
+.card {
+  width: var(--card);
+  height: var(--card);
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+  perspective: 800px;
+  touch-action: manipulation;
+}
+
+.card-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--flip-ms) cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.card.up .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card.missed {
+  animation: wiggle 0.5s ease var(--flip-ms);
+}
+
+.card.matched .card-face {
+  animation: pop 0.45s ease var(--flip-ms);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  font-size: calc(var(--card) * 0.62);
+  line-height: 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-back {
+  font-size: calc(var(--card) * 0.42);
+  background: var(--turn-color);
+  box-shadow: inset 0 -5px 0 var(--turn-edge);
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-front {
+  border: 3px solid #eadcbf;
+  background: #fff;
+  transform: rotateY(180deg);
+}
+
+.card.matched .card-front {
+  border-color: var(--leaf-dark);
+  background: #dff8ec;
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  25% {
+    transform: rotate(-4deg);
+  }
+
+  75% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes pop {
+  50% {
+    scale: 1.14;
+  }
+}
+
+/* ---------- End of game ---------- */
+
+.result {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+  background: rgb(43 33 64 / 45%);
+  animation: fade-in 0.3s ease;
+}
+
+.result-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 420px);
+  max-height: 100%;
+  padding: 20px;
+  overflow-y: auto;
+  border-radius: var(--radius);
+  text-align: center;
+  background: var(--paper);
+}
+
+.result-emoji {
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.result-title {
+  margin: 0;
+  font-size: 1.8rem;
+  line-height: 1.15;
+}
+
+.result-details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+}
+
+.result-detail {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.result-again {
+  flex: none;
+  width: 100%;
+  min-height: 68px;
+  font-size: 1.4rem;
+}
+
+.result-change {
+  flex: none;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Tall screens have room for a bigger scoreboard. */
+@media (min-height: 720px) {
+  .score {
+    gap: 12px;
+    min-height: 80px;
+  }
+
+  .score-face {
+    font-size: 2.8rem;
+  }
+
+  .score-name {
+    font-size: 1.25rem;
+  }
+
+  .score-stars {
+    font-size: 1.45rem;
+  }
+}
+
+/* A phone on its side: the scoreboard moves beside the board. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .play {
+    flex-direction: row;
+  }
+
+  .scoreboard {
+    flex-direction: column;
+    width: 150px;
+  }
+
+  .topbar {
+    padding-top: calc(var(--safe-top) + 6px);
+    padding-bottom: 6px;
+  }
+}

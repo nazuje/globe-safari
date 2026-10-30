@@ -42,8 +42,9 @@ npm run preview                      # serve dist/ at http://localhost:5179
 | `slug` | Folder name in `games/` and the URL path |
 | `title`, `emoji` | Shown on the tile |
 | `tagline` | One short kid-friendly line |
-| `skills` | Any of `world`, `memory`, `logic`, `colors`, `reading`, `numbers` |
-| `ages` | A range such as `"4-9"` |
+| `skills` | Any of `world`, `memory`, `logic`, `colors`, `reading`, `numbers`, `moving` |
+| `ages` | A range such as `"4-9"`. The portal's age filter shows a game when the chosen age falls inside it, ends included |
+| `modes` | `"solo"`, `"together"`, or both: how the game can be played |
 | `color` | Hex accent for the tile |
 | `status` | `"ready"` or `"coming-soon"` |
 

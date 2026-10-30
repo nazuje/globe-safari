@@ -4,8 +4,13 @@
     "title": "Globe Safari",
     "emoji": "🌍",
     "tagline": "Spin the Earth and guess who lives there!",
-    "skills": ["world"],
+    "skills": [
+      "world"
+    ],
     "ages": "3-9",
+    "modes": [
+      "together"
+    ],
     "color": "#2f9fe8",
     "status": "ready"
   },
@@ -14,39 +19,123 @@
     "title": "Memory Zoo",
     "emoji": "🦁",
     "tagline": "Find the animal pairs. Take turns!",
-    "skills": ["memory"],
+    "skills": [
+      "memory"
+    ],
     "ages": "4-9",
+    "modes": [
+      "solo",
+      "together"
+    ],
     "color": "#f59f24",
-    "status": "coming-soon"
+    "status": "ready"
   },
   {
     "slug": "pattern-train",
     "title": "Pattern Train",
     "emoji": "🚂",
     "tagline": "What comes next on the train?",
-    "skills": ["logic"],
-    "ages": "4-9",
+    "skills": [
+      "logic"
+    ],
+    "ages": "5-9",
+    "modes": [
+      "solo"
+    ],
     "color": "#ef5b5b",
-    "status": "coming-soon"
+    "status": "ready"
   },
   {
     "slug": "color-lab",
     "title": "Color Lab",
     "emoji": "🎨",
     "tagline": "Mix paints and guess the color!",
-    "skills": ["colors"],
+    "skills": [
+      "colors"
+    ],
     "ages": "4-9",
+    "modes": [
+      "solo",
+      "together"
+    ],
     "color": "#8b5cf6",
-    "status": "coming-soon"
+    "status": "ready"
   },
   {
     "slug": "word-garden",
     "title": "Word Garden",
     "emoji": "🌻",
     "tagline": "Spell little words to grow flowers!",
-    "skills": ["reading"],
+    "skills": [
+      "reading"
+    ],
     "ages": "5-9",
+    "modes": [
+      "solo",
+      "together"
+    ],
     "color": "#2fb67c",
-    "status": "coming-soon"
+    "status": "ready"
+  },
+  {
+    "slug": "yum-yum-monster",
+    "title": "Yum Yum Monster",
+    "emoji": "👾",
+    "tagline": "Feed the silly monster!",
+    "skills": [
+      "numbers",
+      "colors"
+    ],
+    "ages": "3-5",
+    "modes": [
+      "solo"
+    ],
+    "color": "#ff6fa8",
+    "status": "ready"
+  },
+  {
+    "slug": "shape-friends",
+    "title": "Shape Friends",
+    "emoji": "🔷",
+    "tagline": "Help every shape find its home!",
+    "skills": [
+      "logic"
+    ],
+    "ages": "3-5",
+    "modes": [
+      "solo"
+    ],
+    "color": "#17b5c9",
+    "status": "ready"
+  },
+  {
+    "slug": "hide-and-peek",
+    "title": "Hide and Peek",
+    "emoji": "🙈",
+    "tagline": "Hide a friend. Can you find it?",
+    "skills": [
+      "memory"
+    ],
+    "ages": "3-6",
+    "modes": [
+      "together"
+    ],
+    "color": "#f7b500",
+    "status": "ready"
+  },
+  {
+    "slug": "animal-moves",
+    "title": "Animal Moves",
+    "emoji": "🐸",
+    "tagline": "Hop, stomp and wiggle together!",
+    "skills": [
+      "moving"
+    ],
+    "ages": "3-7",
+    "modes": [
+      "together"
+    ],
+    "color": "#6cc04a",
+    "status": "ready"
   }
 ]

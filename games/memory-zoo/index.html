@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Memory Zoo</title>
+    <meta
+      name="description"
+      content="A matching-pairs game with zoo animals for a child and a grown-up to play in turns, or solo. Every animal is spoken aloud."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦁</text></svg>"
+    />
+  </head>
+  <body>
+    <header id="topbar" class="topbar">
+      <h1 class="title">Memory Zoo</h1>
+      <button id="repeat" class="sound-btn topbar-end" type="button" aria-label="Say that again">🔊</button>
+    </header>
+    <main id="app" class="app"></main>
+    <p id="spoken" class="sr-only" aria-live="polite"></p>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

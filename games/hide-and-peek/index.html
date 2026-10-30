@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Hide and Peek</title>
+    <meta
+      name="description"
+      content="A pass-the-tablet hide and seek game for a 4-year-old and a grown-up. Practice memory, position words and taking turns."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🙈</text></svg>"
+    />
+  </head>
+  <body>
+    <header id="topbar" class="topbar">
+      <h1 class="title">Hide and Peek</h1>
+      <div id="score" class="score topbar-end" aria-label="Stars"></div>
+      <div id="restart" class="restart"></div>
+    </header>
+    <section class="prompt" aria-live="polite">
+      <button id="say-again" class="say-again" type="button" aria-label="Say it again">🔊</button>
+      <p id="prompt-text" class="prompt-text"></p>
+    </section>
+    <main id="stage" class="stage"></main>
+    <footer id="actions" class="actions"></footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

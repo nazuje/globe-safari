@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Pattern Train</title>
+    <meta
+      name="description"
+      content="A train pulls in with a repeating pattern, and your child works out what comes next. Six gentle levels, read aloud, for ages 4 to 9."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚂</text></svg>"
+    />
+  </head>
+  <body>
+    <header id="topbar" class="topbar">
+      <h1 class="title">Pattern Train</h1>
+      <button id="level-btn" class="btn btn-sun topbar-end level-btn" type="button" aria-haspopup="dialog">Level 1</button>
+    </header>
+
+    <main class="game">
+      <ol id="journey" class="journey"></ol>
+
+      <div id="scene" class="scene">
+        <div id="rows" class="rows"></div>
+        <p id="toot" class="toot" hidden></p>
+      </div>
+
+      <p id="prompt" class="prompt" role="status"></p>
+
+      <div class="helpers">
+        <button id="say" class="btn btn-leaf say-btn" type="button">🔊 Say it!</button>
+        <button id="hint" class="btn btn-grape hint-btn" type="button" aria-label="Grown-up hint" aria-pressed="false">💡</button>
+        <p id="hint-note" class="hint-note"></p>
+      </div>
+
+      <div id="options" class="options" aria-label="Answers"></div>
+    </main>
+
+    <section id="picker" class="overlay" role="dialog" aria-modal="true" aria-labelledby="picker-title">
+      <div class="panel">
+        <p class="panel-art" aria-hidden="true">🚂</p>
+        <h2 id="picker-title" class="panel-title">Pattern Train</h2>
+        <button id="aboard" class="btn btn-leaf big-btn" type="button">All aboard!</button>
+        <p class="panel-note">Grown-ups: pick any level to start there.</p>
+        <div id="levels" class="levels"></div>
+        <button id="picker-close" class="btn panel-close" type="button" hidden>Back to the train</button>
+      </div>
+    </section>
+
+    <section id="win" class="overlay" role="dialog" aria-modal="true" aria-labelledby="win-title" hidden>
+      <div class="panel">
+        <p class="panel-art" aria-hidden="true">🌟</p>
+        <h2 id="win-title" class="panel-title"></h2>
+        <button id="next" class="btn btn-leaf big-btn" type="button">Next ▶</button>
+        <button id="win-levels" class="btn panel-close" type="button">Pick a level</button>
+      </div>
+    </section>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

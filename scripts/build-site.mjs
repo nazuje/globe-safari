@@ -7,7 +7,7 @@ import { join } from 'node:path';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DIST = join(ROOT, 'dist');
-const SKILLS = new Set(['world', 'memory', 'logic', 'colors', 'reading', 'numbers']);
+const SKILLS = new Set(['world', 'memory', 'logic', 'colors', 'reading', 'numbers', 'moving']);
 const STATUSES = new Set(['ready', 'coming-soon']);
 
 function fail(message) {

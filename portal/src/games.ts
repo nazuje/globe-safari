@@ -1,6 +1,8 @@
 import registry from '../../games.json';
 
-export type Skill = 'world' | 'memory' | 'logic' | 'colors' | 'reading' | 'numbers';
+export type Skill = 'world' | 'memory' | 'logic' | 'colors' | 'reading' | 'numbers' | 'moving';
+
+export type Mode = 'solo' | 'together';
 
 export interface Game {
   slug: string;
@@ -9,6 +11,7 @@ export interface Game {
   tagline: string;
   skills: Skill[];
   ages: string;
+  modes: Mode[];
   color: string;
   status: 'ready' | 'coming-soon';
 }
@@ -22,4 +25,10 @@ export const SKILL_LABELS: Record<Skill, string> = {
   colors: '🎨 Colors',
   reading: '🔤 Reading',
   numbers: '🔢 Numbers',
+  moving: '🤸 Moving',
+};
+
+export const MODE_LABELS: Record<Mode, { emoji: string; label: string }> = {
+  solo: { emoji: '🧒', label: 'Play alone' },
+  together: { emoji: '🤝', label: 'Play together' },
 };

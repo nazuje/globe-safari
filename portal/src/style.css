@@ -30,19 +30,42 @@
 /* ---------- Filter chips ---------- */
 
 .filters {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 18px;
+}
+
+/* On a phone each row slides sideways by itself, edge to edge. The padding leaves room for chip shadows and focus rings. */
+.filter-row {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 24px;
+  gap: 8px;
+  margin-inline: calc(var(--gutter) * -1);
+  padding: 4px var(--gutter) 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filter-row::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 600px) {
+  .filter-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow: visible;
+  }
 }
 
 .filter {
-  min-height: 48px;
-  padding: 8px 18px;
+  flex: none;
+  min-height: 44px;
+  padding: 6px 16px;
   border: 0;
   border-radius: 999px;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--ink);
   background: #fff;
@@ -166,6 +189,25 @@ a.tile:active {
   font-size: 0.95rem;
   font-weight: 500;
   background: color-mix(in srgb, var(--accent) 16%, #fff);
+}
+
+/* The age and mode badges sit apart from the skill chips, as plain facts. */
+.tile-age,
+.tile-mode {
+  background: var(--paper-2);
+}
+
+/* ---------- Nothing matches ---------- */
+
+.empty {
+  padding: 24px 0;
+  text-align: center;
+}
+
+.empty-note {
+  margin: 0 0 16px;
+  font-size: 1.3rem;
+  color: var(--ink-soft);
 }
 
 /* ---------- Coming soon ---------- */

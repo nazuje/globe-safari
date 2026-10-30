@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Color Lab</title>
+    <meta
+      name="description"
+      content="A paint-mixing science lab for young children: guess what two colors make, mix paints to order, and paint a picture."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>"
+    />
+  </head>
+  <body>
+    <header id="topbar" class="topbar">
+      <button id="back" class="icon-btn" type="button" aria-label="Back to the lab" hidden>⬅️</button>
+      <h1 id="title" class="title">Color Lab</h1>
+      <div class="topbar-end bar-tools">
+        <div id="stars" class="star-count" hidden></div>
+        <button id="repeat" class="icon-btn" type="button" aria-label="Say it again" hidden>🔊</button>
+      </div>
+    </header>
+    <main id="screen" class="screen"></main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

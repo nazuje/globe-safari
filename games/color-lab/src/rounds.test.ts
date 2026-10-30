@@ -1,0 +1,138 @@
+import { describe, expect, it } from 'vitest';
+import { COLORS, mix, PAINTS, sameColor, totalParts } from './mix.ts';
+import {
+  guessChoices,
+  hintLine,
+  MAKE_CAPACITY,
+  pickRound,
+  POTS,
+  QUESTIONS,
+  questionAnswer,
+  questionSentence,
+  ROUND_SIZE,
+  shuffle,
+  TARGETS,
+} from './rounds.ts';
+import type { Level, Rng } from './rounds.ts';
+
+const LEVELS: Level[] = [0, 1, 2];
+const ALL_QUESTIONS = LEVELS.flatMap((level) => QUESTIONS[level]);
+const ALL_TARGETS = LEVELS.flatMap((level) => TARGETS[level]);
+
+/** A small repeatable generator, so failures can be reproduced. */
+function seeded(seed: number): Rng {
+  let state = seed;
+  return () => {
+    state = (state * 1664525 + 1013904223) % 4294967296;
+    return state / 4294967296;
+  };
+}
+
+describe('Guess questions', () => {
+  it('every mix has a name and a color', () => {
+    for (const question of ALL_QUESTIONS) {
+      const answer = COLORS[questionAnswer(question)];
+      expect(answer.name).not.toBe('');
+      expect(answer.hex).toMatch(/^#[0-9a-f]{6}$/);
+    }
+  });
+
+  it('every pot matches the color its paint really makes', () => {
+    for (const [color, parts] of Object.entries(POTS)) expect(mix(parts)).toBe(color);
+  });
+
+  it('never asks the same question twice', () => {
+    const keys = ALL_QUESTIONS.map(({ a, b }) => [a, b].sort().join('+'));
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it('says the headline mixes the way a parent expects', () => {
+    expect(questionSentence({ a: 'red', b: 'yellow' })).toBe('Red and yellow make orange!');
+    expect(questionSentence({ a: 'red', b: 'green' })).toBe('Red and green make brown!');
+    expect(questionSentence({ a: 'black', b: 'white' })).toBe('Black and white make grey!');
+  });
+
+  it('offers the right answer and two wrong ones that are all different', () => {
+    for (const question of ALL_QUESTIONS) {
+      for (let seed = 0; seed < 200; seed++) {
+        const choices = guessChoices(question, seeded(seed));
+        const answer = questionAnswer(question);
+        expect(choices).toHaveLength(3);
+        expect(new Set(choices).size).toBe(3);
+        expect(choices.filter((choice) => choice === answer)).toHaveLength(1);
+      }
+    }
+  });
+
+  it('keeps every blob easy to tell apart, and never offers the pots back', () => {
+    for (const question of ALL_QUESTIONS) {
+      for (let seed = 0; seed < 200; seed++) {
+        const choices = guessChoices(question, seeded(seed));
+        const families = choices.map((choice) => COLORS[choice].family);
+        expect(new Set(families).size).toBe(3);
+        const decoys = choices.filter((choice) => choice !== questionAnswer(question));
+        for (const decoy of decoys) {
+          expect(COLORS[decoy].family).not.toBe(COLORS[question.a].family);
+          expect(COLORS[decoy].family).not.toBe(COLORS[question.b].family);
+        }
+      }
+    }
+  });
+});
+
+describe('Make targets', () => {
+  it('every recipe really makes its target', () => {
+    for (const target of ALL_TARGETS) {
+      const made = mix(target.recipe);
+      expect(made).toBe(target.color);
+    }
+  });
+
+  it('every target has a name and a color, and fits in the beaker', () => {
+    for (const target of ALL_TARGETS) {
+      expect(COLORS[target.color].name).not.toBe('');
+      expect(totalParts(target.recipe)).toBeLessThanOrEqual(MAKE_CAPACITY);
+    }
+  });
+
+  it('every target is a different color from the others', () => {
+    for (const target of ALL_TARGETS) {
+      const lookalikes = ALL_TARGETS.filter((other) => sameColor(other.color, target.color));
+      expect(lookalikes).toEqual([target]);
+    }
+  });
+
+  it('starts simple, then adds white and black, then three-paint colors', () => {
+    const uses = (level: Level, paint: 'white' | 'black') =>
+      TARGETS[level].some((target) => (target.recipe[paint] ?? 0) > 0);
+    expect(uses(0, 'white') || uses(0, 'black')).toBe(false);
+    expect(uses(1, 'white') && uses(1, 'black')).toBe(true);
+    expect(TARGETS[2].map((target) => target.color)).toContain('brown');
+  });
+
+  it('every paint gets used somewhere', () => {
+    for (const paint of PAINTS) {
+      expect(ALL_TARGETS.some((target) => (target.recipe[paint] ?? 0) > 0)).toBe(true);
+    }
+  });
+
+  it('gives hints in plain words', () => {
+    expect(hintLine({ color: 'pink', who: '🐷', recipe: { red: 1, white: 1 } })).toBe('Try red and white.');
+    expect(hintLine({ color: 'lilac', who: '🦄', recipe: { red: 1, blue: 1, white: 1 } })).toBe(
+      'Try red, blue and white.',
+    );
+  });
+});
+
+describe('rounds', () => {
+  it('shuffles without losing anything', () => {
+    expect(shuffle([1, 2, 3, 4], seeded(7)).sort()).toEqual([1, 2, 3, 4]);
+  });
+
+  it('never repeats within a round, and stops at the round size', () => {
+    const big = pickRound(QUESTIONS[1], seeded(3));
+    expect(big).toHaveLength(ROUND_SIZE);
+    expect(new Set(big).size).toBe(ROUND_SIZE);
+    expect(pickRound(TARGETS[0], seeded(3))).toHaveLength(TARGETS[0].length);
+  });
+});

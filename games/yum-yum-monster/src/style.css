@@ -1,0 +1,991 @@
+.app {
+  height: 100dvh;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.25rem, 5vw, 2rem);
+}
+
+/* The small grown-up controls stay up here, far from the food. */
+.leave-btn {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  background: rgb(255 255 255 / 0.75);
+  touch-action: manipulation;
+}
+
+.sound-btn {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-size: 2.1rem;
+  background: var(--sun);
+  box-shadow: 0 5px 0 var(--sun-dark);
+  touch-action: manipulation;
+}
+
+.sound-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--sun-dark);
+}
+
+.leave-btn:focus-visible,
+.sound-btn:focus-visible,
+.pick-card:focus-visible,
+.level-btn:focus-visible,
+.tile:focus-visible {
+  outline: 4px solid var(--grape);
+  outline-offset: 3px;
+}
+
+.finger {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  z-index: 5;
+  font-size: 3.2rem;
+  line-height: 1;
+  pointer-events: none;
+  translate: -50% 0;
+  filter: drop-shadow(0 3px 2px rgb(0 0 0 / 0.25));
+  animation: finger-bob 0.9s ease-in-out infinite;
+}
+
+/* On the plate the finger sweeps across all the food, so it never gives away an answer. */
+.plate > .finger {
+  left: 50%;
+  animation:
+    finger-bob 0.9s ease-in-out infinite,
+    finger-sweep 3.6s ease-in-out infinite;
+}
+
+.tile {
+  position: relative;
+}
+
+@keyframes finger-bob {
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes finger-sweep {
+  0%,
+  100% {
+    left: 18%;
+  }
+  50% {
+    left: 82%;
+  }
+}
+
+/* ---------- Start screen ---------- */
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.pick-grid {
+  position: relative;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 640px;
+  min-height: 300px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.pick-card {
+  min-width: 0;
+  min-height: 0;
+  padding: 6px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--tint);
+  box-shadow: 0 5px 0 rgb(43 33 64 / 0.14);
+  container-type: size;
+  touch-action: manipulation;
+}
+
+.pick-card:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 rgb(43 33 64 / 0.14);
+}
+
+.pick-card .m-rig {
+  animation: bob 2.4s ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.pick-grid .finger {
+  top: 50%;
+  bottom: auto;
+}
+
+.grownups {
+  flex: none;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 18px var(--gutter) calc(var(--safe-bottom) + 12px);
+}
+
+.level-row {
+  display: flex;
+  gap: 8px;
+}
+
+.level-btn {
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  font-size: 1.5rem;
+  background: rgb(255 255 255 / 0.75);
+  touch-action: manipulation;
+}
+
+.level-btn[aria-pressed='true'] {
+  background: #fff;
+  box-shadow: 0 0 0 4px var(--grape);
+}
+
+.grownups-caption {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- Game screen ---------- */
+
+.play {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-areas: 'bar' 'ask' 'stage' 'plate';
+  height: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.play .topbar {
+  grid-area: bar;
+  padding-block: calc(var(--safe-top) + 6px) 4px;
+}
+
+.ask {
+  grid-area: ask;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 var(--gutter);
+}
+
+.bubble {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 92px;
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  text-align: center;
+  background: #fff;
+  box-shadow: 0 4px 0 rgb(43 33 64 / 0.12);
+}
+
+.bubble::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -13px;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  border-radius: 0 0 8px;
+  background: #fff;
+  transform: rotate(45deg);
+  box-shadow: 4px 4px 0 rgb(43 33 64 / 0.06);
+}
+
+.ask-picture {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 6px;
+  min-height: 52px;
+  font-size: 2.5rem;
+  line-height: 1.2;
+}
+
+.ask-eaten {
+  opacity: 0.25;
+}
+
+.ask-number {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--grape-dark);
+}
+
+.swatch {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgb(43 33 64 / 0.2);
+}
+
+.ask-text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+
+.stage {
+  grid-area: stage;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  margin-top: 16px;
+  container-type: size;
+  cursor: pointer;
+}
+
+.plate {
+  grid-area: plate;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: min(100% - 2 * var(--gutter), 520px);
+  align-content: center;
+  min-height: 116px;
+  margin: 8px auto calc(var(--safe-bottom) + 12px);
+  padding: 10px;
+  border-radius: 34px;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 5px #f4e6c9,
+    0 6px 0 rgb(43 33 64 / 0.13);
+}
+
+.tile {
+  min-width: 88px;
+  aspect-ratio: 1;
+  padding: 6px;
+  border: 0;
+  border-radius: 24px;
+  background: #fff6e2;
+  container-type: inline-size;
+  touch-action: manipulation;
+  transition: opacity 0.25s;
+  animation: tile-in 0.28s ease-out;
+}
+
+.tile:active {
+  background: #ffeec7;
+}
+
+.pile {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 1), 1fr);
+  place-items: center;
+  place-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: calc(78cqw / var(--cols, 1));
+  line-height: 1.12;
+  pointer-events: none;
+}
+
+.tile-wiggle {
+  animation: tile-wiggle 0.4s ease-in-out;
+}
+
+.tile-pulse {
+  outline: 5px solid var(--sun);
+  animation: tile-pulse 0.9s ease-in-out infinite;
+}
+
+.tile-fade {
+  opacity: 0.35;
+}
+
+.again {
+  grid-column: 1 / -1;
+  min-height: 112px;
+  font-size: 3.6rem;
+  line-height: 1;
+  animation: tile-pulse 1.1s ease-in-out infinite;
+}
+
+.flyer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  font-size: 3.2rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+@keyframes tile-in {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+
+@keyframes tile-wiggle {
+  25% {
+    transform: rotate(-7deg);
+  }
+  75% {
+    transform: rotate(7deg);
+  }
+}
+
+@keyframes tile-pulse {
+  50% {
+    transform: scale(1.07);
+  }
+}
+
+/* ---------- The monster. Everything is sized from --u, one hundredth of its box ---------- */
+
+.monster {
+  --m: min(90cqw, 100cqh);
+  --u: calc(var(--m) / 100);
+  position: relative;
+  width: var(--m);
+  height: var(--m);
+  margin: 0 auto;
+}
+
+.m-rig {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 92%;
+}
+
+.m-body {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 9%;
+  width: calc(74% + 16% * var(--full));
+  height: calc(74% + 10% * var(--full));
+  margin-inline: auto;
+  border-radius: 48% 48% 44% 44% / 54% 54% 42% 42%;
+  background: radial-gradient(ellipse at 50% 34%, var(--body) 62%, var(--shade));
+  transition:
+    width 0.6s cubic-bezier(0.3, 1.5, 0.6, 1),
+    height 0.6s cubic-bezier(0.3, 1.5, 0.6, 1);
+}
+
+.m-left {
+  --side: 1;
+}
+
+.m-right {
+  --side: -1;
+}
+
+.m-arm {
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  width: calc(19 * var(--u));
+  height: calc(13 * var(--u));
+  border-radius: 50%;
+  background: var(--shade);
+  transform-origin: 80% 50%;
+}
+
+.m-arm.m-left {
+  left: calc(-7 * var(--u));
+  rotate: -18deg;
+}
+
+.m-arm.m-right {
+  right: calc(-7 * var(--u));
+  rotate: 18deg;
+  transform-origin: 20% 50%;
+}
+
+.m-foot {
+  position: absolute;
+  z-index: -1;
+  bottom: calc(-7 * var(--u));
+  width: calc(26 * var(--u));
+  height: calc(15 * var(--u));
+  border-radius: 50% 50% 40% 40%;
+  background: var(--shade);
+}
+
+.m-foot.m-left {
+  left: 12%;
+}
+
+.m-foot.m-right {
+  right: 12%;
+}
+
+.m-horn {
+  position: absolute;
+  z-index: -1;
+  top: calc(-11 * var(--u));
+  width: calc(15 * var(--u));
+  height: calc(22 * var(--u));
+  border-radius: 60% 60% 30% 30%;
+  background: #ffd98a;
+}
+
+.m-horn.m-left {
+  left: 20%;
+  rotate: -14deg;
+}
+
+.m-horn.m-right {
+  right: 20%;
+  rotate: 14deg;
+}
+
+.m-ear {
+  position: absolute;
+  z-index: -1;
+  top: calc(-5 * var(--u));
+  width: calc(25 * var(--u));
+  height: calc(25 * var(--u));
+  border: calc(5 * var(--u)) solid var(--body);
+  border-radius: 50%;
+  background: var(--belly);
+}
+
+.m-ear.m-left {
+  left: 4%;
+}
+
+.m-ear.m-right {
+  right: 4%;
+}
+
+.m-stalk {
+  position: absolute;
+  z-index: -1;
+  top: calc(-14 * var(--u));
+  left: 50%;
+  width: calc(3 * var(--u));
+  height: calc(20 * var(--u));
+  margin-left: calc(-1.5 * var(--u));
+  border-radius: 99px;
+  background: var(--shade);
+}
+
+.m-pompom {
+  position: absolute;
+  top: calc(-21 * var(--u));
+  left: 50%;
+  width: calc(13 * var(--u));
+  height: calc(13 * var(--u));
+  margin-left: calc(-6.5 * var(--u));
+  border-radius: 50%;
+  background: var(--sun);
+  box-shadow: inset 0 calc(-1.5 * var(--u)) 0 var(--sun-dark);
+}
+
+.m-leaf {
+  position: absolute;
+  z-index: -1;
+  top: calc(-8 * var(--u));
+  left: 50%;
+  width: calc(13 * var(--u));
+  height: calc(20 * var(--u));
+  margin-left: calc(-6.5 * var(--u));
+  border-radius: 80% 20% 60% 40%;
+  background: var(--shade);
+}
+
+.m-leaf.m-left {
+  rotate: -32deg;
+  translate: calc(-10 * var(--u)) calc(2 * var(--u));
+}
+
+.m-leaf.m-mid {
+  top: calc(-11 * var(--u));
+}
+
+.m-leaf.m-right {
+  rotate: 32deg;
+  translate: calc(10 * var(--u)) calc(2 * var(--u));
+}
+
+.m-eyes {
+  position: absolute;
+  inset-inline: 0;
+  top: 6%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(3 * var(--u));
+  height: calc(19 * var(--u));
+}
+
+.m-eye {
+  position: relative;
+  width: calc(17 * var(--u));
+  height: calc(17 * var(--u));
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 calc(0.8 * var(--u)) 0 rgb(43 33 64 / 0.16);
+  transition: transform 0.12s;
+}
+
+.m-eyes-1 .m-eye {
+  width: calc(21 * var(--u));
+  height: calc(21 * var(--u));
+}
+
+.m-eyes-3 .m-eye {
+  width: calc(14 * var(--u));
+  height: calc(14 * var(--u));
+}
+
+.m-eyes-3 .m-eye:nth-child(2) {
+  translate: 0 calc(-3 * var(--u));
+}
+
+.m-pupil {
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  width: 62%;
+  height: 62%;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.m-pupil::after {
+  content: '';
+  position: absolute;
+  top: 16%;
+  left: 18%;
+  width: 34%;
+  height: 34%;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.m-cheek {
+  position: absolute;
+  top: 25%;
+  width: calc(9 * var(--u));
+  height: calc(5 * var(--u));
+  border-radius: 50%;
+  background: rgb(255 120 140 / 0.45);
+}
+
+.m-cheek.m-left {
+  left: 5%;
+}
+
+.m-cheek.m-right {
+  right: 5%;
+}
+
+.m-mouth {
+  position: absolute;
+  top: 32%;
+  left: 50%;
+  width: calc(58 * var(--u));
+  height: calc(28 * var(--u));
+  margin-left: calc(-29 * var(--u));
+  overflow: hidden;
+  border-radius: 34% 34% 50% 50% / 22% 22% 78% 78%;
+  background: #4a1838;
+  box-shadow: inset 0 calc(1.5 * var(--u)) 0 rgb(0 0 0 / 0.25);
+  transition:
+    width 0.12s,
+    height 0.12s,
+    margin 0.12s,
+    border-radius 0.12s;
+}
+
+.m-tooth {
+  position: absolute;
+  top: 0;
+  width: 13%;
+  height: 22%;
+  border-radius: 0 0 40% 40%;
+  background: #fff;
+}
+
+.m-tooth.m-left {
+  left: 24%;
+}
+
+.m-tooth.m-right {
+  right: 24%;
+}
+
+.m-tongue {
+  position: absolute;
+  bottom: -18%;
+  left: 18%;
+  width: 64%;
+  height: 58%;
+  border-radius: 50%;
+  background: #ff7d96;
+}
+
+.m-tummy {
+  position: absolute;
+  bottom: 4%;
+  left: 50%;
+  display: grid;
+  grid-template-columns: repeat(5, calc(7 * var(--u)));
+  gap: calc(1 * var(--u));
+  place-content: center;
+  width: calc(46 * var(--u) + 14 * var(--full) * var(--u));
+  height: calc(18 * var(--u) + 6 * var(--full) * var(--u));
+  margin-left: calc(-23 * var(--u) - 7 * var(--full) * var(--u));
+  border-radius: 50%;
+  background: var(--belly);
+  transition:
+    width 0.6s,
+    height 0.6s,
+    margin 0.6s;
+}
+
+.m-dot {
+  width: calc(7 * var(--u));
+  height: calc(7 * var(--u));
+  border: calc(0.8 * var(--u)) solid var(--shade);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.7);
+}
+
+.m-dot-on {
+  border-color: var(--grape-dark);
+  background: var(--sun);
+  animation: dot-pop 0.25s ease-out;
+}
+
+.m-puff {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  display: none;
+  font-size: calc(18 * var(--u));
+  line-height: 1;
+  pointer-events: none;
+}
+
+@keyframes dot-pop {
+  from {
+    transform: scale(1.7);
+  }
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(calc(-2 * var(--u))) scale(1.01, 0.99);
+  }
+}
+
+/* ---------- Moods ---------- */
+
+.monster[data-mood='hungry'] .m-rig {
+  animation: bob 2.2s ease-in-out infinite;
+}
+
+.monster.tickle .m-rig {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+.monster[data-mood='chomp'] .m-mouth {
+  animation: chomp 0.46s ease-in-out;
+}
+
+.monster[data-mood='chomp'] .m-rig {
+  animation: gulp 0.46s ease-in-out;
+}
+
+.monster[data-mood='yuck'] .m-rig {
+  animation: shiver 0.46s linear;
+}
+
+.monster[data-mood='yuck'] .m-eye {
+  transform: scaleY(0.22);
+}
+
+.monster[data-mood='yuck'] .m-mouth {
+  width: calc(30 * var(--u));
+  height: calc(9 * var(--u));
+  margin-left: calc(-15 * var(--u));
+  border-radius: 45% 55% 40% 60%;
+  overflow: visible;
+}
+
+.monster[data-mood='yuck'] .m-tooth {
+  display: none;
+}
+
+.monster[data-mood='yuck'] .m-tongue {
+  bottom: -130%;
+  height: 180%;
+}
+
+.monster[data-mood='sneeze'] .m-rig {
+  animation: sneeze 0.5s ease-out;
+}
+
+.monster[data-mood='sneeze'] .m-eye {
+  transform: scaleY(0.12);
+}
+
+.monster[data-mood='sneeze'] .m-mouth,
+.monster[data-mood='burp'] .m-mouth {
+  width: calc(24 * var(--u));
+  height: calc(24 * var(--u));
+  margin-left: calc(-12 * var(--u));
+  border-radius: 50%;
+}
+
+.monster[data-mood='sneeze'] .m-tooth,
+.monster[data-mood='burp'] .m-tooth {
+  display: none;
+}
+
+.monster[data-mood='sneeze'] .m-puff,
+.monster[data-mood='burp'] .m-puff {
+  display: block;
+  animation: puff 0.9s ease-out both;
+}
+
+.monster[data-mood='sneeze'] .m-puff::before {
+  content: '💦';
+}
+
+.monster[data-mood='burp'] .m-puff::before {
+  content: '💨';
+}
+
+.monster[data-mood='burp'] .m-rig {
+  animation: gulp 0.6s ease-in-out 2;
+}
+
+/* Happy faces: the eyes close into little arches. */
+.monster[data-mood='mmm'] .m-eye,
+.monster[data-mood='wiggle'] .m-eye,
+.monster[data-mood='giggle'] .m-eye,
+.monster[data-mood='burp'] .m-eye {
+  border-top: calc(2 * var(--u)) solid var(--ink);
+  background: transparent;
+  box-shadow: none;
+}
+
+.monster[data-mood='mmm'] .m-pupil,
+.monster[data-mood='wiggle'] .m-pupil,
+.monster[data-mood='giggle'] .m-pupil,
+.monster[data-mood='burp'] .m-pupil {
+  display: none;
+}
+
+.monster[data-mood='mmm'] .m-mouth {
+  width: calc(34 * var(--u));
+  height: calc(10 * var(--u));
+  margin-left: calc(-17 * var(--u));
+  border-radius: 10% 10% 90% 90%;
+}
+
+.monster[data-mood='mmm'] .m-rig {
+  animation: giant 1.4s ease-in-out;
+}
+
+.monster[data-mood='wiggle'] .m-rig {
+  animation: wiggle 0.5s ease-in-out 3;
+}
+
+.monster[data-mood='giggle'] .m-rig {
+  animation: bounce 0.32s ease-in-out 4;
+}
+
+.monster[data-mood='dance'] .m-rig {
+  animation: dance 0.9s ease-in-out infinite;
+}
+
+.monster[data-mood='dance'] .m-arm {
+  animation: wave 0.45s ease-in-out infinite alternate;
+}
+
+.monster[data-mood='dance'] .m-foot {
+  animation: stomp 0.45s ease-in-out infinite alternate;
+}
+
+.monster[data-mood='dance'] .m-foot.m-right {
+  animation-direction: alternate-reverse;
+}
+
+@keyframes chomp {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  25%,
+  75% {
+    transform: scaleY(0.08);
+  }
+  50% {
+    transform: scaleY(0.7);
+  }
+}
+
+@keyframes gulp {
+  50% {
+    transform: scale(1.06, 0.95);
+  }
+}
+
+@keyframes shiver {
+  25% {
+    transform: translateX(calc(-1.5 * var(--u)));
+  }
+  75% {
+    transform: translateX(calc(1.5 * var(--u)));
+  }
+}
+
+@keyframes sneeze {
+  0% {
+    transform: rotate(-5deg) scale(1.04);
+  }
+  30% {
+    transform: rotate(4deg) scale(0.94, 1.05) translateY(calc(2 * var(--u)));
+  }
+}
+
+@keyframes puff {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -30%) scale(0.5);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, 40%) scale(1.5);
+  }
+}
+
+@keyframes giant {
+  40%,
+  70% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes wiggle {
+  25% {
+    transform: rotate(-6deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes bounce {
+  50% {
+    transform: translateY(calc(-5 * var(--u)));
+  }
+}
+
+@keyframes dance {
+  0%,
+  100% {
+    transform: rotate(-9deg) translateY(0);
+  }
+  25% {
+    transform: rotate(0deg) translateY(calc(-6 * var(--u))) scale(0.96, 1.05);
+  }
+  50% {
+    transform: rotate(9deg) translateY(0);
+  }
+  75% {
+    transform: rotate(0deg) translateY(calc(-6 * var(--u))) scale(1.05, 0.96);
+  }
+}
+
+@keyframes wave {
+  from {
+    transform: rotate(calc(var(--side) * -24deg));
+  }
+  to {
+    transform: rotate(calc(var(--side) * 34deg));
+  }
+}
+
+@keyframes stomp {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-3 * var(--u)));
+  }
+}
+
+/* ---------- Other screens ---------- */
+
+@media (min-width: 720px) and (orientation: landscape) {
+  .pick-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 300px);
+    align-content: center;
+    max-width: 1100px;
+    min-height: 240px;
+  }
+}
+
+/* A phone on its side: words and food on the left, monster on the right. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .play {
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-columns: 3fr 2fr;
+    grid-template-areas:
+      'bar stage'
+      'ask stage'
+      'plate stage';
+    max-width: none;
+  }
+
+  .sound-btn {
+    width: 64px;
+    height: 64px;
+  }
+
+  .pick-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    flex: none;
+    min-height: 170px;
+  }
+}

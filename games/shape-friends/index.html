@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Shape Friends</title>
+    <meta
+      name="description"
+      content="Friendly shapes need help getting home. A tap-only game for 4-year-olds that teaches shape names, sizes, colors and sorting."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔺</text></svg>"
+    />
+  </head>
+  <body>
+    <header id="topbar" class="topbar">
+      <div id="dots" class="dots" aria-hidden="true" hidden></div>
+      <button id="corner" class="corner-btn topbar-end" type="button"></button>
+    </header>
+    <main class="app">
+      <section id="title-screen" class="screen title-screen">
+        <h1 class="title">Shape Friends</h1>
+        <div id="crew" class="crew" aria-hidden="true"></div>
+        <button id="play" class="big-btn" type="button">
+          <span class="big-btn-icon" aria-hidden="true"></span>
+          <span id="play-label" class="sr-only">Play</span>
+          <span class="tap-finger" aria-hidden="true">👆</span>
+        </button>
+        <div class="grown-ups">
+          <p id="level-note" class="level-note"></p>
+          <div id="levels" class="levels"></div>
+        </div>
+      </section>
+
+      <section id="play-screen" class="screen" hidden>
+        <div id="scene" class="scene">
+          <div class="sun" aria-hidden="true"></div>
+          <div class="cloud cloud-one" aria-hidden="true"></div>
+          <div class="cloud cloud-two" aria-hidden="true"></div>
+          <div id="street" class="street"></div>
+          <div id="yard" class="yard"></div>
+          <svg id="stones" class="stones" aria-hidden="true"></svg>
+          <button id="friend" class="friend" type="button" aria-label="The friend. Tap to tickle.">
+            <span id="friend-shadow" class="friend-shadow"></span>
+            <span id="friend-body" class="friend-body" data-mood="happy"></span>
+          </button>
+          <button id="say" class="say-btn" type="button" aria-label="Say it again">🔊</button>
+        </div>
+      </section>
+
+      <section id="party-screen" class="screen party-screen" hidden>
+        <div id="party-crowd" class="party-crowd" aria-hidden="true"></div>
+        <div class="party-prize">
+          <div id="party-sticker" class="party-sticker" aria-hidden="true" hidden></div>
+          <button id="next" class="big-btn" type="button" aria-label="Play again" hidden>
+            <span class="big-btn-icon" aria-hidden="true"></span>
+            <span class="tap-finger" aria-hidden="true">👆</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="book-screen" class="screen book-screen" hidden>
+        <div class="book-head">
+          <button id="book-close" class="corner-btn" type="button" aria-label="Close sticker book">↩️</button>
+          <h2 id="book-count" class="book-count"></h2>
+        </div>
+        <div id="book-grid" class="book-grid"></div>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

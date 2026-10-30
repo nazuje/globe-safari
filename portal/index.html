@@ -6,7 +6,7 @@
     <title>Playroom</title>
     <meta
       name="description"
-      content="Playroom is a cozy shelf of small web games for a parent and a young child to play together."
+      content="Playroom is a cozy shelf of small web games for young children to play alone or with a grown-up."
     />
     <meta name="theme-color" content="#fff1d6" />
     <link
@@ -17,12 +17,16 @@
   <body>
     <header class="welcome">
       <h1 class="logo"><span class="logo-mark" aria-hidden="true">🧸</span> Playroom</h1>
-      <p class="tagline">Pick a game to play together!</p>
+      <p class="tagline">Pick a game to play!</p>
     </header>
 
     <main class="shelf">
-      <div id="filters" class="filters" role="group" aria-label="Show games by skill"></div>
+      <div id="filters" class="filters"></div>
       <ul id="tiles" class="tiles"></ul>
+      <div id="empty" class="empty" hidden>
+        <p class="empty-note"><span aria-hidden="true">🙈</span> No games match all of those.</p>
+        <button id="show-all" class="btn btn-sun" type="button">Show all games</button>
+      </div>
     </main>
 
     <script type="module" src="/src/main.ts"></script>
