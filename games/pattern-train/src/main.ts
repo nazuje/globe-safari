@@ -1,6 +1,6 @@
 import '@playroom/kit/kit.css';
 import './style.css';
-import { burst, canSpeak, homeButton, speak, stopSpeaking, store } from '@playroom/kit';
+import { burst, canSpeak, homeButton, say, speak, stopSpeaking, store } from '@playroom/kit';
 import { planChant, playChant, QUESTIONS } from './chant.ts';
 import { furthestAfterTrain, readFurthest, TRAINS_PER_LEVEL } from './journey.ts';
 import { makeTrain, MAX_LEVEL, type Blank, type Item, type Train } from './pattern.ts';
@@ -46,29 +46,13 @@ let stopChant: (() => void) | null = null;
 /** Bumped whenever a new train or level takes over, so older animations know to stop. */
 let run = 0;
 
-let chantVoice: SpeechSynthesisVoice | undefined;
-/** Held here because browsers can forget an utterance mid-word and never report it finished. */
-const chantWords = new Set<SpeechSynthesisUtterance>();
-
-/** Like the kit's speak, but one quiet word at a set pitch that reports when it finishes. */
+/** One quiet word at a set pitch, waiting its turn, that reports when it finishes. */
 function sayWord(word: string, pitch: number, done: () => void): void {
   if (!canSpeak()) {
     done();
     return;
   }
-  chantVoice ??= speechSynthesis.getVoices().find((voice) => voice.lang.startsWith('en') && voice.localService);
-  const utterance = new SpeechSynthesisUtterance(word);
-  utterance.rate = 1;
-  utterance.pitch = pitch;
-  if (chantVoice) utterance.voice = chantVoice;
-  const finish = (): void => {
-    chantWords.delete(utterance);
-    done();
-  };
-  utterance.onend = finish;
-  utterance.onerror = finish;
-  chantWords.add(utterance);
-  speechSynthesis.speak(utterance);
+  void say(word, { rate: 1, pitch, queue: true }).then(done);
 }
 
 function endChant(): void {

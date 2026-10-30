@@ -13,8 +13,12 @@
     "dev": "npm run dev -w @playroom/portal",
     "build": "node scripts/build-site.mjs",
     "preview": "vite preview --outDir dist --port 5179 --strictPort",
-    "test": "npm test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "test": "npm test --workspaces --if-present && node --test scripts/voice/lib.test.mjs",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "voice": "node scripts/voice/voice.mjs generate",
+    "voice:setup": "sh scripts/voice/setup.sh",
+    "voice:words": "node scripts/voice/voice.mjs words",
+    "voice:fix": "node scripts/voice/voice.mjs fix"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -1,6 +1,6 @@
 # 🧸 Playroom
 
-A cozy shelf of small web games for young children, to play alone or with a grown-up. The portal at the site root shows every game as a big tile, with filters for who's playing, age and type of game. Each game lives at its own sub-path.
+A cozy shelf of small web games for young children, to play alone or with a grown-up. The portal at the site root shows every game as a big tile, with filters for who's playing, age, type of game and language. Each game lives at its own sub-path.
 
 Live at <https://nazuje.github.io/playroom/>, with games at `/playroom/<slug>/`.
 
@@ -25,15 +25,16 @@ games.json            the registry: every game the portal shows
 portal/               the game picker, served at the site root
 games/<slug>/         one folder per game
 games/_template/      a working starter game, copied to make new ones
-packages/kit/         @playroom/kit: speech, star burst, home button, store, kit.css
+packages/kit/         @playroom/kit: speech, languages, star burst, home button, store, kit.css
 scripts/build-site.mjs  builds the portal and every ready game into dist/
+scripts/voice/        generates Slovenian speech clips ahead of time
 ```
 
 It is one npm workspace with one root `package-lock.json`. TypeScript, Vite and Vitest live at the root. Each game keeps its own dependencies.
 
 ## Run it
 
-You need Node.js 22 or newer.
+You need Node.js 22.18 or newer, which can read TypeScript directly.
 
 ```sh
 npm install
@@ -59,10 +60,11 @@ npm run preview                      # serve dist/ at http://localhost:5179
 | `skills` | Any of `world`, `memory`, `logic`, `colors`, `reading`, `numbers`, `moving` |
 | `ages` | A range such as `"4-9"`. The portal's age filter shows a game when the chosen age falls inside it, ends included |
 | `modes` | `"solo"`, `"together"`, or both: how the game can be played |
+| `languages` | `"en"`, `"sl"`, or both: the languages the game is fully playable in. The portal shows a language chip once a game has it, and the language row itself once there are two languages. A tile shows a flag badge when a game has more than one language or isn't in English |
 | `color` | Hex accent for the tile |
 | `status` | `"ready"` or `"coming-soon"` |
 
-`"coming-soon"` games show as dimmed tiles and are not built. `"ready"` games are linked and built, and the build fails loudly if a ready game has no `games/<slug>/` folder or no `build` script. **When your game is finished, flip its own entry to `"ready"`.**
+`"coming-soon"` games show as dimmed tiles and are not built. `"ready"` games are linked and built, and the build fails loudly if a ready game has no `games/<slug>/` folder or no `build` script, or if a game listing `"sl"` is missing a clip for any line it declares. **When your game is finished, flip its own entry to `"ready"`.**
 
 ## Template: add a new game
 
@@ -85,11 +87,119 @@ Keep the game's `base: './'` and use relative paths only, because the site runs 
 
 Games import from `@playroom/kit`. It is plain TypeScript with no dependencies and no build step of its own; Vite bundles it into each game.
 
-- `speak(text)`, `canSpeak()`, `stopSpeaking()`: read aloud in a friendly English voice. Safe to call where speech isn't supported.
+- `say(text, options?)`: speaks a line and returns a promise that resolves when it has finished. It always resolves, with timeouts for voices that never start or never end, and waits about as long as the line would take when there is no voice at all. Options: `rate` and `pitch` for device voices, `slow` for a slow recording, `queue: true` to wait behind the current line instead of cutting it off, and `signal` to stop it early.
+- `speak(text)`, `canSpeak()`, `stopSpeaking()`: `speak` is `say` when you don't need to know when it ends. `canSpeak` tells you whether a 🔊 button would do anything. All are safe to call where speech isn't supported. English uses the device's voices.
+- `getLanguage()`, `setLanguage(language)`, `onLanguageChange(listener)`, `LANGUAGES`: the language in use, shared by the portal and every game. It defaults to `'en'`.
+- `languageButton(['en', 'sl'])`: a big round flag for the top bar that switches language.
+- `useClips(manifest)`: plays recorded clips for Slovenian lines. Until a game calls it, that game speaks English whatever the shared language is.
+- `slCount`, `slNumber`, `slCounted`: Slovenian counting grammar. See below.
+- `missingClips(manifest, lines, slowLines?)`: lines with no clip, for a game's test.
 - `burst(x, y, count?)`: a star burst at a viewport position. It needs no CSS and calms down for people who prefer reduced motion.
 - `homeButton()`: a big round 🏠 link back to the portal, for the game's top bar.
 - `store.get(key, fallback)`, `store.set(key, value)`: small JSON values in localStorage for this device, such as best scores. They never throw, so nothing important should rely on them.
 - `import '@playroom/kit/kit.css'`: the Fredoka font, the palette as CSS custom properties, the page background, `.btn` with `.btn-sun`, `.btn-coral`, `.btn-leaf` and `.btn-grape`, `.topbar` with `.topbar-end`, and reduced-motion handling.
+
+## Add a language to a game
+
+A game stays one game, with a switch inside it. Slovenian speech is recorded ahead of time and ships with the game, because a tablet may have no Slovenian voice and a 4-year-old who can't read depends on hearing it. English keeps using device voices.
+
+1. Put the words in `src/lang/`, one file per language with the same shape:
+
+   ```ts
+   // src/lang/en.ts
+   export const en = {
+     hello: 'Hello!',
+     wantApples: (n: number) => (n === 1 ? 'Give me one apple!' : `Give me ${n} apples!`),
+   };
+
+   export type Text = typeof en;
+   ```
+
+   ```ts
+   // src/lang/sl.ts
+   import { slCounted, type SlNoun } from '@playroom/kit';
+   import type { Text } from './en.ts';
+
+   // A noun's forms are data, in the grammatical case the line needs. "Daj mi ..." takes the accusative.
+   const APPLE: SlNoun = { gender: 'n', one: 'jabolko', two: 'jabolki', few: 'jabolka', many: 'jabolk' };
+
+   export const sl: Text = {
+     hello: 'Živjo!',
+     wantApples: (n) => `Daj mi ${slCounted(n, APPLE, 'acc')}!`,
+   };
+
+   /** Every line the game can say in Slovenian, including every counted combination. */
+   export function spokenLines(): string[] {
+     return [sl.hello, ...[1, 2, 3, 4, 5].map(sl.wantApples)];
+   }
+   ```
+
+   ```ts
+   // src/lang/index.ts
+   import { getLanguage } from '@playroom/kit';
+   import { en, type Text } from './en.ts';
+   import { sl } from './sl.ts';
+
+   export const text = (): Text => (getLanguage() === 'sl' ? sl : en);
+   ```
+
+   The pipeline reads `sl.ts` with plain Node, so `sl.ts` and anything it imports must stay free of CSS, assets and JSON. `spokenLines()` must return every string the game can pass to `say()` or `speak()`, exactly as spoken. If a line is built from parts, build every combination.
+
+2. Generate the clips. Setup is once per machine, and [scripts/voice/README.md](scripts/voice/README.md) explains the rest:
+
+   ```sh
+   npm run voice:setup
+   npm run voice -- <slug>
+   ```
+
+   This writes `public/voice/sl/*.mp3` and `src/lang/sl.clips.json`. Commit both.
+
+3. Use the words, register the clips and add the switch. Read `text()` each time you draw or speak, never once at the top of a file:
+
+   ```ts
+   import { homeButton, languageButton, onLanguageChange, speak, useClips } from '@playroom/kit';
+   import { text } from './lang/index.ts';
+   import clips from './lang/sl.clips.json';
+
+   useClips(clips);
+   bar.append(homeButton(), title, languageButton(['en', 'sl']));
+
+   // Redraw from the state you already have. Changing language must not lose progress.
+   onLanguageChange(() => draw());
+
+   speak(text().wantApples(3));
+   ```
+
+4. Add a test, so missing audio can't ship:
+
+   ```ts
+   // src/lang/sl.test.ts
+   import { missingClips } from '@playroom/kit';
+   import { expect, it } from 'vitest';
+   import clips from './sl.clips.json';
+   import { spokenLines } from './sl.ts';
+
+   it('has a clip for every Slovenian line', () => {
+     expect(missingClips(clips, spokenLines())).toEqual([]);
+   });
+   ```
+
+5. Add `"sl"` to the game's `languages` in `games.json`. `npm run build` now refuses to pass if a declared line has no clip.
+
+6. Listen to it. Run `npm run voice:words -- <slug>` and scan the stress on every word. To correct one, run `npm run voice:fix -- <word> <ipa>`, which fixes it everywhere and regenerates only the lines that use it.
+
+### What to know about clips
+
+- `say()` plays the clip for **exactly** the text it's given, so `'Bravo!'` and `'Bravo'` are different lines. A line with no clip uses a device Slovenian voice if there is one and otherwise stays quiet. It is never read with an English voice. In development it logs the line once.
+- `rate` and `pitch` do nothing to a clip, because a recording plays as it was made. For a word read out slowly, also export `slowLines(): string[]` from `sl.ts` and call `say(word, { rate: 0.45, slow: true })`. English keeps using the rate and Slovenian plays the slow recording, which the pipeline generates for those lines. Add them to the test as `missingClips(clips, spokenLines(), slowLines())`.
+
+### Writing Slovenian lines
+
+- **Never assume the child's gender.** Players are boys and girls, so avoid gendered past-tense forms addressed to the child. Write `Bravo!` or `Odlično!`, not `Našel si`. Present tense and the imperative are safe: `Poišči jabolko!`, `Poskusi še enkrat.`
+- **Counting has four forms**, and which one depends on the number's last two digits: `eno jabolko, dve jabolki, tri jabolka, štiri jabolka, pet jabolk`. `slCount(n, { one, two, few, many })` picks the form, so `21` correctly takes `many`.
+- **Numbers agree with the noun's gender:** `en/ena/eno`, `dva/dve/dve`, `trije/tri/tri`. So each noun is data with its gender and forms (`SlNoun`), and `slCounted(n, noun, 'acc')` builds `dve jabolki`.
+- **Mind the case.** Forms must match the sentence. `Daj mi ...` and `Hočem ...` take the accusative, so a feminine noun gives `eno banano`, and a masculine one gives `tri piškote`, not `trije piškoti`. Pass `'acc'` to `slCounted`. A masculine animate noun in the accusative takes `enega`, which the helper doesn't cover, so write that line by hand.
+- **Counting out loud** with no noun uses the feminine forms: `ena, dve, tri, štiri, pet`. That's `slNumber(n, 'f')`.
 
 ## Deploy
 
@@ -98,3 +208,5 @@ Pushing to `main` runs `.github/workflows/deploy.yml`, which tests, builds and p
 ## Credits
 
 Games that use outside images or fonts credit them in their README: [Globe Safari](games/globe-safari/README.md) and [Word Garden](games/word-garden/README.md). The other games are drawn with emoji and CSS. The main font is [Fredoka](https://fonts.google.com/specimen/Fredoka) from Google Fonts.
+
+The Slovenian voice is [Piper "Artur"](https://huggingface.co/rhasspy/piper-voices/tree/main/sl/sl_SI/artur/medium), trained on the [Artur dataset](https://huggingface.co/datasets/ppisljar/artur_studio_tts/) by ppisljar, used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The portal's footer carries the same credit.

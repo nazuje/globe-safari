@@ -191,9 +191,10 @@ a.tile:active {
   background: color-mix(in srgb, var(--accent) 16%, #fff);
 }
 
-/* The age and mode badges sit apart from the skill chips, as plain facts. */
+/* The age, mode and language badges sit apart from the skill chips, as plain facts. */
 .tile-age,
-.tile-mode {
+.tile-mode,
+.tile-language {
   background: var(--paper-2);
 }
 
@@ -208,6 +209,19 @@ a.tile:active {
   margin: 0 0 16px;
   font-size: 1.3rem;
   color: var(--ink-soft);
+}
+
+/* ---------- Credits ---------- */
+
+.credits {
+  padding: 0 var(--gutter) calc(var(--safe-bottom) + 20px);
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.credits a {
+  color: inherit;
 }
 
 /* ---------- Coming soon ---------- */

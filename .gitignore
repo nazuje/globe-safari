@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# The voice tool's environment, 63 MB model and working files
+scripts/voice/.venv
+scripts/voice/model
+scripts/voice/.cache
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

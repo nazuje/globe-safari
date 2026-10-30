@@ -1,9 +1,8 @@
-import { canSpeak, stopSpeaking } from '@playroom/kit';
+import { canSpeak, say, stopSpeaking } from '@playroom/kit';
 
 /*
- * Kit's speak() has one fixed rate and cancels whatever is playing, so it can't
- * say a word slowly and then normally. This file is the game's one place for
- * speech, with its own small queue on the same browser voices.
+ * This game says a word slowly and then normally, so it needs its own rates and
+ * lines that wait their turn. This file is the game's one place for speech.
  */
 const RATE = { word: 0.75, slow: 0.45, normal: 0.95 } as const;
 const PITCH = 1.1;
@@ -19,22 +18,10 @@ export function letterSound(letter: string): string {
   return LETTER_SOUNDS[letter] ?? letter.toUpperCase();
 }
 
-function voice(): SpeechSynthesisVoice | undefined {
-  const english = speechSynthesis.getVoices().filter((candidate) => candidate.lang.startsWith('en'));
-  return english.find((candidate) => candidate.localService) ?? english[0];
-}
-
 function sayInOrder(parts: readonly { text: string; rate: number }[]): void {
   if (!canSpeak()) return;
   stopSpeaking();
-  for (const { text, rate } of parts) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = rate;
-    utterance.pitch = PITCH;
-    const chosen = voice();
-    if (chosen) utterance.voice = chosen;
-    speechSynthesis.speak(utterance);
-  }
+  for (const { text, rate } of parts) void say(text, { rate, pitch: PITCH, queue: true });
 }
 
 export function sayWord(word: string): void {

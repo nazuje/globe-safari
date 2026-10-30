@@ -1,3 +1,4 @@
+import type { Language } from '@playroom/kit';
 import registry from '../../games.json';
 
 export type Skill = 'world' | 'memory' | 'logic' | 'colors' | 'reading' | 'numbers' | 'moving';
@@ -12,6 +13,7 @@ export interface Game {
   skills: Skill[];
   ages: string;
   modes: Mode[];
+  languages: Language[];
   color: string;
   status: 'ready' | 'coming-soon';
 }

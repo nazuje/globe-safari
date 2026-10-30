@@ -1,12 +1,14 @@
 import '@playroom/kit/kit.css';
 import './style.css';
-import { store } from '@playroom/kit';
+import { LANGUAGES, setLanguage, store, type Language } from '@playroom/kit';
 import {
   AGES,
   NO_FILTERS,
   applyFilter,
+  languagesIn,
   restoreFilter,
   skillsIn,
+  tileLanguages,
   type Filters,
 } from './filter.ts';
 import { GAMES, MODE_LABELS, SKILL_LABELS, type Game, type Mode } from './games.ts';
@@ -15,6 +17,7 @@ const FILTER_KEYS: Record<keyof Filters, string> = {
   mode: 'portal-mode',
   age: 'portal-age',
   skill: 'portal-filter',
+  language: 'portal-language',
 };
 
 function byId(id: string): HTMLElement {
@@ -26,12 +29,14 @@ function byId(id: string): HTMLElement {
 const filters = byId('filters');
 const tiles = byId('tiles');
 const skills = skillsIn(GAMES);
+const languages = languagesIn(GAMES);
 const modes = Object.keys(MODE_LABELS) as Mode[];
 const empty = byId('empty');
 let current: Filters = {
   mode: restoreFilter(store.get<unknown>(FILTER_KEYS.mode, null), modes),
   age: restoreFilter(store.get<unknown>(FILTER_KEYS.age, null), AGES),
   skill: restoreFilter(store.get<unknown>(FILTER_KEYS.skill, null), skills),
+  language: restoreFilter(store.get<unknown>(FILTER_KEYS.language, null), languages),
 };
 
 function text(tag: string, className: string, content: string): HTMLElement {
@@ -44,6 +49,15 @@ function text(tag: string, className: string, content: string): HTMLElement {
 function modeBadge(mode: Mode): HTMLElement {
   const { emoji, label } = MODE_LABELS[mode];
   const badge = text('span', 'tile-chip tile-mode', emoji);
+  badge.setAttribute('role', 'img');
+  badge.setAttribute('aria-label', label);
+  badge.title = label;
+  return badge;
+}
+
+function languageBadge(shown: Language[]): HTMLElement {
+  const label = shown.map((language) => LANGUAGES[language].name).join(', ');
+  const badge = text('span', 'tile-chip tile-language', shown.map((language) => LANGUAGES[language].flag).join(' '));
   badge.setAttribute('role', 'img');
   badge.setAttribute('aria-label', label);
   badge.title = label;
@@ -66,6 +80,8 @@ function tile(game: Game): HTMLLIElement {
     ...game.modes.map(modeBadge),
     ...game.skills.map((skill) => text('span', 'tile-chip', SKILL_LABELS[skill])),
   );
+  const shownLanguages = tileLanguages(game);
+  if (shownLanguages.length > 0) chips.append(languageBadge(shownLanguages));
   card.append(emoji, text('span', 'tile-title', game.title), text('span', 'tile-tagline', game.tagline), chips);
   if (!ready) card.append(text('span', 'tile-ribbon', 'Soon!'));
 
@@ -97,7 +113,12 @@ function choose(next: Filters): void {
   renderTiles();
 }
 
-function filterRow<K extends keyof Filters>(key: K, label: string, options: [Filters[K], string][]): HTMLElement {
+function filterRow<K extends keyof Filters>(
+  key: K,
+  label: string,
+  options: [Filters[K], string][],
+  onChosen?: (value: Filters[K]) => void,
+): HTMLElement {
   const row = document.createElement('div');
   row.className = 'filter-row';
   row.setAttribute('role', 'group');
@@ -108,7 +129,10 @@ function filterRow<K extends keyof Filters>(key: K, label: string, options: [Fil
       button.type = 'button';
       button.dataset.key = key;
       button.dataset.value = String(value);
-      button.addEventListener('click', () => choose({ ...current, [key]: value }));
+      button.addEventListener('click', () => {
+        onChosen?.(value);
+        choose({ ...current, [key]: value });
+      });
       return button;
     }),
   );
@@ -123,6 +147,23 @@ filters.append(
   filterRow('age', 'Age', [['all', 'All ages'], ...AGES.map((age): [Filters['age'], string] => [age, `Age ${age}`])]),
   filterRow('skill', 'Skill', [['all', '🌈 All'], ...skills.map((skill): [Filters['skill'], string] => [skill, SKILL_LABELS[skill]])]),
 );
+// One language is nothing to choose between, so the row waits for a second one.
+if (languages.length > 1) {
+  filters.append(
+    filterRow(
+      'language',
+      'Language',
+      [
+        ['all', 'All'],
+        ...languages.map((language): [Language, string] => [language, `${LANGUAGES[language].flag} ${LANGUAGES[language].name}`]),
+      ],
+      (language) => {
+        // A game opened from here starts in this language. "All" leaves the choice alone.
+        if (language !== 'all') setLanguage(language);
+      },
+    ),
+  );
+}
 byId('show-all').addEventListener('click', () => {
   choose(NO_FILTERS);
   filters.querySelector('button')?.focus();

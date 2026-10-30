@@ -41,7 +41,7 @@ button {
   cursor: pointer;
 }
 
-/* ---------- Top bar: homeButton() first, then a title. Add .topbar-end to push the last item right ---------- */
+/* ---------- Top bar: homeButton() first, then a title. Add .topbar-end to push the last item right. languageButton() matches homeButton() ---------- */
 
 .topbar {
   display: flex;
@@ -54,7 +54,8 @@ button {
   margin-left: auto;
 }
 
-.home-btn {
+.home-btn,
+.language-btn {
   display: grid;
   flex: none;
   place-items: center;
@@ -70,9 +71,20 @@ button {
   touch-action: manipulation;
 }
 
-.home-btn:active {
+.home-btn:active,
+.language-btn:active {
   transform: translateY(4px);
   box-shadow: 0 1px 0 var(--sun-dark);
+}
+
+.language-btn {
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.language-btn[hidden] {
+  display: none;
 }
 
 /* ---------- Big buttons ---------- */
