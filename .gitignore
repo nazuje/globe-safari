@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+.playtest
 
 # The voice tool's environment, 63 MB model and working files
 scripts/voice/.venv

@@ -15,6 +15,7 @@
     "preview": "vite preview --outDir dist --port 5179 --strictPort",
     "test": "npm test --workspaces --if-present && node --test scripts/voice/lib.test.mjs",
     "typecheck": "npm run typecheck --workspaces --if-present",
+    "playtest": "node scripts/playtest.mjs",
     "voice": "node scripts/voice/voice.mjs generate",
     "voice:setup": "sh scripts/voice/setup.sh",
     "voice:words": "node scripts/voice/voice.mjs words",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "playwright-core": "^1.64.1",
     "typescript": "~7.0.2",
     "vite": "^8.3.5",
     "vitest": "^5.0.5"

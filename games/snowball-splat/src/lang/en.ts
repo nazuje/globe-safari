@@ -1,0 +1,63 @@
+import type { HatId } from '../hats.ts';
+import type { SceneId } from '../layout.ts';
+import type { LevelId } from '../tuning.ts';
+
+export const en = {
+  title: 'Snowball Splat',
+  description: 'Throw snowballs at silly snowmen in a snowy toy village. They think it is great fun. For ages 3 to 9.',
+  home: 'Back to Playroom',
+  sayAgain: 'Say it again',
+  changePlace: 'Pick another place',
+  levelGroup: 'How hard',
+  hatsButton: 'Hat collection',
+  close: 'Close',
+  noStage: "This device can't show the snowy village. Try another tablet or computer!",
+  gameArea: 'Snowy village. Tap a snowman to throw a snowball.',
+  score: 'Splats',
+  pick: 'Pick a place!',
+  scenes: {
+    village: 'Village Square!',
+    lake: 'Frozen Lake!',
+    night: 'Lantern Night!',
+  } satisfies Record<SceneId, string> as Record<SceneId, string>,
+  levels: {
+    easy: 'Easy!',
+    medium: 'Harder!',
+    hard: 'Hardest!',
+  } satisfies Record<LevelId, string> as Record<LevelId, string>,
+  hint: 'Tap a snowman!',
+  cheers: ['Splat!', 'Got one!', 'Great throw!'],
+  golden: 'A golden snowman!',
+  penguin: 'Hello, penguin!',
+  yeti: 'Look, a yeti!',
+  giant: 'A giant snowman!',
+  keepGoing: 'Keep throwing!',
+  finale: 'Hooray, snow everywhere!',
+  stars: ['One star!', 'Two stars!', 'Three stars!'],
+  best: 'Your best score!',
+  newHat: 'A new hat!',
+  shelf: 'Your hats!',
+  hats: {
+    topHat: 'Top hat!',
+    bobble: 'Bobble hat!',
+    party: 'Party hat!',
+    bucket: 'A bucket!',
+    flowerPot: 'A flower pot!',
+    cowboy: 'Cowboy hat!',
+    chef: 'Chef hat!',
+    viking: 'Viking helmet!',
+    unicorn: 'Unicorn horn!',
+    propeller: 'Propeller hat!',
+    dino: 'Dinosaur hat!',
+    cake: 'A birthday cake!',
+    crown: 'A golden crown!',
+  } satisfies Record<HatId, string> as Record<HatId, string>,
+  mysteryHat: 'Still to find',
+  again: 'Again!',
+  otherPlace: 'Another place',
+  words: ['SPLAT!', 'POOF!', 'BOING!', 'SPLOSH!'],
+  friendWord: 'HELLO!',
+  teaseWords: ['TEE HEE!', 'HEE HEE!', 'BLEH!'],
+};
+
+export type Text = typeof en;

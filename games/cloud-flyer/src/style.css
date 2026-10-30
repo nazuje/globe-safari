@@ -1,0 +1,583 @@
+:root {
+  --bar: #3ba5f2;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  background: var(--bar);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.topbar {
+  flex: none;
+  gap: 8px;
+  padding-top: calc(var(--safe-top) + 6px);
+  padding-bottom: 6px;
+  background: var(--bar);
+  transition: background 0.3s;
+}
+
+.topbar .home-btn,
+.topbar .language-btn {
+  width: 48px;
+  height: 48px;
+  font-size: 1.4rem;
+}
+
+.title {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: clamp(1.25rem, 5vw, 2rem);
+  color: #fff;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 0 rgb(0 0 0 / 22%);
+  white-space: nowrap;
+}
+
+.bar-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  background: #fff;
+  box-shadow: 0 4px 0 var(--sun-dark);
+  touch-action: manipulation;
+}
+
+.bar-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--sun-dark);
+}
+
+.bar-btn[hidden] {
+  display: none;
+}
+
+body[data-screen='pick'] .change-btn {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  body[data-screen='fly'] .title,
+  body[data-screen='result'] .title {
+    display: none;
+  }
+}
+
+/* ---------- The sky fills the rest. The canvas sits behind, so it never props the layout open ---------- */
+
+.sky {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sky canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.overlay {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+}
+
+.no-3d {
+  max-width: 28rem;
+  margin: 15vh auto 0;
+  padding: 24px;
+  border-radius: var(--radius);
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: center;
+  background: var(--paper);
+}
+
+/* ---------- The picker ---------- */
+
+.pick {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(100%, 780px);
+  height: 100%;
+  margin: 0 auto;
+  padding: 8px var(--gutter) calc(var(--safe-bottom) + 12px);
+  overflow-y: auto;
+  pointer-events: auto;
+  touch-action: pan-y;
+}
+
+.flyers {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: minmax(118px, 1fr);
+  gap: 10px;
+  max-height: 560px;
+}
+
+.flyer-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 4px;
+  border: 0;
+  border-radius: var(--radius);
+  color: var(--ink);
+  background: rgb(255 255 255 / 86%);
+  box-shadow: 0 5px 0 rgb(43 33 64 / 22%);
+  touch-action: manipulation;
+  transition: transform 0.08s ease;
+}
+
+.flyer-card:active {
+  transform: scale(0.95) rotate(-1deg);
+}
+
+.flyer-picture {
+  flex: 1 1 0;
+  min-height: 0;
+  max-width: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.flyer-icon {
+  flex: 1;
+  font-size: 3.5rem;
+  line-height: 1.4;
+}
+
+.flyer-name {
+  flex: none;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.choices {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.world-box {
+  min-width: 0;
+}
+
+.worlds {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.world-btn {
+  min-height: 62px;
+  padding: 0;
+  border: 4px solid #fff;
+  border-radius: 18px;
+  font-size: 1.7rem;
+  box-shadow: 0 3px 0 rgb(43 33 64 / 22%);
+  touch-action: manipulation;
+}
+
+.world-btn[aria-pressed='true'] {
+  border-color: var(--sun);
+  outline: 3px solid var(--sun-dark);
+}
+
+.world-name {
+  width: fit-content;
+  margin: 6px auto 0;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  background: rgb(43 33 64 / 62%);
+}
+
+.levels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.level-btn {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 2px 4px;
+  border: 4px solid transparent;
+  border-radius: 18px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 3px 0 rgb(43 33 64 / 22%);
+  touch-action: manipulation;
+}
+
+.level-btn[aria-pressed='true'] {
+  border-color: var(--leaf-dark);
+  background: #d9f8e9;
+}
+
+.level-art {
+  font-size: 1.5rem;
+}
+
+.album {
+  display: flex;
+  flex: none;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 14px;
+  margin: 0 auto;
+  border-radius: 999px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background: rgb(255 255 255 / 80%);
+}
+
+.album-hidden {
+  opacity: 0.28;
+  filter: brightness(0);
+}
+
+@media (min-aspect-ratio: 3/2) and (max-height: 620px) {
+  .pick {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .flyers {
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: minmax(108px, 1fr);
+    gap: 6px;
+  }
+
+  .flyer-name {
+    font-size: 1rem;
+  }
+
+  .choices {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .world-box {
+    flex: 3;
+  }
+
+  .levels {
+    flex: 2;
+    align-self: start;
+  }
+
+  .world-btn,
+  .level-btn {
+    min-height: 54px;
+  }
+
+  .world-name {
+    display: none;
+  }
+
+  .album {
+    display: none;
+  }
+}
+
+@media (min-width: 700px) and (min-height: 621px) {
+  .flyers {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(150px, 1fr);
+  }
+}
+
+/* ---------- Heads-up while flying. It never catches a touch: all of those belong to the canvas ---------- */
+
+.hud {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hud-score,
+.hud-chain {
+  position: absolute;
+  top: 8px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: rgb(255 255 255 / 86%);
+}
+
+.hud-score {
+  left: var(--gutter);
+}
+
+.hud-chain {
+  top: 50px;
+  left: var(--gutter);
+  background: var(--sun);
+}
+
+.hud-chain[hidden],
+.hud-hint[hidden],
+.hud-guide[hidden],
+.hud-dot[hidden] {
+  display: none;
+}
+
+.hud-track {
+  position: absolute;
+  top: 16px;
+  right: 36px;
+  left: 138px;
+  max-width: 480px;
+  height: 14px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 55%);
+}
+
+.hud-progress {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--sky), var(--grape), var(--coral), var(--sun));
+}
+
+.hud-goal {
+  position: absolute;
+  top: -11px;
+  right: -22px;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.hud-hint {
+  position: absolute;
+  top: -48px;
+  left: -48px;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border: 6px solid rgb(255 255 255 / 85%);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 35%);
+}
+
+.hud-hand {
+  font-size: 3.4rem;
+  line-height: 1;
+  transform: rotate(var(--turn, 0rad));
+  animation: hint-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  50% {
+    transform: rotate(var(--turn, 0rad)) translateY(-10px) scale(1.14);
+  }
+}
+
+/* Dashes from the flyer to the hand. */
+.hud-guide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  border-top: 7px dotted rgb(255 255 255 / 92%);
+  transform-origin: 0 0;
+}
+
+.hud-dot {
+  position: absolute;
+  top: -36px;
+  left: -36px;
+  width: 72px;
+  height: 72px;
+  border: 5px solid rgb(255 255 255 / 80%);
+  border-radius: 50%;
+  background: rgb(255 255 255 / 25%);
+}
+
+.bubble {
+  position: absolute;
+  padding: 2px 12px;
+  border-radius: 999px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: rgb(255 255 255 / 92%);
+  transform: translate(-50%, -50%);
+  animation: bubble-up 0.9s ease-out forwards;
+}
+
+@keyframes bubble-up {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -30%) scale(0.5);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -60%) scale(1.15);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -190%) scale(1);
+  }
+}
+
+/* ---------- Landed. The panel keeps to one side so the flyer can bounce in full view ---------- */
+
+.result {
+  --panel-x: -50%;
+  position: absolute;
+  bottom: calc(var(--safe-bottom) + 14px);
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  width: min(92%, 420px);
+  padding: 14px 18px 20px;
+  border-radius: 28px;
+  text-align: center;
+  background: rgb(255 250 240 / 94%);
+  box-shadow: 0 8px 0 rgb(43 33 64 / 18%);
+  pointer-events: auto;
+  transform: translateX(var(--panel-x));
+  animation: result-in 0.35s ease-out;
+}
+
+@keyframes result-in {
+  from {
+    transform: translate(var(--panel-x), 12%) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@media (min-aspect-ratio: 1/1) {
+  .result {
+    --panel-x: 0;
+    top: 50%;
+    right: 3%;
+    bottom: auto;
+    left: auto;
+    width: min(44%, 400px);
+    margin-top: -150px;
+  }
+}
+
+.result-stars {
+  display: flex;
+  gap: 6px;
+  font-size: 3.6rem;
+  line-height: 1.15;
+}
+
+.result-star {
+  color: var(--ink-soft);
+  opacity: 0.45;
+}
+
+.result-star-on {
+  opacity: 1;
+  animation: star-pop 0.5s cubic-bezier(0.2, 1.7, 0.4, 1) backwards;
+}
+
+@keyframes star-pop {
+  from {
+    transform: scale(0) rotate(-60deg);
+  }
+}
+
+.result-score {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.result-best {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+}
+
+.result-new {
+  font-weight: 700;
+  color: var(--coral-dark);
+}
+
+.result-finds {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.result-again {
+  min-height: 72px;
+  margin-top: 10px;
+  padding-inline: 30px;
+  font-size: 1.5rem;
+}
+
+@media (max-height: 450px) {
+  .result {
+    top: 6px;
+    width: min(46%, 400px);
+    margin-top: 0;
+    padding: 6px 14px 14px;
+  }
+
+  .result-stars {
+    font-size: 2.6rem;
+  }
+
+  .result-again {
+    margin-top: 4px;
+    min-height: 60px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-hand {
+    animation: none;
+  }
+}

@@ -1,0 +1,681 @@
+:root {
+  /* The toy table: warm painted wood, with buttons that are the game's own blocks. */
+  --wood: #b77a45;
+  --wood-dark: #7c4c26;
+  --wood-light: #d9a26b;
+  --wood-grain: repeating-linear-gradient(92deg, rgb(92 52 22 / 14%) 0 2px, transparent 2px 46px, rgb(92 52 22 / 8%) 46px 48px, transparent 48px 104px);
+  --block-red: #f0524f;
+  --block-red-edge: #b5322f;
+  --block-blue: #4a9bff;
+  --block-blue-edge: #2a6ec0;
+  --block-green: #4fcf7c;
+  --block-green-edge: #2c9554;
+  --block-purple: #9a6bff;
+  --block-purple-edge: #6a42c8;
+  --block-orange: #ff9838;
+  --block-orange-edge: #c46a14;
+  --block-teal: #2fc6c0;
+  --block-teal-edge: #1a8e89;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  background: var(--wood-grain), var(--wood);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.topbar {
+  flex: none;
+  gap: 8px;
+  padding-top: calc(var(--safe-top) + 6px);
+  padding-bottom: 6px;
+  background: var(--wood-grain), var(--wood);
+  box-shadow: inset 0 -5px 0 var(--wood-dark);
+}
+
+.title {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: clamp(1.3rem, 4vw, 2rem);
+  color: #fff6e6;
+  white-space: nowrap;
+  text-shadow: 0 2px 0 var(--wood-dark);
+}
+
+.bar-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  font-size: 1.4rem;
+  color: #fff;
+  background: var(--block-teal);
+  box-shadow: inset 0 3px 0 rgb(255 255 255 / 30%), 0 5px 0 var(--block-teal-edge);
+  touch-action: manipulation;
+}
+
+.bar-btn:active {
+  transform: translateY(4px);
+  box-shadow: inset 0 3px 0 rgb(255 255 255 / 30%), 0 1px 0 var(--block-teal-edge);
+}
+
+.topbar .home-btn,
+.topbar .language-btn {
+  border-radius: 9px;
+  background: var(--wood-light);
+  box-shadow: inset 0 3px 0 rgb(255 255 255 / 30%), 0 5px 0 var(--wood-dark);
+}
+
+.app {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+}
+
+.scene canvas {
+  touch-action: none;
+}
+
+.no-3d {
+  max-width: 28rem;
+  margin: 3rem auto;
+  padding: 0 var(--gutter);
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+/* ---------- Score ---------- */
+
+.hud {
+  position: absolute;
+  top: 10px;
+  right: var(--gutter);
+  left: var(--gutter);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.hud-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.meter {
+  position: relative;
+  flex: 1;
+  height: 30px;
+  border-radius: 8px;
+  background: rgb(124 76 38 / 55%);
+  box-shadow: inset 0 3px 0 rgb(43 33 64 / 22%);
+}
+
+.meter-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  border-radius: 8px;
+  background: var(--block-orange);
+  transition: width 0.18s ease-out;
+}
+
+.meter-count {
+  flex: none;
+  min-width: 2.6em;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  background: rgb(255 255 255 / 85%);
+}
+
+.meter-count.is-bumped {
+  animation: bumped 0.22s ease-out;
+}
+
+.meter-star {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  font-size: 1.25rem;
+  line-height: 1;
+  filter: grayscale(1) opacity(0.6);
+  transform: translate(-50%, -50%);
+  transition: filter 0.2s;
+}
+
+.meter-star.is-won {
+  filter: none;
+  animation: star-won 0.35s ease-out;
+}
+
+.pips {
+  display: flex;
+  flex: none;
+  gap: 4px;
+  align-items: center;
+}
+
+.pip {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--grape);
+  box-shadow: 0 3px 0 var(--grape-dark);
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+.pip.is-used {
+  opacity: 0.3;
+  transform: scale(0.7);
+}
+
+/* One ball left, and it's the big one. */
+.pips.is-last .pip:not(.is-used) {
+  background: var(--block-orange);
+  box-shadow: 0 3px 0 var(--block-orange-edge);
+  transform: scale(1.5);
+  animation: pulse 0.6s ease-in-out infinite alternate;
+}
+
+.tally {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.tally-chip {
+  padding: 2px 14px;
+  border-radius: 999px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background: rgb(255 255 255 / 70%);
+  opacity: 0.75;
+}
+
+.tally-chip.is-turn {
+  background: #fff;
+  opacity: 1;
+  box-shadow: 0 3px 0 var(--sun-dark);
+}
+
+/* ---------- Choosing a ball ---------- */
+
+.tray {
+  position: absolute;
+  right: 0;
+  bottom: calc(var(--safe-bottom) + 10px);
+  left: 0;
+  display: flex;
+  gap: clamp(4px, 1.6vw, 12px);
+  justify-content: center;
+  padding: 0 8px;
+  pointer-events: none;
+}
+
+.ball-btn {
+  display: grid;
+  flex: 0 1 72px;
+  place-items: center;
+  min-width: 0;
+  height: 68px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: var(--wood-grain), var(--wood-light);
+  box-shadow: inset 0 3px 0 rgb(255 255 255 / 28%), 0 5px 0 var(--wood-dark);
+  pointer-events: auto;
+  touch-action: manipulation;
+  transition: transform 0.1s;
+}
+
+.ball-btn.is-picked {
+  background: var(--wood-grain), #f3cf9f;
+  box-shadow: 0 0 0 4px var(--block-red), 0 6px 0 var(--block-red-edge);
+  transform: translateY(-5px) scale(1.06);
+}
+
+.ball-art {
+  display: block;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  box-shadow: inset -4px -5px 0 rgb(0 0 0 / 16%);
+}
+
+.ball-bowling {
+  background: radial-gradient(circle at 56% 24%, #17112b 0 3px, transparent 4px), radial-gradient(circle at 40% 24%, #17112b 0 3px, transparent 4px), radial-gradient(circle at 48% 38%, #17112b 0 3px, transparent 4px), #5b3fd6;
+}
+
+.ball-beach {
+  width: 54px;
+  height: 54px;
+  background: conic-gradient(#ff5f5f 0 60deg, #fff 60deg 120deg, #ffd23f 120deg 180deg, #fff 180deg 240deg, #4a9bff 240deg 300deg, #fff 300deg);
+}
+
+.ball-tiny {
+  width: 24px;
+  height: 24px;
+  background: #f2b632;
+  box-shadow: inset -3px -3px 0 rgb(0 0 0 / 18%), 0 2px 0 #b98300;
+}
+
+.ball-slime {
+  border-radius: 54% 46% 48% 52% / 58% 56% 44% 42%;
+  background: radial-gradient(circle at 34% 34%, #a6f06a 0 7px, transparent 8px), radial-gradient(circle at 66% 62%, #a6f06a 0 5px, transparent 6px), #62d84a;
+}
+
+.ball-basket {
+  background: linear-gradient(transparent 47%, #402010 47% 53%, transparent 53%), linear-gradient(90deg, transparent 47%, #402010 47% 53%, transparent 53%), #f0822e;
+}
+
+/* ---------- Pointers, taps and the slow-motion moment ---------- */
+
+.hint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: -30px 0 0 -30px;
+  font-size: 60px;
+  line-height: 1;
+  pointer-events: none;
+  animation: pointing 0.9s ease-in-out infinite alternate;
+}
+
+.reticle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border: 5px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--coral);
+  pointer-events: none;
+}
+
+.ripple {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  margin: -35px 0 0 -35px;
+  border: 6px solid #fff;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: ripple 0.35s ease-out forwards;
+}
+
+.slow-motion {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgb(43 33 64 / 34%));
+  pointer-events: none;
+  animation: fade-in 0.2s ease-out;
+}
+
+/* ---------- The end of a turn ---------- */
+
+.card {
+  position: absolute;
+  right: 0;
+  bottom: calc(var(--safe-bottom) + 12px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  width: min(92%, 430px);
+  margin: 0 auto;
+  padding: 12px 16px 20px;
+  border-radius: 14px;
+  color: #fff6e6;
+  background: var(--wood-grain), var(--wood);
+  box-shadow: inset 0 4px 0 rgb(255 255 255 / 22%), 0 9px 0 var(--wood-dark);
+  animation: card-in 0.28s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.card-stars {
+  display: flex;
+  gap: 8px;
+}
+
+.card-star {
+  font-size: 3rem;
+  line-height: 1;
+  filter: grayscale(1) opacity(0.35);
+}
+
+.card-star.is-won {
+  filter: none;
+  animation: star-land 0.42s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+
+.card-score {
+  font-size: 1.9rem;
+  font-weight: 700;
+  text-shadow: 0 2px 0 var(--wood-dark);
+}
+
+.card-note {
+  font-size: 1.05rem;
+  color: #fff6e6;
+  text-shadow: 0 1px 0 var(--wood-dark);
+}
+
+.card-together {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.card-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.card-btn {
+  --btn-color: var(--block-blue);
+  --btn-edge: var(--block-blue-edge);
+  min-width: 96px;
+  min-height: 88px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: #fff;
+  box-shadow: inset 0 4px 0 rgb(255 255 255 / 30%), 0 6px 0 var(--btn-edge);
+}
+
+.card-btn:active {
+  box-shadow: inset 0 4px 0 rgb(255 255 255 / 30%), 0 2px 0 var(--btn-edge);
+}
+
+.card-btn:focus-visible {
+  outline-color: #fff6e6;
+}
+
+.card-next {
+  --btn-color: var(--block-green);
+  --btn-edge: var(--block-green-edge);
+}
+
+.card-gift {
+  --btn-color: var(--block-purple);
+  --btn-edge: var(--block-purple-edge);
+}
+
+.card-wide {
+  min-width: 200px;
+}
+
+.card-gift {
+  animation: pulse 0.8s ease-in-out infinite alternate;
+}
+
+/* ---------- Picking a level ---------- */
+
+.picker {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px var(--gutter) calc(var(--safe-bottom) + 14px);
+  overflow-y: auto;
+  background: var(--wood-grain), var(--wood);
+}
+
+.settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  justify-content: center;
+}
+
+.toggle {
+  display: flex;
+  gap: 6px;
+}
+
+.toggle-btn {
+  min-height: 52px;
+  padding: 4px 14px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--wood-light);
+  box-shadow: inset 0 3px 0 rgb(255 255 255 / 25%), 0 5px 0 var(--wood-dark);
+  touch-action: manipulation;
+}
+
+.toggle-btn.is-picked {
+  color: #fff;
+  background: var(--block-red);
+  box-shadow: inset 0 3px 0 rgb(255 255 255 / 30%), 0 5px 0 var(--block-red-edge);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 12px;
+  width: min(100%, 760px);
+  margin: 0 auto;
+}
+
+/* Every level is a toy block. */
+.tile {
+  --paint: var(--block-blue);
+  --edge: var(--block-blue-edge);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  min-height: 92px;
+  padding: 6px 2px 8px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--ink);
+  background: var(--paint);
+  box-shadow: inset 0 4px 0 rgb(255 255 255 / 30%), 0 6px 0 var(--edge);
+  touch-action: manipulation;
+}
+
+.tile[data-paint='1'] {
+  --paint: var(--block-green);
+  --edge: var(--block-green-edge);
+}
+
+.tile[data-paint='2'] {
+  --paint: var(--block-orange);
+  --edge: var(--block-orange-edge);
+}
+
+.tile[data-paint='3'] {
+  --paint: var(--block-purple);
+  --edge: var(--block-purple-edge);
+}
+
+.tile[data-paint='4'] {
+  --paint: var(--block-teal);
+  --edge: var(--block-teal-edge);
+}
+
+.tile.is-current {
+  box-shadow: inset 0 4px 0 rgb(255 255 255 / 30%), 0 0 0 4px #fff6e6, 0 6px 0 4px var(--edge);
+}
+
+.tile-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.tile-stars {
+  min-height: 1.15em;
+  font-size: 1rem;
+  line-height: 1.15;
+  letter-spacing: -1px;
+}
+
+@keyframes pointing {
+  from {
+    translate: 0 -8px;
+    scale: 1;
+  }
+
+  to {
+    translate: 0 14px;
+    scale: 0.88;
+  }
+}
+
+@keyframes ripple {
+  from {
+    opacity: 0.9;
+    transform: scale(0.3);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes bumped {
+  50% {
+    transform: scale(1.22);
+  }
+}
+
+@keyframes star-won {
+  50% {
+    transform: translate(-50%, -50%) scale(1.6);
+  }
+}
+
+@keyframes star-land {
+  from {
+    opacity: 0;
+    transform: scale(0.2) rotate(-30deg);
+  }
+}
+
+@keyframes card-in {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* A short landscape screen moves the balls to the side, so the tower keeps the middle. */
+@media (max-height: 520px) {
+  .tray {
+    top: 50px;
+    right: 8px;
+    bottom: 8px;
+    left: auto;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .ball-btn {
+    flex: 1 1 0;
+    width: 60px;
+    min-height: 0;
+    height: auto;
+    max-height: 52px;
+    border-radius: 14px;
+  }
+
+  .ball-art {
+    transform: scale(0.72);
+  }
+
+  .card {
+    flex-flow: row wrap;
+    justify-content: center;
+    width: min(96%, 640px);
+    padding: 6px 12px 10px;
+  }
+
+  .card-star {
+    font-size: 2rem;
+  }
+
+  .card-btn {
+    min-height: 72px;
+  }
+
+  .card-actions {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    display: none;
+  }
+
+  .topbar-end {
+    margin-left: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint,
+  .card,
+  .card-gift,
+  .meter-star.is-won,
+  .meter-count.is-bumped {
+    animation: none;
+  }
+}

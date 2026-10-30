@@ -1,0 +1,432 @@
+html,
+body {
+  overscroll-behavior: none;
+}
+
+/* The whole page is the game's world: main.ts sets these from worlds.ts. */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  color: var(--on-sky);
+  background: var(--sky-top);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.topbar {
+  flex: none;
+  gap: 8px;
+}
+
+.landscape {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+
+body[data-screen='play'] .landscape {
+  display: none;
+}
+
+.title {
+  min-width: 0;
+  margin: 0;
+  font-size: clamp(1.3rem, 5vw, 2.2rem);
+  white-space: nowrap;
+  color: var(--on-sky);
+}
+
+.home-btn,
+.language-btn,
+.bar-btn {
+  background: #fff;
+  box-shadow: 0 4px 0 var(--soil);
+}
+
+.home-btn:active,
+.language-btn:active {
+  box-shadow: 0 1px 0 var(--soil);
+}
+
+.bar-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  touch-action: manipulation;
+}
+
+.bar-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--soil);
+}
+
+.bar-btn[hidden] {
+  display: none;
+}
+
+body[data-screen='pick'] .back-btn,
+body:not([data-screen='play']) .retry-btn {
+  display: none;
+}
+
+.app {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ---------- The game fills the screen below the bar, and the page must not move ---------- */
+
+body[data-screen='play'] {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body[data-screen='play'] .topbar {
+  padding-top: calc(var(--safe-top) + 6px);
+  padding-bottom: 8px;
+}
+
+@media (max-width: 480px) {
+  body[data-screen='play'] .title {
+    display: none;
+  }
+}
+
+@media (max-height: 480px) {
+  body[data-screen='play'] .topbar {
+    padding-top: calc(var(--safe-top) + 2px);
+    padding-bottom: 2px;
+  }
+
+  body[data-screen='play'] .bar-btn,
+  body[data-screen='play'] .home-btn,
+  body[data-screen='play'] .language-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
+  }
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.world {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* ---------- Choosing ---------- */
+
+.pick {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(100%, 860px);
+  margin: 0 auto;
+  padding: 0 var(--gutter) calc(var(--safe-bottom) + 20px);
+}
+
+.speeds {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.speed-btn {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  padding: 10px 6px 4px;
+  border: 0;
+  border-top: 10px solid var(--grass);
+  border-radius: 12px 12px 22px 22px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--soil-deep);
+  touch-action: manipulation;
+}
+
+/* The chosen speed stands on sunlit ground. */
+.speed-btn[aria-pressed='true'] {
+  outline: 4px solid #fff;
+  outline-offset: 2px;
+}
+
+.speed-btn:active {
+  transform: translateY(3px);
+}
+
+.speed-art {
+  font-size: 1.5rem;
+}
+
+.runners {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 620px) {
+  .runners {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.runner-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 150px;
+  padding: 0 0 8px;
+  border: 0;
+  border-radius: 14px 14px 26px 26px;
+  color: #fff;
+  background: linear-gradient(180deg, transparent 0 calc(100% - 40px), var(--grass) calc(100% - 40px) calc(100% - 30px), var(--soil-deep) calc(100% - 30px));
+  touch-action: manipulation;
+}
+
+.runner-card:active {
+  transform: translateY(4px);
+}
+
+.runner-art {
+  width: min(100%, 150px);
+  aspect-ratio: 1;
+}
+
+.runner-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.levels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 620px) {
+  .levels {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.level-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  min-height: 112px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: var(--radius);
+  color: var(--tile-ink);
+  background: linear-gradient(180deg, var(--tile-top) 0 66%, var(--tile-low) 66% 74%, var(--tile-soil) 74%);
+  touch-action: manipulation;
+}
+
+.level-tile:active {
+  transform: translateY(4px);
+}
+
+.level-next {
+  animation: tile-pulse 1.3s ease-in-out infinite;
+}
+
+@keyframes tile-pulse {
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.tile-art {
+  font-size: 2.3rem;
+  line-height: 1.1;
+}
+
+.tile-stage {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.tile-stars {
+  font-size: 1.25rem;
+  line-height: 1;
+  letter-spacing: 1px;
+  color: rgb(255 255 255 / 55%);
+  text-shadow: 0 1px 1px rgb(0 0 0 / 35%);
+}
+
+.tile-star.on {
+  color: var(--sun);
+}
+
+.tile-treasure,
+.tile-castle {
+  position: absolute;
+  top: 4px;
+  font-size: 1.15rem;
+}
+
+.tile-treasure {
+  right: 6px;
+}
+
+.tile-treasure:not(.found) {
+  filter: grayscale(1) opacity(0.55);
+}
+
+.tile-castle {
+  right: 30px;
+}
+
+.shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 34px;
+  background: #fff;
+  box-shadow: 0 4px 0 rgb(0 0 0 / 8%);
+}
+
+.shelf-slot {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  font-size: 1.6rem;
+}
+
+.shelf-slot.empty::after {
+  width: 26px;
+  height: 26px;
+  content: '';
+  border: 3px dashed #d9d0c2;
+  border-radius: 50%;
+}
+
+/* ---------- The flag's reward ---------- */
+
+.finish {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px var(--gutter);
+  overflow: hidden;
+  text-align: center;
+  background: rgb(30 50 90 / 58%);
+  background: color-mix(in srgb, color-mix(in srgb, var(--sky-top) 62%, #123) 68%, transparent);
+  animation: finish-in 0.25s ease-out;
+}
+
+@keyframes finish-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.finish-stars {
+  display: flex;
+  gap: 6px;
+  font-size: clamp(3.4rem, min(17vw, 20vh), 6rem);
+  line-height: 1;
+}
+
+.finish-star {
+  color: rgb(255 255 255 / 30%);
+  transition: transform 0.25s cubic-bezier(0.3, 2, 0.6, 1), color 0.15s;
+}
+
+.finish-star.on {
+  color: var(--sun);
+  transform: scale(1.15) rotate(-6deg);
+  text-shadow: 0 3px 0 var(--sun-dark);
+}
+
+.finish-score {
+  margin: 0;
+  font-size: clamp(2rem, 8vh, 3rem);
+  font-weight: 700;
+  color: #fff;
+}
+
+.finish-best {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.finish-treasure {
+  margin: 0;
+  font-size: clamp(2.4rem, 11vh, 4rem);
+  line-height: 1.1;
+}
+
+.finish-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.finish-btn {
+  min-width: 88px;
+  min-height: 76px;
+  padding: 8px 12px 4px;
+  border: 0;
+  border-top: 12px solid var(--grass);
+  border-radius: 14px 14px 28px 28px;
+  font-size: 2rem;
+  background: var(--soil-deep);
+  touch-action: manipulation;
+}
+
+.finish-next {
+  min-width: 112px;
+  font-size: 2.4rem;
+}
+
+.finish[data-ready='false'] .finish-actions {
+  pointer-events: none;
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-next {
+    animation: none;
+    outline: 4px solid var(--leaf);
+  }
+}

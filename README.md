@@ -23,6 +23,11 @@ Live at <https://nazuje.github.io/playroom/>, with games at `/playroom/<slug>/`.
 | [🏎️ Zoom Road / Brm brm!](games/zoom-road/README.md) | Pick your ride and zoom to the finish! | 4-9 | ✓ |  | 🇬🇧 🇸🇮 |
 | [🎈 Balloon Battle / Balonski dvoboj](games/balloon-battle/README.md) | Two players. Tap fast. Bang! | 3-9 |  | ✓ | 🇬🇧 🇸🇮 |
 | [🎸 Silly Band / Smešni orkester](games/silly-band/README.md) | Tap the band and make a racket! | 3-9 | ✓ | ✓ | 🇬🇧 🇸🇮 |
+| [✈️ Cloud Flyer / Let med oblaki](games/cloud-flyer/README.md) | Swoop through the sky rings in 3D! | 4-9 | ✓ |  | 🇬🇧 🇸🇮 |
+| [⛄ Snowball Splat / Kepanje](games/snowball-splat/README.md) | Splat silly snowmen with snowballs! | 3-9 | ✓ |  | 🇬🇧 🇸🇮 |
+| [🧱 Block Bash / Podri stolp!](games/block-bash/README.md) | Throw a ball and smash the towers down! | 4-9 | ✓ | ✓ | 🇬🇧 🇸🇮 |
+| [🐇 Hop Dash / Hopsasa!](games/hop-dash/README.md) | Run, jump and bounce to the flag! | 4-9 | ✓ |  | 🇬🇧 🇸🇮 |
+| [👽 Tickle Blaster / Žgečkaj vesoljčke!](games/tickle-blaster/README.md) | Tickle the grumpy aliens until they giggle! | 5-9 | ✓ |  | 🇬🇧 🇸🇮 |
 
 ## Layout
 
@@ -31,9 +36,13 @@ games.json            the registry: every game the portal shows
 portal/               the game picker, served at the site root
 games/<slug>/         one folder per game
 games/_template/      a working starter game, copied to make new ones
+packages/stage3d/     @playroom/stage3d: the 3D scene the 3D games share
 packages/kit/         @playroom/kit: speech, languages, sound effects, star burst, home button, store, kit.css
 scripts/build-site.mjs  builds the portal and every ready game into dist/
 scripts/voice/        generates Slovenian speech clips ahead of time
+scripts/playtest.mjs  mashes built games in Chrome and reports what broke
+docs/making-games.md  the rules every game follows
+.claude/              shared agent setup: the game tester and reviewed three.js skills
 ```
 
 It is one npm workspace with one root `package-lock.json`. TypeScript, Vite and Vitest live at the root. Each game keeps its own dependencies.
@@ -50,6 +59,7 @@ npm test                             # every workspace's tests
 npm run typecheck                    # every workspace, including the template
 npm run build                        # the whole site into dist/
 npm run preview                      # serve dist/ at http://localhost:5179
+npm run playtest -- <slug>           # mash a built game in Chrome, on phone and tablet, in each language
 ```
 
 `npm run dev` is enough to click through the whole site. A small Vite plugin in `portal/devGames.ts` runs each ready game inside the portal's dev server, so tile links work and edits to a game reload the page. A game has to be `"ready"` in `games.json` to appear there. While a game is still `"coming-soon"`, use `npm run dev -w @playroom/<slug>`.
@@ -63,7 +73,7 @@ npm run preview                      # serve dist/ at http://localhost:5179
 | `slug` | Folder name in `games/` and the URL path |
 | `title`, `emoji` | Shown on the tile |
 | `tagline` | One short kid-friendly line |
-| `skills` | Any of `fun`, `world`, `memory`, `logic`, `colors`, `reading`, `numbers`, `moving` |
+| `skills` | Any of `fun`, `action`, `3d`, `world`, `memory`, `logic`, `colors`, `reading`, `numbers`, `moving` |
 | `ages` | A range such as `"4-9"`. The portal's age filter shows a game when the chosen age falls inside it, ends included |
 | `modes` | `"solo"`, `"together"`, or both: how the game can be played |
 | `languages` | `"en"`, `"sl"`, or both: the languages the game is fully playable in. The portal shows a language chip once a game has it, and the language row itself once there are two languages. A tile shows a flag badge when a game has more than one language or isn't in English |
@@ -106,6 +116,12 @@ Games import from `@playroom/kit`. It is plain TypeScript with no dependencies a
 - `homeButton()`: a big round 🏠 link back to the portal, for the game's top bar.
 - `store.get(key, fallback)`, `store.set(key, value)`: small JSON values in localStorage for this device, such as best scores. They never throw, so nothing important should rely on them.
 - `import '@playroom/kit/kit.css'`: the Fredoka font, the palette as CSS custom properties, the page background, `.btn` with `.btn-sun`, `.btn-coral`, `.btn-leaf` and `.btn-grape`, `.topbar` with `.topbar-end`, and reduced-motion handling.
+
+## 3D games
+
+3D games use [three.js](https://threejs.org) through `@playroom/stage3d`, so a fix for slow or old tablets reaches all of them. Add `@playroom/stage3d` and `three` to the game's dependencies and `@types/three` to its dev dependencies.
+
+`createStage(host, { fov?, near?, far? })` fills `host` with a scene and returns `{ scene, camera, renderer, canvas, onFrame, start, stop, dispose }`, or `null` on a device that can't draw 3D, so a game can say so kindly. It handles screen size and tall phones, sharpness that drops by itself on a slow device, a safe time step after the tab sleeps, pausing while hidden, and a lost graphics context.
 
 ## Add a language to a game
 

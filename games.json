@@ -359,5 +359,139 @@
     },
     "color": "#2fb37a",
     "status": "ready"
+  },
+  {
+    "slug": "cloud-flyer",
+    "title": "Cloud Flyer",
+    "emoji": "✈️",
+    "tagline": "Swoop through the sky rings in 3D!",
+    "skills": [
+      "3d",
+      "action",
+      "fun"
+    ],
+    "ages": "4-9",
+    "modes": [
+      "solo"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Let med oblaki",
+        "tagline": "Leti skozi obroče visoko na nebu!"
+      }
+    },
+    "color": "#4aa8f0",
+    "status": "ready"
+  },
+  {
+    "slug": "snowball-splat",
+    "title": "Snowball Splat",
+    "emoji": "⛄",
+    "tagline": "Splat silly snowmen with snowballs!",
+    "skills": [
+      "3d",
+      "action",
+      "fun"
+    ],
+    "ages": "3-9",
+    "modes": [
+      "solo"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Kepanje",
+        "tagline": "Zadeni smešne snežake s kepami!"
+      }
+    },
+    "color": "#6fc3e8",
+    "status": "ready"
+  },
+  {
+    "slug": "block-bash",
+    "title": "Block Bash",
+    "emoji": "🧱",
+    "tagline": "Throw a ball and smash the towers down!",
+    "skills": [
+      "3d",
+      "action",
+      "fun"
+    ],
+    "ages": "4-9",
+    "modes": [
+      "solo",
+      "together"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Podri stolp!",
+        "tagline": "Vrzi žogo in podri vse stolpe!"
+      }
+    },
+    "color": "#e0792f",
+    "status": "ready"
+  },
+  {
+    "slug": "hop-dash",
+    "title": "Hop Dash",
+    "emoji": "🐇",
+    "tagline": "Run, jump and bounce to the flag!",
+    "skills": [
+      "action",
+      "fun"
+    ],
+    "ages": "4-9",
+    "modes": [
+      "solo"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Hopsasa!",
+        "tagline": "Teci, skači in zberi vse zvezdice!"
+      }
+    },
+    "color": "#58b947",
+    "status": "ready"
+  },
+  {
+    "slug": "tickle-blaster",
+    "title": "Tickle Blaster",
+    "emoji": "👽",
+    "tagline": "Tickle the grumpy aliens until they giggle!",
+    "skills": [
+      "action",
+      "fun"
+    ],
+    "ages": "5-9",
+    "modes": [
+      "solo"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Žgečkaj vesoljčke!",
+        "tagline": "Hitro, vsi vesoljčki se morajo smejati!"
+      }
+    },
+    "color": "#6a4fd8",
+    "status": "ready"
   }
 ]

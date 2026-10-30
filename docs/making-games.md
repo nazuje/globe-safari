@@ -1,0 +1,37 @@
+# Making a Playroom game
+
+The players are a 6-year-old and a 4-year-old, boys and girls alike, mostly on a tablet or phone. These rules hold for every game. `README.md` covers the mechanics of adding a game or a language.
+
+## Every game
+
+- **Plays without reading.** Everything important is spoken, with a 🔊 button to repeat it, and the game still makes sense with the sound off, through pictures and a pulsing hint. Words on screen are for the grown-up.
+- **Tap only, and big.** Gameplay targets are at least 64px, and 88px in games for age 3 to 5. Everything else is at least 48px. Text is at least 16px. Portrait phones (360px wide) and landscape tablets both fit with no sideways scroll.
+- **Failure is funny.** A miss gets a silly reaction and a way forward. After a couple of misses, the answer gets easier to spot, so nobody gets stuck.
+- **Mash-proof.** A palm on the screen or 50 fast taps breaks nothing, loses nothing and skips no screen. The home button and any start-over control stay small and away from the play area. Handle game taps on `pointerdown`, and keep two simultaneous fingers working.
+- **Fast reward, short rounds.** Rounds last 1 to 3 minutes, or 30 to 90 seconds for age 3 to 5, then a burst of confetti, a spoken cheer and one big button for the next round.
+- **Kind to everyone.** Characters are gender-neutral and nothing is sorted by gender. Dinosaurs, unicorns, crowns and diggers all sit side by side. Nothing is scary, mean or violent, and anything hit laughs.
+- **Self-contained.** Art is CSS, canvas, emoji or three.js primitives, and sound comes from `playSound` and `playNote` in kit, so games make no outside requests. Game rules live in pure modules with vitest tests, and respect `prefers-reduced-motion`.
+
+## Fun and action games
+
+- Every tap gets sound and movement within a frame. Rare surprises keep the tenth round fresh, and something should grow over time, such as a collection.
+- Action games may keep score, show a personal best and give up to 3 stars. Retrying takes one tap, and every level stays open. Easy is the default and a 4-year-old can enjoy it, with at least one harder setting for the 6-year-old. There are no lives, no game over and no pressure timers: a mistake costs a moment, never the run.
+- Playing always beats not playing. An assist helps a 4-year-old succeed, while a hands-off run earns the lowest rating and scores below even careless play. Prove it with simulated hands-off, careless and skilled players across every setting, in tests.
+- Keep rules frame-rate independent.
+
+## 3D games
+
+- Build on `@playroom/stage3d`, which owns sizing, pixel ratio, sleep and lost contexts, whatever a three.js example shows. When `createStage` returns null, show a kind translated message and the home button.
+- Aim for bright, toy-like low-poly worlds: `flatShading`, a hemisphere light plus one directional light, blob shadows, and fog at the far edge. Reuse geometries and materials, instance repeats, and stay near 100 draw calls.
+- The camera moves smoothly, with no rolling or hard shaking.
+- For three.js API questions, use the skills in `.claude/skills/`, or find the page through the index at <https://threejs.org/docs/llms.txt>.
+
+## Look
+
+Choose each game's world and palette before writing code: the place it's set, three main colors, and one signature effect. Each game should be recognisable from a thumbnail. Cream or off-white backgrounds, pill-shaped buttons and a yellow primary button are the house habit, so reach for something the game's own world suggests instead.
+
+## Slovenian
+
+Build English and Slovenian from the start, following `README.md`. Spoken lines are warm, natural and short, as a kindergarten teacher would say them, so rewrite jokes rather than translating them word for word. Address the child in a way that works for any gender: "Bravo!", or a present-tense or imperative verb. Use `slCounted` and friends for numbers.
+
+Stress can't be read from spelling and the voice engine guesses. After generating clips, read every word in `npm run voice:words -- <slug>`, and fix only the ones you're sure of with `npm run voice:fix -- <word> <ipa>`. List anything that needs a native speaker's ear in your report.

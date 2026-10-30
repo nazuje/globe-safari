@@ -1,7 +1,7 @@
 import type { Language } from '@playroom/kit';
 import registry from '../../games.json';
 
-export type Skill = 'fun' | 'world' | 'memory' | 'logic' | 'colors' | 'reading' | 'numbers' | 'moving';
+export type Skill = 'fun' | 'action' | '3d' | 'world' | 'memory' | 'logic' | 'colors' | 'reading' | 'numbers' | 'moving';
 
 export type Mode = 'solo' | 'together';
 
@@ -23,6 +23,8 @@ export const GAMES = registry as Game[];
 
 export const SKILL_LABELS: Record<Skill, string> = {
   fun: '🎉 Just for fun',
+  action: '⚡ Action',
+  '3d': '🧊 3D',
   world: '🌍 World',
   memory: '🧠 Memory',
   logic: '🧩 Logic',
