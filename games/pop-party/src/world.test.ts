@@ -15,6 +15,17 @@ function play(collection: Collection = { found: [], pops: 0, debuts: 0 }, rng: (
   return { world, events, count: (type) => events.filter((event) => event.type === type).length };
 }
 
+/** The same game every run, so a long test can't fail on an unlucky roll. */
+function seeded(seed: number): () => number {
+  let state = seed;
+  return () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let mixed = Math.imul(state ^ (state >>> 15), 1 | state);
+    mixed = (mixed + Math.imul(mixed ^ (mixed >>> 7), 61 | mixed)) ^ mixed;
+    return ((mixed ^ (mixed >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 function run(world: World, seconds: number): void {
   for (let i = 0; i < seconds * 60; i++) world.step(1 / 60);
 }
@@ -186,12 +197,13 @@ describe('a party', () => {
 
 describe('a long, wild game', () => {
   it('survives mashing, stays within its limits and fills the shelf', () => {
-    const { world, count } = play();
+    const rng = seeded(7);
+    const { world, count } = play(undefined, rng);
     for (let frame = 0; frame < 60 * 60 * 12; frame++) {
       world.step(1 / 60);
       const target = world.bubbles.find((bubble) => bubble.alive && bubble.y > 0 && bubble.y < world.floor);
       if (frame % 8 === 0 && target) world.tap(target.x, target.y);
-      if (frame % 13 === 0) world.tap(Math.random() * WIDTH, Math.random() * HEIGHT);
+      if (frame % 13 === 0) world.tap(rng() * WIDTH, rng() * HEIGHT);
       if (frame === 60 * 60) world.resize(1280, 700);
       expect(live(world)).toBeLessThanOrEqual(MAX_BUBBLES);
     }

@@ -28,6 +28,7 @@ Live at <https://nazuje.github.io/playroom/>, with games at `/playroom/<slug>/`.
 | [🧱 Block Bash / Podri stolp!](games/block-bash/README.md) | Throw a ball and smash the towers down! | 4-9 | ✓ | ✓ | 🇬🇧 🇸🇮 |
 | [🐇 Hop Dash / Hopsasa!](games/hop-dash/README.md) | Run, jump and bounce to the flag! | 4-9 | ✓ |  | 🇬🇧 🇸🇮 |
 | [👽 Tickle Blaster / Žgečkaj vesoljčke!](games/tickle-blaster/README.md) | Tickle the grumpy aliens until they giggle! | 5-9 | ✓ |  | 🇬🇧 🇸🇮 |
+| [🚨 Maze Escape / Pobeg iz labirinta](games/maze-escape/README.md) | Sneak past the robots and escape the maze! | 5-9 | ✓ |  | 🇬🇧 🇸🇮 |
 
 ## Layout
 

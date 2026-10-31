@@ -17,6 +17,7 @@ The players are a 6-year-old and a 4-year-old, boys and girls alike, mostly on a
 - Every tap gets sound and movement within a frame. Rare surprises keep the tenth round fresh, and something should grow over time, such as a collection.
 - Action games may keep score, show a personal best and give up to 3 stars. Retrying takes one tap, and every level stays open. Easy is the default and a 4-year-old can enjoy it, with at least one harder setting for the 6-year-old. There are no lives, no game over and no pressure timers: a mistake costs a moment, never the run.
 - Playing always beats not playing. An assist helps a 4-year-old succeed, while a hands-off run earns the lowest rating and scores below even careless play. Prove it with simulated hands-off, careless and skilled players across every setting, in tests.
+- Maze Escape is the one game with real losing, because the parent asked for it. Losing still costs nothing: a cartoon reaction, one tap to retry, and finished levels stay finished.
 - Keep rules frame-rate independent.
 
 ## 3D games

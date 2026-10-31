@@ -493,5 +493,32 @@
     },
     "color": "#6a4fd8",
     "status": "ready"
+  },
+  {
+    "slug": "maze-escape",
+    "title": "Maze Escape",
+    "emoji": "🚨",
+    "tagline": "Sneak past the robots and escape the maze!",
+    "skills": [
+      "3d",
+      "action",
+      "fun"
+    ],
+    "ages": "5-9",
+    "modes": [
+      "solo"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Pobeg iz labirinta",
+        "tagline": "Izogni se robotom in najdi izhod!"
+      }
+    },
+    "color": "#d6336c",
+    "status": "ready"
   }
 ]
