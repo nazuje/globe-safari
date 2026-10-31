@@ -1,0 +1,314 @@
+[
+ {
+  "number": 1,
+  "won": true,
+  "tries": 1,
+  "seconds": 27.61,
+  "stars": 3,
+  "gems": 3,
+  "lavaGapTiles": 7.8,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 2,
+  "won": true,
+  "tries": 1,
+  "seconds": 30.81,
+  "stars": 3,
+  "gems": 4,
+  "lavaGapTiles": 8.8,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 3,
+  "won": true,
+  "tries": 1,
+  "seconds": 29.11,
+  "stars": 3,
+  "gems": 2,
+  "lavaGapTiles": 6.8,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 4,
+  "won": true,
+  "tries": 1,
+  "seconds": 25.41,
+  "stars": 3,
+  "gems": 5,
+  "lavaGapTiles": 6.7,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 5,
+  "won": true,
+  "tries": 1,
+  "seconds": 29.73,
+  "stars": 3,
+  "gems": 4,
+  "lavaGapTiles": 7.2,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 6,
+  "won": true,
+  "tries": 1,
+  "seconds": 34.56,
+  "stars": 3,
+  "gems": 4,
+  "lavaGapTiles": 4.4,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 7,
+  "won": true,
+  "tries": 1,
+  "seconds": 28.06,
+  "stars": 3,
+  "gems": 3,
+  "lavaGapTiles": 7.3,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 8,
+  "won": true,
+  "tries": 1,
+  "seconds": 33.92,
+  "stars": 3,
+  "gems": 4,
+  "lavaGapTiles": 6.5,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 9,
+  "won": true,
+  "tries": 1,
+  "seconds": 28.6,
+  "stars": 3,
+  "gems": 8,
+  "lavaGapTiles": 7.3,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 10,
+  "won": true,
+  "tries": 1,
+  "seconds": 25.86,
+  "stars": 3,
+  "gems": 4,
+  "lavaGapTiles": 6.1,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 11,
+  "won": true,
+  "tries": 1,
+  "seconds": 33.41,
+  "stars": 3,
+  "gems": 4,
+  "lavaGapTiles": 6.5,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 12,
+  "won": true,
+  "tries": 1,
+  "seconds": 30.32,
+  "stars": 3,
+  "gems": 3,
+  "lavaGapTiles": 3.7,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 13,
+  "won": true,
+  "tries": 1,
+  "seconds": 21.63,
+  "stars": 3,
+  "gems": 4,
+  "lavaGapTiles": 4.9,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 14,
+  "won": true,
+  "tries": 1,
+  "seconds": 25.11,
+  "stars": 3,
+  "gems": 7,
+  "lavaGapTiles": 5.8,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 15,
+  "won": true,
+  "tries": 1,
+  "seconds": 28.31,
+  "stars": 3,
+  "gems": 6,
+  "lavaGapTiles": 3.4,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 16,
+  "won": true,
+  "tries": 1,
+  "seconds": 30.01,
+  "stars": 3,
+  "gems": 5,
+  "lavaGapTiles": 4.2,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 17,
+  "won": true,
+  "tries": 1,
+  "seconds": 28.51,
+  "stars": 3,
+  "gems": 7,
+  "lavaGapTiles": 3.1,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 18,
+  "won": true,
+  "tries": 1,
+  "seconds": 35.11,
+  "stars": 3,
+  "gems": 7,
+  "lavaGapTiles": 4.1,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 19,
+  "won": true,
+  "tries": 1,
+  "seconds": 36.16,
+  "stars": 3,
+  "gems": 7,
+  "lavaGapTiles": 5.7,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 20,
+  "won": true,
+  "tries": 1,
+  "seconds": 31.51,
+  "stars": 3,
+  "gems": 7,
+  "lavaGapTiles": 2.8,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 21,
+  "won": true,
+  "tries": 1,
+  "seconds": 38.49,
+  "stars": 3,
+  "gems": 11,
+  "lavaGapTiles": 3.3,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 22,
+  "won": true,
+  "tries": 1,
+  "seconds": 42.16,
+  "stars": 3,
+  "gems": 11,
+  "lavaGapTiles": 5.4,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 23,
+  "won": true,
+  "tries": 1,
+  "seconds": 40.66,
+  "stars": 3,
+  "gems": 11,
+  "lavaGapTiles": 4.6,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 24,
+  "won": true,
+  "tries": 1,
+  "seconds": 50.82,
+  "stars": 3,
+  "gems": 14,
+  "lavaGapTiles": 2.5,
+  "log": [
+   "won"
+  ],
+  "problems": []
+ }
+]

@@ -17,8 +17,17 @@ The players are a 6-year-old and a 4-year-old, boys and girls alike, mostly on a
 - Every tap gets sound and movement within a frame. Rare surprises keep the tenth round fresh, and something should grow over time, such as a collection.
 - Action games may keep score, show a personal best and give up to 3 stars. Retrying takes one tap, and every level stays open. Easy is the default and a 4-year-old can enjoy it, with at least one harder setting for the 6-year-old. There are no lives, no game over and no pressure timers: a mistake costs a moment, never the run.
 - Playing always beats not playing. An assist helps a 4-year-old succeed, while a hands-off run earns the lowest rating and scores below even careless play. Prove it with simulated hands-off, careless and skilled players across every setting, in tests.
-- Maze Escape is the one game with real losing, because the parent asked for it. Losing still costs nothing: a cartoon reaction, one tap to retry, and finished levels stay finished.
 - Keep rules frame-rate independent.
+
+## Challenge games
+
+The parent asked for games that are truly hard. Maze Escape and every game tagged `challenge` have real losing, and these rules replace the softer ones above where they differ. They suit age 6 and up.
+
+- Losing costs nothing but the try: a funny reaction, one tap to retry within a second, and finished levels stay finished.
+- Difficulty is a staircase. The first levels teach one idea and a 6-year-old beats them quickly. The last levels are a real challenge for a grown-up.
+- Levels open in order. After 5 failed tries on a level, a small skip button appears, so nobody stays stuck.
+- Every loss is fair: the danger or mistake was visible, and the player can see what to do differently.
+- Prove the staircase by playing the built game with real touch events, not only by simulation. A skilled bot beats every level, a careless bot beats the early levels and loses the late ones. Simulated results have disagreed with the real game here before, so the real run decides.
 
 ## 3D games
 

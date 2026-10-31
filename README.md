@@ -29,6 +29,8 @@ Live at <https://nazuje.github.io/playroom/>, with games at `/playroom/<slug>/`.
 | [🐇 Hop Dash / Hopsasa!](games/hop-dash/README.md) | Run, jump and bounce to the flag! | 4-9 | ✓ |  | 🇬🇧 🇸🇮 |
 | [👽 Tickle Blaster / Žgečkaj vesoljčke!](games/tickle-blaster/README.md) | Tickle the grumpy aliens until they giggle! | 5-9 | ✓ |  | 🇬🇧 🇸🇮 |
 | [🚨 Maze Escape / Pobeg iz labirinta](games/maze-escape/README.md) | Sneak past the robots and escape the maze! | 5-9 | ✓ |  | 🇬🇧 🇸🇮 |
+| [☄️ Dodge Arena / Izmikaj se!](games/dodge-arena/README.md) | Dodge everything. How long can you last? | 6-12 | ✓ |  | 🇬🇧 🇸🇮 |
+| [🔦 Beam Bender / Zrcalni žarek](games/beam-bender/README.md) | Turn the mirrors and hit every target! | 6-12 | ✓ | ✓ | 🇬🇧 🇸🇮 |
 
 ## Layout
 
@@ -74,7 +76,7 @@ npm run playtest -- <slug>           # mash a built game in Chrome, on phone and
 | `slug` | Folder name in `games/` and the URL path |
 | `title`, `emoji` | Shown on the tile |
 | `tagline` | One short kid-friendly line |
-| `skills` | Any of `fun`, `action`, `3d`, `world`, `memory`, `logic`, `colors`, `reading`, `numbers`, `moving` |
+| `skills` | Any of `fun`, `challenge`, `action`, `3d`, `world`, `memory`, `logic`, `colors`, `reading`, `numbers`, `moving` |
 | `ages` | A range such as `"4-9"`. The portal's age filter shows a game when the chosen age falls inside it, ends included |
 | `modes` | `"solo"`, `"together"`, or both: how the game can be played |
 | `languages` | `"en"`, `"sl"`, or both: the languages the game is fully playable in. The portal shows a language chip once a game has it, and the language row itself once there are two languages. A tile shows a flag badge when a game has more than one language or isn't in English |

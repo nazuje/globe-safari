@@ -8,7 +8,7 @@ import { clipsDir, manifestPath, readLines } from './voice/lines.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DIST = join(ROOT, 'dist');
-const SKILLS = new Set(['fun', 'action', '3d', 'world', 'memory', 'logic', 'colors', 'reading', 'numbers', 'moving']);
+const SKILLS = new Set(['fun', 'challenge', 'action', '3d', 'world', 'memory', 'logic', 'colors', 'reading', 'numbers', 'moving']);
 const STATUSES = new Set(['ready', 'coming-soon']);
 const LANGUAGES = new Set(['en', 'sl']);
 

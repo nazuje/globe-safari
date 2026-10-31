@@ -1,0 +1,30 @@
+[
+ {
+  "number": 1,
+  "won": true,
+  "tries": 5,
+  "seconds": 43.7,
+  "stars": 1,
+  "log": [
+   "singed, best 49/128 rows",
+   "singed, best 59/128 rows",
+   "stuck y 616",
+   "singed, best 3/128 rows",
+   "won"
+  ],
+  "problems": []
+ },
+ {
+  "number": 2,
+  "won": false,
+  "tries": 5,
+  "log": [
+   "singed, best 60/126 rows",
+   "singed, best 33/126 rows",
+   "stuck y 1913",
+   "singed, best 15/126 rows",
+   "singed, best 63/126 rows"
+  ],
+  "problems": []
+ }
+]

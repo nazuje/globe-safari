@@ -1,0 +1,60 @@
+import type { Kind } from '../dangers.ts';
+import type { NamedWave } from '../waves.ts';
+import type { Surprise } from '../run.ts';
+
+export const en = {
+  title: 'Dodge Arena',
+  description: 'A 3D survival game in a neon arena floating in space. Dodge meteors, boulders, beams and bouncy slime, and beat your best time. For ages 6 to 12.',
+  home: 'Back to Playroom',
+  sayAgain: 'Say it again',
+  menu: 'Menu',
+  stagesLabel: 'Challenge stages',
+  no3d: 'This device cannot draw the arena. Try another tablet or computer!',
+  greet: 'Dodge everything!',
+  howTo: 'Hold your finger to run. Tap the button to leap.',
+  pickStage: 'Pick a stage!',
+  endless: 'Endless',
+  challenge: 'Challenge',
+  best: 'Best',
+  leap: 'Leap',
+  stage: (n: number) => `Stage ${n}`,
+  surviveFor: (n: number) => `Survive ${n} seconds`,
+  locked: 'Locked',
+  retry: 'Try again',
+  next: 'Next stage',
+  skip: 'Skip this stage',
+  stars: 'Stars',
+  bonk: 'BONK!',
+  lastedLabel: 'You lasted',
+  seconds: 'seconds',
+  lastHeart: 'Last heart!',
+  newBest: 'New best time!',
+  greatRun: 'What a run!',
+  almost: 'So close! Try again!',
+  stageDone: 'Stage done!',
+  allStars: 'Three stars!',
+  faster: 'Faster!',
+  teach: {
+    meteor: 'Meteor! Run out of the shadow.',
+    boulder: 'Boulder! Get out of the lane.',
+    beam: 'Beam! Jump it or step aside.',
+    ring: 'Ring! Jump when it reaches you.',
+    bar: 'Spinning bar! Stay out of the circle.',
+    slime: 'Slime! Run, it will pop.',
+  } satisfies Record<Kind, string>,
+  waves: {
+    storm: 'Meteor storm!',
+    bowling: 'Boulder bowling!',
+    disco: 'Laser disco!',
+    ripple: 'Ring party!',
+    soup: 'Slime soup!',
+  } satisfies Record<NamedWave, string>,
+  surprises: {
+    heart: 'A heart!',
+    slow: 'Slow motion!',
+    golden: 'Golden wave!',
+    ufo: 'A friendly UFO!',
+  } satisfies Record<Surprise, string>,
+};
+
+export type Text = typeof en;

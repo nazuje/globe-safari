@@ -520,5 +520,86 @@
     },
     "color": "#d6336c",
     "status": "ready"
+  },
+  {
+    "slug": "beam-bender",
+    "title": "Beam Bender",
+    "emoji": "🔦",
+    "tagline": "Turn the mirrors and hit every target!",
+    "skills": [
+      "challenge",
+      "3d",
+      "logic"
+    ],
+    "ages": "6-12",
+    "modes": [
+      "solo",
+      "together"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Zrcalni žarek",
+        "tagline": "Obrni zrcala in zadeni vse tarče!"
+      }
+    },
+    "color": "#12b5a6",
+    "status": "ready"
+  },
+  {
+    "slug": "lava-climb",
+    "title": "Lava Climb",
+    "emoji": "🌋",
+    "tagline": "Jump higher before the lava gets you!",
+    "skills": [
+      "challenge",
+      "action"
+    ],
+    "ages": "6-12",
+    "modes": [
+      "solo"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Beg pred lavo",
+        "tagline": "Skači višje, lava se dviga!"
+      }
+    },
+    "color": "#e4572e",
+    "status": "coming-soon"
+  },
+  {
+    "slug": "dodge-arena",
+    "title": "Dodge Arena",
+    "emoji": "☄️",
+    "tagline": "Dodge everything. How long can you last?",
+    "skills": [
+      "challenge",
+      "action",
+      "3d"
+    ],
+    "ages": "6-12",
+    "modes": [
+      "solo"
+    ],
+    "languages": [
+      "en",
+      "sl"
+    ],
+    "translations": {
+      "sl": {
+        "title": "Izmikaj se!",
+        "tagline": "Izmikaj se vsemu. Koliko časa zdržiš?"
+      }
+    },
+    "color": "#7b2cbf",
+    "status": "ready"
   }
 ]

@@ -1,0 +1,536 @@
+:root {
+  --night: #140a10;
+  --basalt: #2a161c;
+  --basalt-edge: #4a2428;
+  --ember: #ff7a2f;
+  --flame: #ffc21f;
+  --hot: #ff3d2e;
+  --mint: #4ff0c8;
+}
+
+html,
+body {
+  overscroll-behavior: none;
+}
+
+body {
+  min-height: 100dvh;
+  color: #ffeedd;
+  background: var(--night);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+body[data-screen='play'] {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body[data-screen='play'] .topbar {
+  display: none;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  gap: 8px;
+  padding-block: calc(var(--safe-top) + 8px) 8px;
+  background: linear-gradient(180deg, var(--night) 70%, rgba(20, 10, 16, 0));
+}
+
+.title {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: clamp(1.3rem, 5vw, 2.1rem);
+  font-weight: 700;
+  color: var(--flame);
+  text-shadow: 0 2px 0 var(--hot);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.home-btn,
+.language-btn,
+.bar-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 2px solid var(--basalt-edge);
+  border-radius: 12px;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: inherit;
+  background: var(--basalt);
+  box-shadow: 0 3px 0 #000;
+  touch-action: manipulation;
+}
+
+.bar-btn[hidden] {
+  display: none;
+}
+
+.home-btn:active,
+.language-btn:active,
+.bar-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #000;
+}
+
+/* ---------- The map: a tower to climb, with lava under it ---------- */
+
+.map {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--gutter) 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.badge {
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 2px solid var(--basalt-edge);
+  border-radius: 12px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  background: var(--basalt);
+}
+
+.badge-singe {
+  color: #fff;
+  background: linear-gradient(180deg, var(--ember), var(--hot));
+  border-color: var(--flame);
+}
+
+.band {
+  padding: 12px;
+  border-radius: 8px;
+  border: 3px solid rgba(255, 255, 255, 0.14);
+}
+
+.band-shaft {
+  background: linear-gradient(180deg, #3a1218, #5a1c18);
+}
+
+.band-ice {
+  background: linear-gradient(180deg, #0f2d4d, #1c5a82);
+}
+
+.band-clock {
+  background: linear-gradient(180deg, #2f2a1a, #5e4a22);
+}
+
+.band-top {
+  background: linear-gradient(180deg, #0e0a3a, #3a2a8a);
+}
+
+.band-name {
+  margin: 0 0 10px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.band-grid {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  gap: 10px;
+  justify-content: center;
+}
+
+.level-btn {
+  position: relative;
+  display: flex;
+  flex: 0 1 calc((100% - 20px) / 3);
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px;
+  padding: 6px;
+  border: 3px solid rgba(255, 255, 255, 0.28);
+  border-radius: 10px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.42);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.55);
+  touch-action: manipulation;
+}
+
+.level-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
+}
+
+.level-btn.fresh {
+  border-color: var(--flame);
+  background: linear-gradient(180deg, var(--ember), var(--hot));
+  animation: nudge 1.3s ease-in-out infinite;
+}
+
+.level-btn.locked {
+  opacity: 0.55;
+}
+
+.level-number {
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.level-stars {
+  min-height: 1.2em;
+  font-size: 1.05rem;
+  letter-spacing: 1px;
+  color: var(--flame);
+}
+
+.level-btn.fresh .level-stars {
+  color: #fff;
+}
+
+.level-secret {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 1rem;
+}
+
+.map-lava {
+  height: 110px;
+  margin: 0 calc(var(--gutter) * -1);
+  background: linear-gradient(180deg, #fff3a0 0, var(--flame) 8px, var(--ember) 30px, var(--hot) 70px, #6e0f1e);
+  box-shadow: 0 -18px 40px rgba(255, 110, 30, 0.55);
+}
+
+@keyframes nudge {
+  50% {
+    transform: translateY(-3px) scale(1.03);
+  }
+}
+
+/* ---------- Playing ---------- */
+
+.play {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto minmax(0, 1fr) 150px;
+  grid-template-areas: 'barl barr' 'field field' 'move act';
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  background: var(--night);
+  touch-action: none;
+}
+
+.hud {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  padding: 6px 8px;
+}
+
+.hud-left {
+  grid-area: barl;
+  grid-column: 1 / -1;
+  padding-right: 120px;
+}
+
+.hud-right {
+  grid-area: barr;
+  justify-content: flex-end;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  z-index: 1;
+}
+
+.hud .topbar-end {
+  margin-left: 0;
+}
+
+.stat {
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-level {
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: #120a10;
+  background: var(--flame);
+}
+
+.stat-singes {
+  color: var(--flame);
+}
+
+.field-box {
+  position: relative;
+  grid-area: field;
+  min-width: 0;
+  min-height: 0;
+}
+
+.field {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.hint {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  left: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  color: #fff;
+  background: rgba(10, 6, 12, 0.72);
+  pointer-events: none;
+}
+
+.hint[hidden] {
+  display: none;
+}
+
+.skip-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  min-width: 48px;
+  height: 48px;
+  padding: 0 8px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  font-size: 1.15rem;
+  color: #fff;
+  background: rgba(10, 6, 12, 0.7);
+  touch-action: manipulation;
+}
+
+.skip-btn[hidden] {
+  display: none;
+}
+
+.skip-btn.armed {
+  border-color: var(--flame);
+  background: var(--hot);
+}
+
+.pad {
+  display: flex;
+  gap: 6px;
+  padding: 6px 8px 10px;
+  min-width: 0;
+}
+
+.pad-move {
+  grid-area: move;
+}
+
+.pad-act {
+  grid-area: act;
+}
+
+.zone {
+  display: grid;
+  flex: 1 1 0;
+  place-items: center;
+  min-width: 0;
+  border: 3px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  font-size: 2.3rem;
+  line-height: 1;
+  color: #ffeedd;
+  background: linear-gradient(180deg, #3a2028, #24121a);
+  box-shadow: 0 4px 0 #000;
+  touch-action: none;
+}
+
+.zone-jump {
+  flex-grow: 1.5;
+  border-color: var(--flame);
+  color: #2a0d06;
+  background: linear-gradient(180deg, var(--flame), var(--ember));
+}
+
+.zone-dash {
+  border-color: var(--mint);
+  background: linear-gradient(180deg, #17564c, #0d2f2c);
+}
+
+.zone.on {
+  transform: translateY(3px);
+  filter: brightness(1.35);
+  box-shadow: 0 1px 0 #000;
+}
+
+/* A phone on its side, or any wide screen: the tower stands in the middle with the buttons either side. */
+@media (min-aspect-ratio: 11/10) {
+  .play {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 56vh) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas: 'barl field barr' 'move field act';
+  }
+
+  .hud-left {
+    grid-column: 1;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    padding-right: 8px;
+  }
+
+  .hud-right {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: stretch;
+    align-items: flex-start;
+  }
+
+  .pad {
+    align-items: stretch;
+    padding-top: 10px;
+    padding-bottom: 14px;
+  }
+}
+
+/* ---------- The result ---------- */
+
+.result {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  background: rgba(14, 6, 12, 0.76);
+  touch-action: manipulation;
+}
+
+.result[hidden] {
+  display: none;
+}
+
+.result-stars {
+  display: flex;
+  gap: 8px;
+}
+
+.star {
+  font-size: clamp(3.4rem, 16vmin, 6rem);
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.18);
+}
+
+.star.got {
+  color: var(--flame);
+  text-shadow: 0 0 18px var(--ember);
+  animation: pop 0.34s ease-out backwards;
+  animation-delay: calc(var(--at) * 0.26s + 0.1s);
+}
+
+.result-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.fact {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.fact.good {
+  color: #10241f;
+  background: var(--mint);
+}
+
+.big-btn {
+  min-height: 72px;
+  padding: 10px 30px;
+  border: 3px solid var(--flame);
+  border-radius: 14px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #2a0d06;
+  background: linear-gradient(180deg, var(--flame), var(--ember));
+  box-shadow: 0 5px 0 #7a2410;
+}
+
+.small-btn {
+  width: 56px;
+  height: 56px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 1.5rem;
+  color: #fff;
+  background: var(--basalt);
+}
+
+.result .big-btn,
+.result .small-btn {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.result.awake .big-btn,
+.result.awake .small-btn {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.2);
+  }
+
+  70% {
+    transform: scale(1.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-btn.fresh,
+  .star.got {
+    animation: none;
+  }
+}
+
+/* The second tap of a skip is somewhere else, so no mash lands on both. */
+.skip-btn.armed {
+  right: 10px;
+  left: auto;
+}

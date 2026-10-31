@@ -1,0 +1,53 @@
+import type { WorldId } from '../levels.ts';
+
+export type HintId = 'jump' | 'crumble' | 'wall' | 'spikes' | 'pad' | 'rocks' | 'ice' | 'dash' | 'moving' | 'belts';
+
+export const en = {
+  title: 'Lava Climb',
+  description: 'A tight, fast climbing game for ages 6 to 12. Jump, wall jump and dash up 24 towers before the lava catches you.',
+  home: 'Back to Playroom',
+  sayAgain: 'Say it again',
+  levels: 'All levels',
+  level: (n: number) => `Level ${n}`,
+  locked: (n: number) => `Level ${n}, still locked`,
+  starsLabel: (n: number) => (n === 1 ? '1 star' : `${n} stars`),
+  singes: 'Singes',
+  stars: 'Stars',
+  secrets: 'Secret gems',
+  time: 'Time',
+  gems: 'Gems',
+  next: 'Next level',
+  again: 'Climb it again',
+  skip: 'Skip this level',
+  skipSure: 'Tap again to skip',
+  left: 'Go left',
+  right: 'Go right',
+  jump: 'Jump',
+  dash: 'Dash',
+  ready: 'Press to start',
+  where: 'Pick a level!',
+  go: 'Climb! The lava is rising!',
+  hints: {
+    jump: 'Hold jump to go higher!',
+    crumble: 'Cracked ledges fall. Keep moving!',
+    wall: 'Slide on a rough wall and jump off it!',
+    spikes: 'Spikes sting. Jump over them!',
+    pad: 'Bouncy pads throw you high!',
+    rocks: 'Watch for the shadow. A rock is coming!',
+    ice: 'Ice is slippery. Stop early!',
+    dash: 'Press the wind button in the air to dash!',
+    moving: 'Ride the moving platforms!',
+    belts: 'Belts push you along!',
+  } satisfies Record<HintId, string>,
+  ouch: ['Ouch! Hot hot hot!', 'Sizzle!', 'Toasted!', 'Quick, once more!'],
+  bonk: 'Bonk!',
+  win: ['You made it!', 'So fast!', 'Three stars! Amazing!'],
+  secret: 'A secret gem!',
+  fish: 'The lava fish says hello!',
+  stuck: 'Too hard? You can skip this level.',
+  lockedLine: 'Beat the level before it first!',
+  allDone: 'Top of the world! Bravo!',
+  worlds: { shaft: 'Volcano Shaft', ice: 'Ice Tower', clock: 'Clockwork Tower', top: 'The Top' } satisfies Record<WorldId, string>,
+};
+
+export type Text = typeof en;

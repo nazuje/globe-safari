@@ -8,7 +8,9 @@ Read `docs/making-games.md` before building or changing a game.
 
 1. `npm test`, `npm run typecheck` and `npm run build` all exit 0. Read the exit codes, because `npm test` runs Node tests after vitest and a grep for vitest output misses them.
 2. `npm run playtest -- <slug>` passes, after a build, and you've looked at the screenshots in `.playtest/`.
-3. For a new game or a big change, a separate agent that didn't build it gives a **ship** verdict, following `.claude/agents/game-tester.md`.
+3. For a new game or a big change, a separate agent that didn't build it plays it, following `.claude/agents/game-tester.md`. This can happen after publishing, with its fixes going out as updates.
+
+4. Commit, push to `main` and confirm the deploy and the live page, without waiting to be asked. Publish each finished game on its own, and send tester fixes as follow-up updates.
 
 Report what no script can check: real sound, real tablets and native Slovenian. No one has yet confirmed any of these on a real device.
 
